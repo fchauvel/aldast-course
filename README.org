@@ -1,0 +1,7 @@
+
+* Introduction to Algorithms and Data-structures
+
+Here are the sources of the companion website for the course I run in
+NTNU on algorithms and data-structures (IDAT2032).
+
+
