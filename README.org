@@ -5,3 +5,16 @@ Here are the sources of the companion website for the course I run in
 NTNU on algorithms and data-structures (IDAT2032).
 
 
+
+
+
+** Configuration
+
+Add reveal.js to the ~lib~ folder, using
+
+#+begin_src 
+$ cd src/assets/lib
+$ git clone --branch 4.1.0 https://github.com/hakimel/reveal.js.git
+#+end_src
+
+

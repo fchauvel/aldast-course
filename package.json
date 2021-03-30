@@ -1,0 +1,26 @@
+{
+  "name": "course",
+  "version": "1.0.0",
+  "description": "* Introduction to Algorithms and Data-structures",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fchauvel/aldast-course.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fchauvel/aldast-course/issues"
+  },
+  "homepage": "https://github.com/fchauvel/aldast-course#readme",
+  "devDependencies": {
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-connect": "^5.7.0",
+    "gulp-sass": "^4.1.0"
+  }
+}

@@ -4,3 +4,9 @@
 *~
 \#*\#
 .\#*
+
+# NPM local files
+node_modules/*
+
+# Generated site
+site/*

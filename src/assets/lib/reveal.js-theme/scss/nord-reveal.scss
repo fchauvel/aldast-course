@@ -8,8 +8,8 @@
 
 
 // Default mixins and settings -----------------
-@import "./template/mixins";
-@import "./template/settings";
+@import "../../reveal.js/css/theme/template/mixins";
+@import "../../reveal.js/css/theme/template/settings";
 // ---------------------------------------------
 
 
@@ -52,7 +52,7 @@ $selectionBackgroundColor: rgba(0, 0, 0, 0.99);
 
 
 // Theme template ------------------------------
-@import "./template/theme";
+@import "../../reveal.js/css/theme/template/theme";
 // ---------------------------------------------
 
 
