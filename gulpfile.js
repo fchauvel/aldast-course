@@ -19,6 +19,13 @@ gulp.task('install-reveal-plugins', () => {
 
 });
 
+gulp.task('install-images', () => {
+ return gulp
+        .src('src/assets/images/**/*')
+        .pipe(gulp.dest('site/images'));
+});
+
+
 gulp.task('install-reveal-theme', () => {
     const source = 'src/assets/lib/reveal.js-theme';
     const target = 'site/lib/reveal.js-theme/';
@@ -38,11 +45,21 @@ gulp.task('install-site', () =>  {
 
 });
 
+gulp.task('install-timeline', () => {
+    const source = 'src/assets/lib/timeline';
+    const target = 'site/lib/timeline';
+    return gulp.src(`${source}/**/timeline.scss`)
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest(target));
+});
+
 gulp.task('build',
           gulp.parallel([
               'install-reveal.js',
               'install-reveal-plugins',
               'install-reveal-theme',
+              'install-timeline',
+              'install-images',
               'install-site']));
 
 gulp.task('clean', () => {
@@ -61,6 +78,12 @@ gulp.task('serve', () => {
         host: '0.0.0.0',
         livereload: true
     });
+
+    gulp.watch(['src/**/*.html',
+                'src/**/*.scss',
+                'src/**/*.css'],
+               gulp.series('build'));
+
 });
 
 

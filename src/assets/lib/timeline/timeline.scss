@@ -1,0 +1,141 @@
+@import '../nord/nord';
+
+
+div.timeline {
+    position: relative;
+    display: flex;
+    height: 400px;
+}
+
+div.timeline div.time {
+    position: absolute;
+    content: "";
+    bottom: 50%;
+    z-index: -10;
+
+    height: 0px;
+    width: 90%;
+
+    margin: 0;
+    padding: 0;
+
+    border: 3px solid $nord-night-3;
+}
+
+div.timeline div.container {
+    position: relative;
+    z-index: -2;
+
+    height: 38%;
+    width: 200px;
+
+    padding: 10px;
+    margin: 0;
+
+    background-color: $nord-night-2;
+
+    border-radius: 5px;
+
+}
+
+.timeline .container h2 {
+    padding: 0;
+    margin: 0;
+
+    text-align: left;
+    font-size: 18px;
+
+    color: $nord-aurora-3;
+}
+
+
+.timeline .container p {
+    padding: 0;
+    margin: 0;
+
+    text-align: left;
+    font-size: 18px;
+}
+
+.timeline .container img {
+    display: block;
+    max-height: 40px;
+    text-align: left;
+}
+
+div.timeline div.container.bottom:before {
+    position: absolute;
+    top: -10%;
+    left: 5%;
+    z-index: 3;
+
+    content: "";
+
+    height: 0px;
+    width: 0px;
+
+    background-color: transparent;
+    border-color: transparent transparent $nord-night-2 transparent;
+    border-style: solid;
+    border-width: 10px;
+}
+
+div.timeline div.container.bottom {
+    align-self: flex-end;
+}
+
+div.timeline div.container.bottom:after {
+    position: absolute;
+    top: -25%;
+    left: 5%;
+    z-index: 4;
+
+    content: " ";
+
+    height: 10px;
+    width: 10px;
+
+    border-radius: 10px;
+    border: 5px solid $nord-night-3;
+
+    background-color: $nord-aurora-3;
+}
+
+div.timeline div.container.top {
+    align-self: flex-start;
+}
+
+div.timeline div.container.top:before {
+    position: absolute;
+    bottom: -10%;
+    left: 5%;
+    z-index: 3;
+
+    content: "";
+
+    height: 0px;
+    width: 0px;
+
+    background-color: transparent;
+    border-color: $nord-night-2 transparent transparent transparent;
+    border-style: solid;
+    border-width: 10px;
+}
+
+
+div.timeline div.container.top:after {
+    position: absolute;
+    bottom: -20%;
+    left: 5%;
+    z-index: 4;
+
+    content: " ";
+
+    height: 10px;
+    width: 10px;
+
+    border-radius: 10px;
+    border: 5px solid $nord-night-3;
+
+    background-color: $nord-aurora-3;
+}
