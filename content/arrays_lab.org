@@ -1,0 +1,516 @@
+#+title: Run-length Encoding
+#+subtitle: Playing with Arrays
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+* Introduction
+
+  In this lab session we will look a /run-length/ encodings, a method
+  to compress data.
+
+  The idea is to avoid repeating the same value again and again, and a
+  sequence of similar value by two pieces of information, namely the
+  value that is repeated and the number of repetitions. For example,
+  the text "aaabbbcddeeeeee" would be /compressed/ into
+  "(3,a),(3,b),(1,c),(2,d),(6,e)". Where is the compression? If we
+  discard the commas and brackets, which I added for better
+  readability, we get a shorter text "3a3b1c2d6e". 10 characters
+  instead of 15.
+
+  Let see how we could approach that with arrays
+
+  #+headers: :cmdline --transparent
+  #+header: :results graphics file
+  #+header: :exports results
+  #+headers: :file ../assets/images/array-deletion.png
+  #+begin_src ditaa
+
+    Raw data
+
+    25  26  27  28  29  30  31  32  33  34  35  36  37  38  39
+    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    :   | a | a | a | b | b | b | c | d | d | e | e | e | e |   :
+    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+        <-=->
+                                  |
+     bucket size                  |
+                                  | compressed into
+                                  |
+    Run-length encoding           v
+
+    45  46  47  48  49  50  51  52  53  54  55  56  57  58  59
+    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+    :   | 3 | a | 3 | b | 1 | c | 2 | d | 4 | e |   :   :   :   :
+    +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+        <---=--->
+
+      new bucket size
+   #+end_src
+
+   #+RESULTS:
+   [[file:../assets/images/array-deletion.png]]
+
+   Before to dive into the exercise let quickly look at how promising
+   is RLE.
+
+* Average Saving 
+
+  Let look at the space-efficiency of a data structure. So far we main
+  discussed the efficiency of algorithms, but space-efficiency also
+  applies to data structures.
+
+  The Space-efficiency of a data structure reflects how we use the
+  memory. Do we use it to store actual data or do we need additional
+  memory for house keeping. Take a textbook with table of content and
+  index. These pages are not content, only repetitions of headings or
+  keyword that help us find what we need faster.
+
+  Returning let's look at the memory save by run-length encoding. We
+  define the saving as follow:
+
+  \[
+  \text{saving} = 1 - \frac{\text{compressed size}}{\text{uncompressed size}}
+  \]
+
+  where both sizes are a number of bucket. 
+
+  #+begin_question
+  Assuming arrays of length 3 that can only contain value "0" or "1",
+  write all the possible input arrays, identify the runs, the
+  compressed size and the saving.
+  #+end_question
+  
+  Let's take an example to see how this RLE compression behaves. To
+  keep things manageable, let's look at small given array ($n=3$),
+  built from a small alphabet ${0, 1}$. Table [[table:encoding-binary]]
+  shows all possible input array of length 3, the number of runs, the
+  resulting encoding, its size and the associate saving.  We see from
+  Table [[table:encoding-binary]] that /compressed size is given by the
+  number of runs/.
+
+
+  #+caption: Encoding binary strings using RLE
+  #+name: table:encoding-binary
+   |  input  | size | runs          | run count |  encoded | comp. size | saving |
+   |---------+------+---------------+-----------+----------+------------+--------|
+   |     000 |    3 | 000           |         1 |       30 |          1 |    0.7 |
+   |     001 |    3 | 00\vert1      |         2 |     2021 |          2 |    0.3 |
+   |     010 |    3 | 0\vert1\vert0 |         3 |   101110 |          3 |    0.0 |
+   |     011 |    3 | 0\vert11      |         2 |     1021 |          2 |    0.3 |
+   |     100 |    3 | 1\vert00      |         2 |     1120 |          2 |    0.3 |
+   |     101 |    3 | 1\vert0\vert1 |         3 |   111011 |          3 |    0.0 |
+   |     110 |    3 | 11\vert0      |         2 |     2110 |          2 |    0.3 |
+   |     111 |    3 | 111           |         1 |       31 |          1 |    0.7 |
+   |---------+------+---------------+-----------+----------+------------+--------|
+   | Average |      |               |      2.00 |          |       2.00 |        |
+   #+tblfm: @>$6=vmean(@I$4..@II$4);%.2f::@2$7..@9$7=1.-($6/$2);N%.1f
+
+
+  #+begin_question
+  Just as we do for algorithms, let's look at the worst case, the best
+  case and the average case.
+   - What is the best case, that is the one with the highest saving percentage?
+   - What is the worse case?
+   - How would you approach the average case?
+  #+end_question
+  
+  The worse case happens when there are as many runs as there buckets
+  in th input array. In that case, the size is the same, but only if
+  we count buckets. If we were to count cells, it would twice as big!.
+
+  The best case is the opposite, that is when the given input array is
+  a single run, that is when it contains only one symbol repeated all the
+  way to the end.
+
+  The average case is more involved and I put the detail in [[*Average
+  Compression Ratio]] in Appendix. Nonetheless we can see how this
+  behaves with respect to the number of symbols available in the chose
+  alphabet and the length of the input array.
+
+  Given a random array of length $\ell$, where each bucket is a symbol
+  for the alphabet $\mathcal{A}$, the average length of the RLE output
+  is:
+
+  \begin{align*}
+   space(\mathcal{A}, \ell) = \frac{\ell(|\mathcal{A}|-1)+1}{|\mathcal{A}|}
+  \end{align*}
+
+  If we plug this into our definition of the savings in term, we get:
+
+  \begin{align*}
+    saving(\mathcal{A}, \ell) & = 1- \frac{\frac{\ell(|\mathcal{A}|-1)+1}{|\mathcal{A}|}}{\ell} \\
+        &= \frac{\ell-1}{|\mathcal{A}|\ell}
+  \end{align*}
+
+  We can now try to visualize this average saving as the length of
+  input array and the alphabet grow. Figure [[fig:average-saving]] gives a
+  perspective view. The good thing is that the average saving rises
+  when the length grows but only up to a limit. The less good thing is
+  that this gain significantly reduces when the alphabet grows.
+
+  Nonetheless RLE seems to offer good saving long arrays built on top of small alphabet: binary images.
+  
+   #+header: :R-dev-args bg="transparent"
+   #+header: :results graphics file
+   #+header: :exports results
+   #+header: :file ../assets/images/rle_compression_ratio.png
+   #+headers: 
+   #+begin_src R
+ count <- function(a, n, s) { choose(n-1, s-1) * a * (a-1)^(s-1) };
+ probability <- function(a, n, s) { count(a, n, s) / a^n };
+ #expected_size <- function(a, n) {sum(sapply(1:n, function(x){x * probability(a, n, x)}))};
+ expected_size <- function(a, n) { (n * (a-1) +1 ) / a}; 
+ compression_ratio <- function(a, n) { n / expected_size(a, n) };
+ saving <- function (a, n) { 1 - expected_size(a,n) / n };
+ saving <- function (a, n) { (n-1)/(a*n) };
+
+ alphabet <- 2:26;
+ text_length <- 1:20
+ saving <- outer(alphabet, text_length, Vectorize(saving));
+ persp(alphabet, text_length, saving, theta=45, phi=20, col="lightblue", shade=0.5, ticktype="detailed", xlab="alphabet length", ylab="array length (n)", zlab="Space saved (%)");
+  #+end_src
+  
+  #+caption: Visualization of the average memory saving of RLE given inputs up to 20 cells, and alphabets up to 26 symbols.
+  #+name: fig:average-saving
+  #+RESULTS:
+  [[file:../assets/images/rle_compression_ratio.png]]
+
+   
+* Encoding & Decoding
+
+** Encoding
+
+   #+headers: :exports both
+   #+headers: :results output
+   #+begin_src js
+     function encode(input) {
+         const encoded = [];
+         let index = 0;
+         let counter = 1;
+         while (index+1 < input.length) {
+             let next = input[index+1]
+             if (input[index] === next) {
+               counter += 1;
+             } else {
+               encoded.push({ 'count': counter, 'value': input[index] });
+               counter = 1;
+             }
+             index += 1;
+         }
+         encoded.push({'count': counter, 'value': input[index]});
+         return encoded;
+     }
+
+     const input = ['a', 'a', 'a', 'b', 'b', 'c', 'd', 'd', 'd'];
+     const encoded = encode(input);
+     console.log(JSON.stringify(encoded, null, 2));
+     console.log()
+   #+end_src
+
+   #+RESULTS:
+   #+begin_example
+   [
+     {
+       "count": 3,
+       "value": "a"
+     },
+     {
+       "count": 2,
+       "value": "b"
+     },
+     {
+       "count": 1,
+       "value": "c"
+     },
+     {
+       "count": 3,
+       "value": "d"
+     }
+   ]
+   #+end_example
+
+   What is the space-efficiency of this encoding. Again, let's start
+   by looking at the best and worse cases. The best cases here means
+   that we compress to the maximum. This happens when the given input
+   contains only a single character repeated many times. What is the
+   length of the ~encoded~ array in that case? It's one. Say for
+   example we are given an array with 1000 "0", it will be encoded as
+   ~[{'count': 1000, 'value': 0}]~. This holds regardless of the size
+   of the given array. Here our best case in of constant space, that
+   is $s \in \Theta(1)$
+
+   What is the worse case now. It is when the given arrays does not
+   contains any repetition. For example the array ~[A, B, C]~ gets
+   compressed into ~[(1, A), (1, B), (1, C)]~. Not the best
+   compression ever. What is the length of the encoded array. In this
+   case, it is the same as the input array, that is $n$. So $s \in
+   \Theta(n)$. I found this somehow misleading because the number of
+   buckets is the same, but the buckets of the encoded array are
+   bigger. They contain both a value and a number. So if the input
+   array contains only integer for example, the size of the encoded
+   array is actually $2n$. Really bad.
+
+   
+** Encoding
+
+** Decoding
+
+* Search
+
+* Insertion
+
+* Deletion
+
+* Comparisons
+
+* Appendix
+
+I put here the detail of the calculation, not because they are not
+important, but because some of are tedious and I don't want they take
+the focus off data structure and algorithms. This is not a maths
+course.
+  
+** Average Compression Ratio
+
+   - How to compute an average. 
+
+   - What are the different case?
+
+   - How many run-length can we find?
+
+
+   So my strategy to calculate the probability of have $k$ runs in the
+   given input is:
+
+   1. Calculate how many inputs are possible ;
+   2. Calculate how many inputs will have $k$ runs;
+   3. Calculate the probability of having $k$ runs;
+
+*** Counting arrays of length $\ell$
+    
+    Let's start by the easier: The total number of arrays of length
+    $\ell$. This depends on the number of symbols in the alphabet
+    (which I denote by $\mathcal{A}$). If we assume that $\ell=3$ and
+    that we have 2 symbols (say 0 and 1 for example) we can build $2
+    \times 2 \times 2 = 2^3$ arrays.
+
+    Generally, for each bucket in the array, we can choose any symbol
+    from the alphabet, so the number of arrays is given by
+
+    \[
+       \overbrace{|\mathcal{A}| \times |\mathcal{A}| \times \ldots \times |\mathcal{A}|}^{\ell\;\text{times}} = |\mathcal{A}|^\ell
+    \]
+
+    where $|\mathcal{A}|$ denotes the number of symbols in the alphabet
+    and $\ell$ the length of the given array.
+    
+*** Counting arrays with $k$ runs
+
+    The next question is to find how many of these arrays of length
+    $\ell$ contain $k$ runs.
+
+    To answer this, we need to find:
+    1. How many ways there are to split an array into $r$ fragments
+    2. Given $r$ fragments, how many ways there are fill them with symbols.
+
+    Let's go. So how many way are there to assign symbols to $r$
+    runs. Take three runs for example. For the first runs, I can
+    choose any symbol, so that is $|\mathcal{A}|$. For the second run,
+    I cannot reuse the same symbol, otherwise these two runs would
+    become one. That is $|\mathcal{A}|-1$. The same hold for the third
+    run. In total we get $|\mathcal{A}| \times (|\mathcal{A}|-1)
+    \times (|\mathcal{A}|-1)$.
+
+    The general pattern is that for the first run, any symbol works,
+    but for each following run, we cannot reuse the previous
+    symbol. This gives us:
+
+    \[
+    \vert\mathcal{A}| \times \overbrace{(|\mathcal{A}|-1) \times \ldots \times (|\mathcal{A}|-1)}^{r-1\;\text{times}} = |\mathcal{A}| \times (|\mathcal{A}|-1)^{r-1}    
+    \]
+
+    Let's now turn to the second question: How many ways are there to
+    define $r$ runs in an array of length $\ell$? As always, let's
+    look at an example and return to our binary "strings" assuming
+    that $\ell = 4$ and $r=3$. I see three options: "?|?|??", "?|??|?"
+    and "??|?|?".
+
+    The trick here is that the runs are defined by where we decide to
+    split our arrays (those "|"). So the number of ways to define $r$
+    runs is the number of ways to places splits. But how many splits
+    do we need to get $r$ runs? We need $r-1$. Besides, there are only
+    $\ell-1$ positions where we can place a given split. So the number
+    of ways to define $r$ runs in an array of length $\ell$ is the
+    number of ways there are of choosing $r-1$ items among $\ell-1$
+    possibilities. This is known as the [[https://en.wikipedia.org/wiki/Binomial_coefficient][binomial coefficient]]
+    $C_{k}^{n}$, which reads "choose k among n", as follows:
+
+    \[
+      C_{k}^{n} = \frac{n!}{k!(n-k)!}
+    \]
+
+    Returning to our number of arranging $r$ runs in an array of
+    length $\ell$, this gives us $C_{r-1}^{\ell-1}$.
+
+    Now we know how many ways there are to assign symbol to $r$ runs,
+    and how many ways there are to define $r$ runs, we can get the
+    number of array of length $\ell$ that contains $r$ runs is given
+    with:
+
+    \[
+    C_{r-1}^{\ell-1} \cdot |\mathcal{A}| \times (|\mathcal{A}|-1)^{r-1} 
+    \]
+    
+*** Probability of $k$ runs 
+
+    Now we have all we know to compute the probability of having $r$
+    runs in an array of length $\ell$.
+
+    Let me define a random variable $R_\ell$ that represents the
+    number of run we get in an array of length $\ell$. It ranges from
+    1 to $\ell$, as there is no way we can get more runs than there
+    are buckets.
+
+    Now the probability of having $r$ runs, which I denote by
+    $\mathbb{P}[R=r]$, is given by:
+
+    \begin{align*}
+    \mathbb{P}[R=r] &= \frac{\text{number of }\ell\text{-arrays with } r \text{ runs}}{\text{total number of }\ell\text{-arrays}} \\
+                         &= \frac{    C_{r-1}^{\ell-1} \cdot |\mathcal{A}| \times (|\mathcal{A}|-1)^{r-1}}{|\mathcal{A}|^\ell} \\
+               &= \frac{    C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1}}{|\mathcal{A}|^{\ell-1}} \\
+    \end{align*}
+
+*** Average Compression Ratio
+
+    Now know the probability of having $r$ runs, we can compute the
+    average compression ratio.
+
+    To do that, we need to know the space taken by the array once we have
+    encoded it. This is simply the number or runs, because we create a
+    new bucket for each run. 
+
+    \begin{align*}
+      space(\mathcal{A}, \ell, R) = R
+    \end{align*}
+
+    Now the average space (so called the expected value, which we
+    denote by E) is given by :
+
+    \begin{align*}
+      \mathbb{E}[space(\mathcal{A}, \ell, R)] & = \sum_{r=1}^{\ell} r \cdot \mathbb{P}[R=r] \\
+           & = \sum_{r=1}^{\ell} r \cdot \frac{ C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1}}{|\mathcal{A}|^{\ell-1}}  \\
+           & = \frac{1}{|\mathcal{A}|^{\ell-1}} \underbrace{\sum_{r=1}^{\ell} r \cdot C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1}}_{\text{Term 1}}  \\
+    \end{align*}
+
+    We can use the [[https://en.wikipedia.org/wiki/Binomial_theorem][binomial theorem]] to simplify Term 1. It tells us
+    that $\sum_{k=0}^{n} C_k^n x^k = (1+x)^n$. But to do, we need to
+    break the $r$ factor into $1 + (r-1)$.
+
+    \begin{align*}
+      \text{Term 1} & = \sum_{r=1}^{\ell} r \cdot C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1}  \\
+          & = \sum_{r=1}^{\ell} \left[1 + (r-1)\right] \cdot C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1}  \\
+    \end{align*}
+
+    In this form, we can use the fact that $\sum_{k=1}^{n}
+    (k+a)\cdot f(k) = \sum_{k=1}^{n} k\cdot f(k) + a \cdot
+    \sum_{k=1}^{n} f(k)$ to break our sum into two, which we can work
+    out more easily.
+
+    \begin{align*}
+      \text{Term 1} & = \sum_{r=1}^{\ell} r \cdot C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1} \\
+                 & = \underbrace{\sum_{r=1}^{\ell} C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1}}_{\text{Term 1.1}} + \underbrace{\sum_{r=1}^{\ell} (r-1) \cdot C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1}}_{\text{Term 1.2}}
+    \end{align*}
+
+    The [[https://en.wikipedia.org/wiki/Binomial_theorem][binomial theorem]] gives us both sums. Let's start with the left
+    operand, Term 1.1 We just need to shift down the summation bounds by 1,
+    that is:
+
+    \begin{align*}
+      \text{Term 1.1} & = \sum_{r=1}^{\ell} C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1} \\
+              & = \sum_{r=0}^{\ell-1} C_{r}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r} \\
+              & = (|\mathcal{A}|-1 + 1)^{\ell-1} \\
+              & =  |\mathcal{A}|^{\ell-1}
+    \end{align*}
+
+    To simplify the right hand side we need to account for the fact
+    that $k\cdot C_k^n = n\cdot C_{k-1}^{n-1}$ as follows:
+
+   \begin{align*}
+      \text{Term 1.2} & = \sum_{r=1}^{\ell} (r-1) \cdot C_{r-1}^{\ell-1} \cdot (|\mathcal{A}|-1)^{r-1} \\
+             & = \sum_{r=2}^{\ell} (\ell-1) \cdot C_{r-2}^{\ell-2} \cdot (|\mathcal{A}|-1)^{r-1} \\
+             & =  (\ell-1) \cdot \sum_{r=2}^{\ell} C_{r-2}^{\ell-2} \cdot (|\mathcal{A}|-1)^{r-1} \\
+    \end{align*}
+
+   In the last step, we adjust the lower bound $r$ so as it starts
+   from 0, but the upper bound of the sum differs from the binomial
+   coefficient ($\ell-1$ vs $\ell-2$) so we need to treat the last
+   term of the sum separately as follows
+
+   \begin{align*}
+      \text{Term 1.2} & = (\ell-1) \cdot \sum_{r=2}^{\ell} C_{r-2}^{\ell-2} \cdot (|\mathcal{A}|-1)^{r-1} \\
+        & = (\ell-1) \cdot (|\mathcal{A}|-1) \cdot \sum_{r=2}^{\ell} C_{r-2}^{\ell-2} \cdot (|\mathcal{A}|-1)^{r-2} \\
+        & = (\ell-1) \cdot (|\mathcal{A}|-1) \cdot \sum_{r=0}^{\ell-2} C_{r}^{\ell-2} \cdot (|\mathcal{A}|-1)^{r} \\
+        & = (\ell-1) \cdot (|\mathcal{A}|-1) \cdot (|\mathcal{A}|-1+1)^{\ell-2} \\
+        & = (\ell-1) \cdot (|\mathcal{A}|-1) \cdot |\mathcal{A}|^{\ell-2} \\
+   \end{align*}
+
+   Now if, we assemble Term 1.1 and Term 1.2 we get:
+
+   \begin{align*}
+           \mathbb{E}[space(\mathcal{A}, \ell, R)] & = \frac{1}{|\mathcal{A}|^{\ell-1}} \left[ |\mathcal{A}|^{\ell-1} + \left( (\ell -1) \cdot (|\mathcal{A}|-1) \cdot |\mathcal{A}|^{\ell-2} \right) \right] \\
+               & = \frac{|\mathcal{A}|^{\ell-1} + \left( (\ell -1) \cdot (|\mathcal{A}|-1) \cdot |\mathcal{A}|^{\ell-2}\right)}{|\mathcal{A}|^{\ell-1}} \\
+               & = \frac{\mathcal{|A|}^{\ell-2} \cdot \left( |A| + (\ell -1) \cdot (|\mathcal{A}|-1) \right)}{|\mathcal{A}|^{\ell-1}} \\
+               & = \frac{|A| + (\ell -1) \cdot (|\mathcal{A}|-1)}{|\mathcal{A}|} \\
+               & = \frac{|A| + (|\mathcal{A}|\ell - \ell - |\mathcal{A}| + 1)}{|\mathcal{A}|} \\
+               & = \frac{|\mathcal{A}|\ell - \ell + 1}{|\mathcal{A}|} \\
+               \mathbb{E}[space(\mathcal{A}, \ell, R)] & = \frac{\ell \cdot (|\mathcal{A}| - 1) + 1}{|\mathcal{A}|} \\
+
+   \end{align*}
+
+   Quick sanity check now. If we assume $\mathcal{A} = \{0,1\}$ and $\ell=3$ we get:
+
+   \begin{align*}
+           \mathbb{E}[space(\mathcal{A}, \ell, R)] & = \mathbb{E}[space(\{0,1\}, 3, R)] \\
+                 & = \frac{3\cdot(2-1) + 1} {2} \\
+                 & = \frac{3 \cdot 1 + 1} {2} \\
+                 & = \frac{4} {2} = 2 \\
+   \end{align*}
+
+   
+     | sequence | encoded |   s |
+     |----------+---------+-----|
+     | aaa      | 3a      |   1 |
+     | aab      | 2a1b    |   2 |
+     | aac      | 2a1c    |   2 |
+     | aba      | 1a1b1a  |   3 |
+     | abb      | 1a2b    |   2 |
+     | abc      | 1a1b1c  |   3 |
+     | aca      | 1a1c1a  |   3 |
+     | acb      | 1a1c1b  |   3 |
+     | acc      | 1a2c    |   2 |
+     |----------+---------+-----|
+     | baa      | 1b2a    |   2 |
+     | bab      | 1b1a1b  |   3 |
+     | bac      | 1b1a1c  |   3 |
+     | bba      | 2b1a    |   2 |
+     | bbb      | 3b      |   1 |
+     | bbc      | 2b1c    |   2 |
+     | bca      | 1b1c1a  |   3 |
+     | bcb      | 1b1c1b  |   3 |
+     | bcc      | 1b2c    |   2 |
+     |----------+---------+-----|
+     | caa      | 1c2a    |   2 |
+     | cab      | 1c1a1b  |   3 |
+     | cac      | 1c1a1c  |   3 |
+     | cba      | 1c1b1a  |   3 |
+     | cbb      | 1c2b    |   2 |
+     | cbc      | 1c1b1c  |   3 |
+     | cca      | 2c1a    |   2 |
+     | ccb      | 2c1a    |   2 |
+     | ccc      | 3c      |   1 |
+     |----------+---------+-----|
+     |          | Average | 2.3 |
+   #+tblfm: @>$3=vmean(@I$3..@II$3);%.1f
+ 

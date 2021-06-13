@@ -1,0 +1,5 @@
+
+
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="assets/css/nord-org-mode.css" />
+#+HTML_CONTAINER: div
+#+HTML_MATHJAX: align: left indent: 2em tagside: left font: Asana Math scale: 90

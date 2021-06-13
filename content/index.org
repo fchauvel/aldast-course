@@ -1,0 +1,24 @@
+#+TITLE: Algorithms and Data Structures
+#+subtitle:
+#+author: Franck Chauvel
+
+#+setupfile: ../templates/style.org
+
+* Welcome!
+
+  Welcome to this course on Algorithms and Data Structure. You will
+  find here links to the lecture slides, lecture notes and
+  exercises. Your feedback is very valuable! Feel free to share
+  problems, comments, ideas, or suggestions with us!
+
+
+* Overview
+
+  This course is divided into 14 weeks, and each weeks include 2 hours
+  of lectures and 4 hours of exercises. Each week, we further broke
+  down these hours into 30 min. lectures, followed 1 hour exercises
+  session.
+
+  #+include: syllabus.org
+
+* Suggested Readings
