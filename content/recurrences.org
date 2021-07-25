@@ -1,0 +1,167 @@
+#+titile: Recurrences
+#+subtitle: Analysis of Recursive Algorithms
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+* Introduction
+
+  - How to compute the efficiency of recursive procedures?
+
+  - Example sum of integer, using arrows
+
+  #+header: :results output
+  #+begin_src scheme
+       (define (sum-of-integers n)
+         (cond [(= n 1) 1]
+               [(= n 2) 3]
+               [else (+ n (- n 1) (sum-of-integers (- n 2)))])
+         )
+
+    (print (sum-of-integers 5))
+  #+end_src
+
+  #+RESULTS:
+  : 15
+
+
+  \begin{align*}
+    \text{time}(n) &= \begin{cases}
+         1 & \text{if } n = 1 \\
+         2 & \text{if } n = 2 \\
+         2 + \text{time}(n-2) & \text{otherwise}
+    \end{cases}
+  \end{align*}
+
+* Terminology
+
+  - Sequences := progression := List of numbers
+
+  - series: The sum of all terms in a sequence
+
+  - arithemtic progression:
+    - a_n = a_n-1 + k
+
+  - geometric progression
+    - a_n = r * a_n-1 a_0 = k
+
+    - a_n = k r^n
+      
+
+  - harmonic progression
+    - Each term is the 1 / an, where ancomes from an arithmetic progression
+
+
+  - What is a recurrence relation
+
+    \[
+     a_n = f(a_{n-1}, a_{n-2}, \ldots, a_{n-k})
+    \]
+
+
+* Merge Sort
+
+
+  
+* Recurrence Relations
+
+  - linear: No product of R(n)
+  - homogeneous:
+
+    
+  - Order k? Of how many previous term the relationship depends
+  
+  What it is?
+
+  \[
+   c_0 R(n) + c_1 R(n-1) + c_2 R(n-2) + \ldots + c_k R(n-k) = f(n)
+  \]
+
+  If f(n) = 0 then the relationship is homogeneous
+
+  What is the solution? The solution is a function s(n) that does
+  refer to any previous term.
+
+
+  | Types         | Linear    | Non Linear |
+  |---------------+-----------+------------|
+  | Homogeneous   | Expansion |            |
+  | Heterogeneous |           |            |
+
+** Homogeneous Case
+
+   Homogeneous implies $f(n) = 0$
+
+   Implies that the differences between terms in the progression is zero
+
+   Method:
+   1. Extract the characteristic polynomial
+   2. Solves the polynomial: Finds the roots
+   3. Determine the form of the solution 
+   4. Solve for the coefficients
+
+
+   
+   We assume that the solution s(n) is of the form $s(n) = r^n$, and we hence must have
+
+   \begin{align*}
+   c_0 s(n) + c_1 s(n-1) + c_2 s(n-2) + \ldots + c_k s(n-k) & = 0 \\
+   c_0 r^n + c_1 r^{n-1} + c_2 r^{n-2} + \ldots + c_k r^{n-k} & = 0 \\
+   \end{align*}
+
+   Which, if we divide by $r^{n-k}$, yields
+
+   \begin{align*}
+   c_0 r^k + c_1 r^{k-1} + c_2 r^{k-2} + \ldots + c_k & = 0 \\
+   \end{align*}
+   
+    
+* Adding difference between terms
+
+   a_1 - a_0 = x_1
+ + a_2 - a_1 = x_2
+ + a_3 - a_2 = x_3
+   ...
+ + a_n - a_n-1 = x_n
+
+
+ a_n - a_n-1 = k <==> a_n = a_n-1 + k
+ a_n = a_0 + sum_i=1^n k
+   
+* Expansion Methods
+
+ - Only for order 1 relation
+ - Can go either top down or bottom up.
+ 
+ #+header: :results output
+ #+begin_src scheme
+   (define (time1 n)
+     (cond [(= n 1) 1]
+           [(= n 2) 2]
+           [else (+ 2 (time1 (- n 2)))]))
+
+   ;; (define (time2 n)
+   ;:  (if (odd? n)
+   ;;      (+ 1 (* 2 (/ (- n 1) 2)))
+   ;;      (* 2 (/ n 2))))
+
+   (define (time2 n)
+     (* 2 (floor (/ n 2))))
+
+   (print (map (lambda (x) (cons (time1 x) (time2 x))) '(1 2 3 4 5 6 7 8 9 10)))
+ #+end_src
+
+ #+RESULTS:
+ : '((1 . 0) (2 . 2) (3 . 2) (4 . 4) (5 . 4) (6 . 6) (7 . 6) (8 . 8) (9 . 8) (10 . 10))
+
+  
+  - Master Theorem
+
+
+* Difference Equations
+
+  
+
+* Recap

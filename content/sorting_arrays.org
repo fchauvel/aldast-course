@@ -1,0 +1,153 @@
+#+title: Sorting Arrays
+#+subtitle: Introduction
+#+author: Franck Chauvel
+#+language: en
+
+* What is Sorting
+
+  - Vocabulary
+    - key vs. information
+    - Stability?
+
+  - Comparison?
+    - number
+    - ordered
+    - date
+      
+
+  - How Would you Proceed?
+
+  - Warning: Don't write your own sorting algorithms!
+
+
+* Selection Sort
+
+  - Core Idea:
+    - Divide into sorted and unsorted.
+    - Add the minimum of the unsorted array as the next sorted elements
+
+  #+name: code:insertion-sort
+  #+header: :results output
+  #+begin_src ruby -n -r  
+    def insertion_sort(array)
+      for index in 0 .. array.length-2
+         minimum = find_minimum(array, index)
+         swap(array, index, minimum)
+      end
+    end
+
+    def find_minimum(array, start)
+      minimum = start
+      for index in start+1 .. array.length-1
+        if array[index] < array[minimum]
+          minimum = index
+        end
+      end
+     return minimum
+    end
+
+    def swap(array, left, right)
+       tmp = array[right]
+       array[right] = array[left]
+       array[left] = tmp
+    end
+
+    array = [ 3, 4, 1, 2, 7, 7, 2, 9, 13, 2 ]
+    insertion_sort(array)
+    array.each { |value| print(value, " ") }
+  #+end_src
+
+  #+RESULTS: code:insertion-sort
+  : 1 2 2 2 3 4 7 7 9 13 
+
+  - time complexity time in 
+  
+* Insertion Sort
+
+  - Divide between sorted and unsorted
+  - Take a new unsorted element and insert it at the right place
+
+  #+name: code:insertion-sort
+  #+header: :results output
+  #+begin_src ruby -n -r  
+    def selection_sort(array)
+      for index in 1 .. array.length-1
+         position = find_position(array, index)
+         insert(array, position, index)
+      end
+    end
+
+    def find_position(array, last)
+      for index in 0 .. last
+        if array[index] >= array[last]
+           return index
+        end
+      end
+     return last
+    end
+
+    def insert(array, position, last)
+        value = array[last]
+        for index in last.downto(position)
+           array[index] = array[index-1]
+        end
+        array[position] = value
+    end
+
+    array = [ 3, 4, 1, 2, 7, 7, 2, 9, 13, 2 ]
+    selection_sort(array)
+    array.each { |value| print(value, " ") }
+  #+end_src
+
+  #+RESULTS:
+  : 1 2 2 2 3 4 7 7 9 13 
+
+
+  
+* Bubble Sort
+
+  - Traverse the array swapping pairs of adjacents element if needing
+  - Repeat until no swap occur
+
+  #+name: code:bubble-sort
+  #+header: :results output
+  #+begin_src ruby -n -r
+    def bubble_sort(array)
+       swapped = true
+       while swapped
+         swapped = false
+         for index in 1 .. array.length-1
+           if array[index] < array[index-1]
+             swap(array, index-1, index)
+             swapped = true
+           end
+         end
+       end
+    end
+
+    def swap(array, left, right)
+      tmp = array[right]
+      array[right] = array[left]
+      array[left] = tmp
+    end
+
+    array = [ 3, 4, 1, 2, 7, 7, 2, 9, 13, 2 ]
+    bubble_sort(array)
+    array.each { |value| print(value, " ") }
+  #+end_src
+
+  #+RESULTS: code:bubble-sort
+  : 1 2 2 2 3 4 7 7 9 13 
+  
+  
+* Resources
+
+  [[https://en.wikipedia.org/wiki/Sorting_algorithm][Storing Algorithms (Wikipedia)]]
+  
+  [[https://www.cs.cmu.edu/~fp/courses/15122-f15/lectures/05-sort.pdf][Lecture Note on Instertion Sort from Carngie Mellon]]
+
+  [[https://opendsa-server.cs.vt.edu/ODSA/Books/Everything/html/InSort.html][OpenDSA Chap. 13 on Sorting]]
+
+  [[https://www.toptal.com/developers/sorting-algorithms][Sorting Visualization]]
+
+  [[https://visualgo.net/en/sorting][Algorithms Visualization]]

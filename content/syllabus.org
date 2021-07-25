@@ -1,62 +1,68 @@
 
    #+caption: Course Overview and Resources
    #+name: table:syllabus
-   | Week | Chap. | Lecture Notes                | Slides | Exercises   | Quizz | Exam   |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |    1 |     1 | [[file:welcome.org][Getting started]]              |        |             |       |        |
-   |    1 |     2 | [[file:rasp_machines.org][Random access machines]]       |        |             |       |        |
-   |    1 |     3 | [[file:orders_of_growth.org][Orders of growth]]             |        |             |       |        |
-   |    1 |     4 |                              |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |    5 |     5 | [[file:arrays.org][Static Arrays]]                |        | [[file:arrays_lab.org][Lab session]] |       |        |
-   |    5 |     6 | Dynamic arrays               |        |             |       |        |
-   |    5 |     7 | Sorted arrays                |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |    8 |     8 | Abstract Data Types          |        |             |       |        |
-   |    8 |     9 | Stacks                       |        |             |       |        |
-   |    8 |    10 | Linked Lists                 |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   11 |    11 | Hash tables                  |        |             |       | Home 1 |
-   |   11 |    12 | More on hashing              |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   13 |    13 | Queues                       |        |             |       |        |
-   |   13 |    14 | Dictionaries                 |        |             |       |        |
-   |   13 |    15 | More Sorting                 |        |             |       |        |
-   |   13 |    16 | Recursion                    |        |             |       |        |
-   |   13 |    17 | Trees                        |        |             |       |        |
-   |   13 |    18 | Binary Trees                 |        |             |       |        |
-   |   13 |    19 | Balanced Trees               |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   20 |    20 | Prefix Trees                 |        |             |       |        |
-   |   20 |    21 | Heaps                        |        |             |       | Home 2 |
-   |   20 |    22 | Graphs                       |        |             |       |        |
-   |   20 |    23 | Directed Graphs              |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   24 |    24 | Weighted Graphs              |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   25 |    25 | Edit Distance                |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   26 |    26 | Recurrence                   |        |             |       |        |
-   |   26 |    27 | Sets                         |        |             |       |        |
-   |   26 |    28 | Case-study I: Huffman Coding |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   29 |    29 | Dynamic programming          |        |             |       |        |
-   |   29 |    30 | Even More Sorting            |        |             |       |        |
-   |   29 |    31 | ???                          |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   32 |    32 | Greedy Algorithms            |        |             |       |        |
-   |   32 |    33 | Case-study II: Sudoku        |        |             |       |        |
-   |   32 |    34 | Divide and Conquer           |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   35 |    35 | Regular Expressions          |        |             |       |        |
-   |   35 |    36 | backtracking                 |        |             |       |        |
-   |   35 |    37 | Persistent Data structures   |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   38 |    38 | NP-completeness & Reduction  |        |             |       |        |
-   |   38 |    39 | Parallel Algorithms          |        |             |       |        |
-   |   38 |    40 | Quantum Computing            |        |             |       |        |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
-   |   41 |    41 |                              |        |             |       | Final  |
-   |------+-------+------------------------------+--------+-------------+-------+--------|
+   | Week | Chap. | Lecture Notes                       | Slides       | Exercises           | Quizz | Exam   |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |    1 |     1 | [[file:welcome.org][Getting started]]                     |              |                     |       |        |
+   |      |       | Programming Refresher               |              |                     |       |        |
+   |      |       | Program Correctness                 |              |                     |       |        |
+   |    1 |     3 | [[file:rasp_machines.org][Random access machines]]              |              |                     |       |        |
+   |    1 |     2 | [[file:orders_of_growth.org][Orders of growth]]                    |              |                     |       |        |
+   |    1 |     4 |                                     |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |    2 |     5 | [[file:arrays.org][Static Arrays]]                       |              | [[file:arrays_lab.org][Run-length encoding]] |       |        |
+   |      |     6 | [[file:dynamic_arrays.org][Dynamic Arrays]]                      | [[file:~/Documents/perso/aldast-course/assets/slides/dynamic_arrays.pptx][Slides]]       |                     |       |        |
+   |      |     7 | [[file:searching.org][Searching]]                           | [[file:~/Documents/perso/aldast-course/assets/slides/searching.pptx][Slides]]       |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |    3 |     8 | [[file:sorting_arrays.org][Sorting]]                             | [[file:~/Documents/perso/aldast-course/assets/slides/simple_sorting.pptx][Slides]]       | Visualization       |       |        |
+   |      |     9 | [[file:stacks_and_queues.org][Stacks and Queues]]                   | [[file:~/Documents/perso/aldast-course/assets/slides/stacks_and_queues.pptx][Slides]]       |                     |       |        |
+   |      |    10 | [[file:linked_lists.org][Linked Lists]]                        | [[file:assets/slides/linked_lists.pptx][Slides]]       |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |    4 |    11 | [[file:recursion.org][Procedure Calls & Memory Allocation]] | [[file:~/Documents/perso/aldast-course/assets/slides/recursion.pptx][Slides]]       | [[file:compiler.log][RAM Compilers]]       |       | Home 1 |
+   |      |    12 | [[file:recursion.org][Recursion]]                           | [[../assets/slides/recursion.pptx][Slides]]       |                     |       |        |
+   |      |    13 | [[file:recurrences.org][Recurrences]]                         | [[file:~/Documents/perso/aldast-course/assets/slides/recurences.pptx][Slides (TBC)]] |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |    5 |    14 | Quick Sort                          | [[file:~/Documents/perso/aldast-course/assets/slides/quick_sort.pptx][Slides]]       |                     |       |        |
+   |      |    15 | Merge Sort                          |              |                     |       |        |
+   |      |    16 | Breaking the Sorting Bound          |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |    6 |    17 | Hash tables                         | [[file:~/Documents/perso/aldast-course/assets/slides/hashing.pptx][Slides]]       | Roll your own       |       |        |
+   |      |    18 | Hashing: Handling Collisions        | [[file:~/Documents/perso/aldast-course/assets/slides/hashing_collision.pptx][Slides]]       |                     |       |        |
+   |      |    20 | Case-study                          |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   13 |    17 | Trees                               |              |                     |       |        |
+   |   13 |    18 | Binary Trees                        |              |                     |       |        |
+   |   13 |    19 | Balanced Trees                      |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   20 |    20 | Prefix Trees                        |              |                     |       |        |
+   |   20 |    21 | Heaps                               |              |                     |       | Home 2 |
+   |   20 |    22 | Graphs                              |              |                     |       |        |
+   |   20 |    23 | Directed Graphs                     |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   24 |    24 | Weighted Graphs                     |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   25 |    25 | Edit Distance                       |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   26 |    27 | Sets                                |              |                     |       |        |
+   |   26 |    28 | Case-study I: Huffman Coding        |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   29 |    29 | Dynamic programming                 |              |                     |       |        |
+   |   29 |    30 | Even More Sorting                   |              |                     |       |        |
+   |   29 |    31 | ???                                 |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   32 |    32 | Greedy Algorithms                   |              |                     |       |        |
+   |   32 |    33 | Case-study II: Sudoku               |              |                     |       |        |
+   |   32 |    34 | Divide and Conquer                  |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   35 |    35 | Regular Expressions                 |              |                     |       |        |
+   |   35 |    36 | backtracking                        |              |                     |       |        |
+   |   35 |    37 | Persistent Data structures          |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   38 |    38 | NP-completeness & Reduction         |              |                     |       |        |
+   |   38 |    39 | Parallel Algorithms                 |              |                     |       |        |
+   |   38 |    40 | Quantum Computing                   |              |                     |       |        |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
+   |   41 |    41 |                                     |              |                     |       | Final  |
+   |------+-------+-------------------------------------+--------------+---------------------+-------+--------|
    #+tblfm: $2=@#-1::
   

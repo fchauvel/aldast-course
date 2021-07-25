@@ -1,0 +1,243 @@
+#+title: Procedures, Recursion, and Memory
+#+subtitle: Efficiency of Memory Allocation
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+* Introduction
+
+
+* Indirect Addressing
+
+for example IADD, which adds to ACC the content of the value located
+
+ - eval([ADD <address>]): ACC := ACC + MEM[addr]
+ - eval(IADD <pointer>]) = ACC := ACC + MEM[MEM[address]]
+
+   %IADD(pointer) = (
+     ;; save acc
+     STORE TMP
+     
+     LOAD 0 ;; Compute target address
+     ADD pointer
+     STORE target+1  
+
+     load 0
+     add TMP
+     target: ADD 0
+   )
+  
+* Calling procedures
+
+** Inlining
+
+** Branching
+
+*** Call without arguments
+
+
+    #+begin_src asm
+
+      ;; caller
+      PUSH a
+      PUSH b
+      PUSH IP+2
+      JUMP
+      STORE
+
+      my_proc:
+        PUSH FP
+        FP := SP
+        LOAD 0
+        ADD ARG_1
+        ADD ARD_2
+        STORE RESULT
+        POP ;; ACC := FP
+        STORE FP
+        POP ;; ACC
+        PUSH RESULT
+        JMP ACC
+    #+end_src
+
+    we need a macro for PUSH
+    %PUSH(address) =  (
+        ILOAD address
+        ISTORE stack_pointer
+        LOAD 1
+        ADD SP
+        STORE SP
+    )
+
+    we also need a macro for pop. That is read the last value of the stack
+    %POP = (
+       DEC SP
+       LOAD 1
+       IADD SP
+       
+    )
+
+    %DEC(address) = (
+       LOAD -1
+       ADD address
+       STORE address
+    )
+    
+    load 0
+    jump my_procedure
+
+    
+    ?? where to come back?
+
+
+*** Call with arguments
+
+    ?? how to pass the argument
+
+*** Need for a convention
+
+    - Is it the "stack discipline"?
+
+
+** The RAM model
+
+   #+headers: :file ../assets/images/memory.png
+   #+headers: :cache yes
+   #+begin_src ditaa
+   +---------------------+ Higher address
+   | Stack               |
+   |  Static allocation  |
+   |------=--------------|
+   |                 |   |
+   |                 |   |
+   |   ^             v   |
+   |   |                 |
+   |   |                 |
+   |-----------------=---|
+   | Heap:               |
+   |  Dynamic allocation |
+   |---------------------|
+   | Static data         |
+   |---------------------|
+   | Instructions        |
+   +---------------------+ Lower address
+   #+end_src
+
+   #+RESULTS[8337689ca56e7235bd11dfa643e3f5297e74961e]:
+   [[file:../assets/images/memory.png]]
+
+   #+headers: :file ../assets/images/call_stack.png
+   #+headers: :cache yes
+   #+begin_src ditaa
+  +-------------------+----- bottom
+  |                   |   ^
+  |                   |   |
+  |                   |   |
+  +-------------------+   |
+  | local variables   |   | caller frame
+  +-------------------+   |
+  | argument n        |   |
+  | ...               |   |
+  | argument 2        |   |
+  | argument 1        |   |
+  +-------------------+   |
+  | return address    |   v
+ -+-------------------+-----
+  | frame pointer     |   ^ callee frame
+  +-------------------+   |
+  | local variables   |   v
+  +-------------------+----- top (stack pointer)
+  |                   |
+  |                   |
+  |                   |
+  |                   |
+  |                   |
+  +-------------------+
+   #+end_src
+
+   #+RESULTS[07023e68f4ef32f17b7cbc01ce0ba96c1c796dcb]:
+   [[file:../assets/images/call_stack.png]]
+
+
+   The compiler generates the prologue and the epilogue of a call.
+
+   PUSH ARG_3
+   PUSH ARG_2
+   PUSH ARG_1
+   PUSH IP
+   JUMP procedures
+
+   procedure: push frame_pointer
+
+** Recursion
+
+   #+name: code:factorial
+   #+begin_src C
+     #include <stdio.h>
+
+     long factorial(int value) {
+       long product = 1;
+       for(int each=2 ; each <= value ; each++) {
+           product = product * each;
+       }
+       return product;
+     }
+
+     int main() {
+        printf("5! = %d\n", factorial(5));
+     }
+   #+end_src
+
+   #+RESULTS: code:factorial
+   : 5! = 120
+
+
+   #+name: code:factorial-recursive
+   #+begin_src C
+     #include <stdio.h>
+
+     long factorial(int value) {
+       if (value == 0) return 1;
+       return value * factorial(value-1);
+     }
+
+     int main() {
+        printf("5! = %d\n", factorial(5));
+     }
+   #+end_src
+
+   #+RESULTS: code:factorial-recursive
+   : 5! = 120
+   
+* Dynamic Memory: Heap
+
+
+
+
+** How does malloc work
+
+  - malloc uses other system calls, brk/sbrk and mmap?
+
+    - brk() and sbrk() change the location of the program break, which
+      defines the end of the process's data segment.
+
+      from [[https://en.wikipedia.org/wiki/Sbrk][Wikipedia on brk & sbrk]]
+  
+      from [[https://stackoverflow.com/questions/6988487/what-does-the-brk-system-call-do][Stack Overflow]]
+
+    - mmap seems to allocate any portion of the virtual address space
+      while still having it accessible in the process data
+      segment. Used by malloc to allocate very large amount of data.
+      
+      - See [[https://en.wikipedia.org/wiki/Mmap][Wikipedia on mmap]]
+    
+  - Unclear what algorithms malloc uses, maybe a [[https://en.wikipedia.org/wiki/Buddy_memory_allocation][buddy memory allocation scheme]].
+
+  - What are the other algorithms
+    - Best fit
+    - Worse fit
+    - Next/first fit
+
+      
+   

@@ -1,0 +1,496 @@
+#+title: Linked Lists
+#+subtitle: Non-contiguous Memory Allocation
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+* Introduction
+
+
+* What is a "linked list"?
+
+
+** Overview
+
+
+** Creating a linked list
+
+   #+name: code:declaration
+   #+begin_src C -n -r
+     #include <stdio.h>
+     #include <stdlib.h>
+
+     typedef struct Node {
+        int value;
+        struct Node* next;
+     } Node;
+
+     typedef struct List {
+        struct Node* first;
+        struct Node* last;
+     } List;
+
+     List* create_list() {
+        List* list = malloc(sizeof(List));
+        return list;
+     }
+   #+end_src
+
+   #+RESULTS: code:declaration
+
+** Dynamic Memory Allocation
+
+
+** Space Efficiency
+
+   #+header: :R-dev-args bg="transparent"
+   #+header: :results graphics file
+   #+header: :exports results
+   #+header: :file ../assets/images/linked_list_space_efficiency.png
+   #+begin_src R
+   space_list <- function(n, s) { n * (s+1) + 2};
+   space_array <- function(n, s) { n + 1 };
+
+   sizes <- 1:10;
+   lengths <- 1:10;
+
+   space <- outer(lengths, sizes, Vectorize(space_list));
+   persp(lengths,
+         sizes,
+         space,
+         shade=TRUE,
+         theta=-60,
+         phi=15,
+         col="lightblue",
+         ticktype="detailed",
+         xlab="list length",
+         ylab="item size (cells)",
+         zlab="total space (cells)")
+   #+end_src
+
+   #+RESULTS:
+   [[file:../assets/images/linked_list_space_efficiency.png]]
+
+
+* "Singly" Linked Lists
+
+
+** Traversal
+
+   #+name: code:traversal
+   #+begin_src C -n -r
+     void show(List* list) {
+        Node* current = list->first;
+        printf("[ ");
+        while (current != NULL) {
+          printf("%d", current->value);
+          if (current->next != NULL) {
+            printf(", ");
+          }
+          current = current->next;
+        }
+        printf(" ]\n");
+     }
+     #+end_src
+
+     #+name: code:traversal-test
+     #+headers: :noweb strip-export
+     #+headers: :results output
+     #+headers: :exports both
+     #+begin_src C -n -r
+       <<code:declaration>>
+       <<code:traversal>>
+       int main(){
+         List* list = create_list();
+         show(list);
+         free(list);
+       }
+   #+end_src
+
+   #+RESULTS: code:traversal-test
+   : [  ]
+
+** Insertion
+
+*** In Front
+
+*** At the Back
+
+    #+name: code:append
+    #+begin_src C -n -r
+      void insert(List* list, int value) {
+         Node* new_node = malloc(sizeof(Node));
+         new_node->value = value;
+         if (list->first == NULL) {
+            list->first = new_node;
+            list->last = new_node;
+         } else {
+           list->last->next = new_node;
+           list->last = new_node;
+         }
+      }
+    #+end_src
+
+    #+RESULTS: code:append
+
+
+   #+name: code:append-test
+   #+headers: :noweb strip-export
+   #+headers: :results output
+   #+headers: :exports both
+   #+begin_src C -n -r
+     <<code:declaration>>
+     <<code:traversal>>
+     <<code:append>>
+     int main(){
+       List* list = create_list();
+       insert(list, 1);
+       insert(list, 2);
+       insert(list, 3);
+       show(list);
+     }
+   #+end_src
+
+   #+RESULTS: code:append-test
+   : [ 1, 2, 3 ]
+
+*** Arbitrary Insertion
+
+
+
+** Search
+
+    #+name: code:search
+    #+begin_src C -n -r
+      int search(List* list, int value) {
+        int index = -1;
+        Node* current = list-> first;
+        while (current != NULL) {
+           index += 1;
+           if (current->value == value) {
+              return index;
+           }
+           current = current->next;
+        }
+        return -1;
+      }
+    #+end_src
+
+    #+RESULTS: code:append
+
+
+   #+name: code:search-test
+   #+headers: :noweb strip-export
+   #+headers: :results output
+   #+headers: :exports both
+   #+begin_src C -n -r
+     <<code:declaration>>
+     <<code:traversal>>
+     <<code:append>>
+     <<code:search>>
+     int main(){
+       List* list = create_list();
+       insert(list, 1);
+       insert(list, 2);
+       insert(list, 3);
+       printf("%d at %d\n", 2, search(list, 2));
+       printf("%d at %d\n", 123, search(list, 123));
+     }
+   #+end_src
+
+   #+RESULTS: code:search-test
+   : 2 at 1
+   : 123 at -1
+
+
+** Deletion
+
+    #+name: code:get
+    #+begin_src C -n -r
+      Node* get(List* list, int selected) {
+          Node* node = list->first;
+          int index = -1;
+          while (node != NULL) {
+             index += 1;
+             if (index == selected) {
+                return node;
+             }
+             node = node->next;
+          }
+          return NULL;
+      }
+    #+end_src
+   
+    #+name: code:delete
+    #+begin_src C -n -r
+      void delete(List* list, int index) {
+        if (list->first == NULL) return;
+        if (index == 0) {
+          Node* target = list->first;
+          if (target->next == NULL) {
+            list->first = NULL;
+            list->last = NULL;
+          } else {
+            list->first = target->next;
+          }
+          free(target);
+        } else {
+          Node* previous = get(list, index-1);
+          if (previous == NULL) return;
+
+          Node* target = previous->next;
+          if (target->next == NULL) {
+            list->last = previous;
+            previous->next = NULL;
+          } else {
+            previous->next = target->next;
+          }
+          free(target);
+        }
+      }
+    #+end_src
+
+
+   #+name: code:delete-test
+   #+headers: :noweb strip-export
+   #+headers: :results output
+   #+headers: :exports both
+   #+begin_src C -n -r
+     <<code:declaration>>
+     <<code:traversal>>
+     <<code:append>>
+     <<code:get>>
+     <<code:delete>>
+     int main(){
+       List* list = create_list();
+       insert(list, 1);
+       insert(list, 2);
+       insert(list, 3);
+       show(list);
+
+       delete(list, 1);
+       show(list);
+
+       delete(list, 1);
+       show(list);
+
+       delete(list, 0);
+       show(list);
+     }
+   #+end_src
+
+   #+RESULTS: code:delete-test
+   : [ 1, 2, 3 ]
+   : [ 1, 3 ]
+   : [ 1 ]
+   : [  ]
+
+
+* Doubly Linked Lists
+
+  #+headers: :cmdline --transparent
+  #+header: :results graphics file
+  #+header: :exports results
+  #+headers: :file ../assets/images/doubly_linked_list.png
+  #+begin_src ditaa
+  +--------+
+  |  List  |
+  +--------+
+  | last   |-------------------------------------------------------+
+  +--------+                                                       |
+  | first  |                                                       |
+  +--------+                                                       |
+    |                                                              |
+    |                                                              |
+    |                                                              |
+    |                                                              v
+    |    +---------+      +---------+      +---------+       +---------+
+    +--->| next    |----->| next    |--=-->| next    |----=->|    /    |
+         +---------+      +---------+      |---------|       |---------|
+         |    /    |<-----| prev.   |<--=--| prev.   |<---=--| prev.   |
+         +---------+      +---------+      |---------|       |---------|
+         | Node 1  |      | Node 2  |      :  Node i |       | Node M  |
+         +---------+      +---------+      +---------+       +---------+
+  #+end_src
+
+  #+RESULTS:
+  [[file:../assets/images/doubly_linked_list.png]]
+
+
+** Creation
+
+
+   #+name: code:declaration-dll
+   #+begin_src C -n -r
+     #include <stdio.h>
+     #include <stdlib.h>
+
+     typedef struct Node {
+        int value;
+        struct Node* next;
+        struct Node* previous; // <-- Extra pointer!
+     } Node;
+
+     typedef struct List {
+        struct Node* first;
+        struct Node* last;
+     } List;
+
+     List* create_list() {
+        List* list = malloc(sizeof(List));
+        return list;
+     }
+   #+end_src
+
+   
+** Insertion
+
+    #+name: code:insert-dll
+    #+begin_src C -n -r
+      void insert(List* list, int value, int index) {
+        Node* new_node = malloc(sizeof(Node));
+        new_node->value = value;
+        if (list->first == NULL) {
+            list->first = new_node;
+            list->last = new_node;
+
+        } else if (index == 0) {
+            list->first->previous = new_node;
+            new_node->next = list->first;
+            list->first = new_node;
+
+        } else {
+          Node* previous = get(list, index-1);
+          if (previous == NULL) {
+              free(new_node);
+              return;
+          }
+          new_node->previous = previous;
+          new_node->next = previous->next;
+          if (previous->next == NULL) {
+              list->last = new_node;
+              previous->next = new_node;
+          } else {
+            previous->next->previous = new_node;
+            previous->next = new_node;
+          }
+        }
+      }
+    #+end_src
+
+
+   #+name: code:insert-dll-test
+   #+headers: :noweb strip-export
+   #+headers: :results output
+   #+headers: :exports both
+   #+headers: :cache yes
+   #+begin_src C -n -r
+     <<code:declaration-dll>>
+     <<code:traversal>>
+     <<code:get>>
+     <<code:insert-dll>>
+     int main(){
+       List* list = create_list();
+       insert(list, 23, 0);
+       insert(list, 22, 0);
+       insert(list, 25, 2);
+       insert(list, 24, 2);
+       show(list);
+     }
+   #+end_src
+
+   #+RESULTS: code:insert-dll-test
+   : [ 22, 23, 24, 25 ]
+   
+
+** Deletion
+
+
+   #+name: code:delete-dll
+   #+begin_src C -n -r
+     void delete(List* list, int index) {
+       if (list->first == NULL) return;
+       if (index == 0) {
+         Node* target = list->first;
+         if (target->next == NULL) {
+           list->first = NULL;
+           list->last = NULL;
+         } else {
+           list->first = target->next;
+           target->next->previous = NULL;
+         }
+         free(target);
+       } else {
+         Node* target = get(list, index);
+         if (target == NULL) return;
+
+         if (target->next == NULL) {
+           list->last = target->previous;
+           target->previous->next = NULL;
+         } else {
+           target->previous->next = target->next;
+           target->next->previous = target->previous;
+         }
+         free(target);
+       }
+     }
+   #+end_src
+
+   #+name: code:delete-dll-test
+   #+headers: :noweb strip-export
+   #+headers: :results output
+   #+headers: :exports both
+   #+headers: :cache yes
+   #+begin_src C -n -r
+     <<code:declaration-dll>>
+     <<code:traversal>>
+     <<code:get>>
+     <<code:insert-dll>>
+     <<code:delete-dll>>
+     int main(){
+       List* list = create_list();
+       insert(list, 23, 0);
+       insert(list, 22, 0);
+       insert(list, 25, 2);
+       insert(list, 24, 2);
+       show(list);
+
+       delete(list, 2);
+       show(list);
+
+       delete(list, 2);
+       show(list);
+
+       delete(list, 0);
+       show(list);
+
+       delete(list, 0);
+       show(list);
+     }
+   #+end_src
+
+   #+RESULTS: code:delete-dll-test
+   : [ 22, 23, 24, 25 ]
+   : [ 22, 23, 25 ]
+   : [ 22, 23 ]
+   : [ 23 ]
+   : [  ]
+   
+   
+* Summary
+
+  #+name: table:summary
+  #+caption: Summary of linked list operation and the time efficiency
+  | List   |  Operation | Best     | Average  |  Worse   |
+  |--------+------------+----------+----------+----------|
+  | Singly | get        | Theta(1) | Theta(1) | Theta(1) |
+  |        | search     | Theta(1) | Theta(n) | Theta(n) |
+  |        | insert     | Theta(1) | Theta(n) | Theta(n) |
+  |        | delete     | Theta(1) | Theta(n) | Theta(n) |
+  |--------+------------+----------+----------+----------|
+  | Doubly | get        |          |          |          |
+  |        | search     |          |          |          |
+  |        | insert     |          |          |          |
+  |        | delete     |          |          |          |

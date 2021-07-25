@@ -1,0 +1,165 @@
+#+titile: Searching
+#+subtitle: Finding items in ordered collections
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+* Introduction
+
+* Linear Search
+
+  #+name: code:linear-search
+  #+begin_src js
+    function linearSearch(array, value, start=0) {
+        for (let index=start ; index<array.length ; index++) {
+            if (array[index] === value) {
+                return index;
+            }
+        }
+        return -1;
+    }
+  #+end_src
+
+  
+  #+name: code:linear-search-test
+  #+header: results: output
+  #+header: :noweb strip-export
+  #+begin_src js
+     <<code:linear-search>>
+    test = [23, 35, 8, 11, 213, 86, 37, 67, 55, 54, 27, 39];
+    console.log("Index: " + linearSearch(test, 67));
+  #+end_src
+
+  #+RESULTS: code:linear-search-test
+  : Index: 7
+  : undefined
+
+* Jump Search
+
+
+ #+name: code:jump-search
+ #+header: :noweb strip-export
+ #+begin_src js
+   <<code:linear-search>>
+   function jumpSearch(array, value) {
+       const jump = Math.floor(Math.sqrt(array.length));
+       let current = 0;
+       while (current < array.length && array[current] < value) {
+          current += jump;
+       }
+       if (current >= array.length) return -1;
+       if (array[current] === value) return current;
+       return linearSearch(array, value, current-jump);
+   }
+ #+end_src
+
+
+ #+name: code:jump-search-test
+ #+header: :noweb strip-export
+ #+begin_src js
+   <<code:jump-search>>
+   test = [23, 35, 8, 11, 213, 86, 37, 67, 55, 54, 27, 39];
+   test.sort();
+   console.log("Index: " + jumpSearch(test, 67));
+ #+end_src
+
+ #+RESULTS: code:jump-search-test
+ : Index: 9
+ : undefined
+
+
+ How to choose the jump size
+
+ In the worst case, the time is given by the formula $time(n,k) = \frac{n}{k} + k - 1$
+
+ \begin{align*}
+
+  \underset{1 \leq k \leq n}{\arg\min} \; time(n, k) \equiv
+     \frac{\partial\,\text{time}}{\partial\, k} &= 0 \\                                             
+     -\frac{n}{k^2}+1 &= 0 \\
+     1  &= \frac{n}{k^2} \\
+     k^2 &= n \\
+     k &= \sqrt{n} \\
+ \end{align*}
+ 
+* Binary Search
+
+ #+name: code:binary-search
+  #+header: :noweb strip-export
+  #+begin_src js
+    function binarySearch(array, value) {
+       let lower = 0;
+       let upper = array.length;
+       while (upper-lower > 1) {
+          let split = lower + Math.floor((upper-lower)/2);
+          console.log("Spliting at " + split);
+          if (array[split] > value) {
+             upper = split - 1;
+          } else if ( array[split] < value) {
+             lower = split + 1;
+          } else {
+             return split;
+          }
+       }
+       return -1;
+    }
+  #+end_src
+
+  #+header: :noweb strip-export
+  #+begin_src js
+   <<code:binary-search>>
+   test = [23, 35, 8, 11, 213, 86, 37, 67, 55, 54, 27, 39];
+   test.sort();
+   console.log("Index: " + binarySearch(test, 67));
+  #+end_src
+
+  #+RESULTS:
+  : Spliting at 6
+  : Spliting at 9
+  : Index: 9
+  : undefined
+  
+
+* Interpolated Search
+
+  #+name: code:interpolated-search
+  #+header: :noweb strip-export
+  #+begin_src js
+    function interpolate(array, lower, upper, value) {
+        const width = array[upper-1] - array[lower];
+        const ratio = (value - array[lower]) / width;
+        return lower + Math.floor(ratio * (upper - 1 - lower));
+    }
+
+    function interpolatedSearch(array, value) {
+        let lower = 0;
+        let upper = array.length;
+        while (upper-lower > 1) {
+            let split = interpolate(array, lower, upper, value);
+            console.log("Spliting at " + split);
+            if (array[split] > value) {
+                upper = split - 1;
+            } else if ( array[split] < value) {
+             lower = split + 1;
+            } else {
+                return split;
+            }
+        }
+        return -1; 
+    }
+  #+end_src
+
+  #+header: :noweb strip-export
+  #+begin_src js
+   <<code:interpolated-search>>
+   test = [23, 35, 8, 11, 213, 86, 37, 67, 55, 54, 27, 39];
+   test.sort();
+   console.log("Index: " + interpolatedSearch(test, 67));
+  #+end_src
+
+  #+RESULTS:
+  : Spliting at 8
+  : Spliting at 9
+  : Index: 9
+  : undefined

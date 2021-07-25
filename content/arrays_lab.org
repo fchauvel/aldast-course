@@ -24,7 +24,7 @@
   #+headers: :cmdline --transparent
   #+header: :results graphics file
   #+header: :exports results
-  #+headers: :file ../assets/images/array-deletion.png
+  #+Headers: :file ../assets/images/array-deletion.png
   #+begin_src ditaa
 
     Raw data
@@ -146,30 +146,26 @@
 
   We can now try to visualize this average saving as the length of
   input array and the alphabet grow. Figure [[fig:average-saving]] gives a
-  perspective view. The good thing is that the average saving rises
-  when the length grows but only up to a limit. The less good thing is
-  that this gain significantly reduces when the alphabet grows.
+  perspective view.
 
-  Nonetheless RLE seems to offer good saving long arrays built on top of small alphabet: binary images.
-  
-   #+header: :R-dev-args bg="transparent"
-   #+header: :results graphics file
-   #+header: :exports results
-   #+header: :file ../assets/images/rle_compression_ratio.png
-   #+headers: 
-   #+begin_src R
- count <- function(a, n, s) { choose(n-1, s-1) * a * (a-1)^(s-1) };
- probability <- function(a, n, s) { count(a, n, s) / a^n };
- #expected_size <- function(a, n) {sum(sapply(1:n, function(x){x * probability(a, n, x)}))};
- expected_size <- function(a, n) { (n * (a-1) +1 ) / a}; 
- compression_ratio <- function(a, n) { n / expected_size(a, n) };
- saving <- function (a, n) { 1 - expected_size(a,n) / n };
- saving <- function (a, n) { (n-1)/(a*n) };
+  #+header: :R-dev-args bg="transparent"
+  #+header: :results graphics file
+  #+header: :exports results
+  #+header: :file ../assets/images/rle_compression_ratio.png
+  #+headers: 
+  #+begin_src R
+  count <- function(a, n, s) { choose(n-1, s-1) * a * (a-1)^(s-1) };
+  probability <- function(a, n, s) { count(a, n, s) / a^n };
+  #expected_size <- function(a, n) {sum(sapply(1:n, function(x){x * probability(a, n, x)}))};
+  expected_size <- function(a, n) { (n * (a-1) +1 ) / a}; 
+  compression_ratio <- function(a, n) { n / expected_size(a, n) };
+  saving <- function (a, n) { 1 - expected_size(a,n) / n };
+  saving <- function (a, n) { (n-1)/(a*n) };
 
- alphabet <- 2:26;
- text_length <- 1:20
- saving <- outer(alphabet, text_length, Vectorize(saving));
- persp(alphabet, text_length, saving, theta=45, phi=20, col="lightblue", shade=0.5, ticktype="detailed", xlab="alphabet length", ylab="array length (n)", zlab="Space saved (%)");
+  alphabet <- 2:26;
+  text_length <- 1:20
+  saving <- outer(alphabet, text_length, Vectorize(saving));
+  persp(alphabet, text_length, saving, theta=45, phi=20, col="lightblue", shade=0.5, ticktype="detailed", xlab="alphabet length", ylab="array length (n)", zlab="Space saved (%)");
   #+end_src
   
   #+caption: Visualization of the average memory saving of RLE given inputs up to 20 cells, and alphabets up to 26 symbols.
@@ -177,11 +173,29 @@
   #+RESULTS:
   [[file:../assets/images/rle_compression_ratio.png]]
 
+  #+begin_question
+  What does Figure [[fig:average-saving]] tell us? In which case is RLE
+  space-efficient? Can you think of specific data that would benefit
+  from it?
+  #+end_question
+
+  The good thing is that the average saving rises
+  when the length grows but only up to a limit. The less good thing is
+  that this gain significantly reduces when the alphabet grows.
+
+  Nonetheless RLE seems to offer good saving long arrays built on top of small alphabet: binary images.
+  
+
    
 * Encoding & Decoding
 
 ** Encoding
 
+   #+begin_question
+   In the language of your choice, write an program that consume an
+   array of integers or characters, and produces an RLE array.
+   #+end_question
+   
    #+headers: :exports both
    #+headers: :results output
    #+begin_src js
@@ -194,19 +208,25 @@
              if (input[index] === next) {
                counter += 1;
              } else {
-               encoded.push({ 'count': counter, 'value': input[index] });
+               encoded.push({
+                   'count': counter,
+                   'value': input[index]
+               });
                counter = 1;
              }
              index += 1;
          }
-         encoded.push({'count': counter, 'value': input[index]});
+         encoded.push({
+             'count': counter,
+             'value': input[index]
+         });
          return encoded;
      }
 
      const input = ['a', 'a', 'a', 'b', 'b', 'c', 'd', 'd', 'd'];
      const encoded = encode(input);
      console.log(JSON.stringify(encoded, null, 2));
-     console.log()
+
    #+end_src
 
    #+RESULTS:
@@ -231,6 +251,12 @@
    ]
    #+end_example
 
+   #+begin_question
+   What is the time efficiency of your solution? What about the space
+   efficiency, if we put aside the memory used to store the input and
+   output?
+   #+end_question
+   
    What is the space-efficiency of this encoding. Again, let's start
    by looking at the best and worse cases. The best cases here means
    that we compress to the maximum. This happens when the given input
@@ -252,13 +278,90 @@
    array contains only integer for example, the size of the encoded
    array is actually $2n$. Really bad.
 
-   
-** Encoding
-
 ** Decoding
 
 * Search
 
+  Let's see now how we would search for the first cell that contains a
+  given value.
+
+  #+begin_question
+  In the language of your choice, write a program, which, given a
+  value, and a /RLE array/, returns the index of the first bucket that
+  contains this value.
+  #+end_question
+
+  We can directly reuse the //linear search// we've seen in [[file:arrays.org][lecture on
+  arrays]]. Listing [[code:search]] show a JavaScript solution.
+  
+  #+caption: Linear search applied to RLE arrays
+  #+name: code:search
+  #+headers: :exports both
+  #+headers: :results output
+  #+begin_src js -n -r
+    function search(array, value) {
+        for (let anyIndex = 0 ; anyIndex < array.length ; anyIndex++) {
+            if (array[anyIndex].value === value) {
+                return anyIndex;
+            }
+        }
+        return -1;
+    }
+
+    const array = [
+        { count: 3, value: 'a'},
+        { count: 2, value: 'b'},
+        { count: 1, value: 'c'}, // Index = 2
+        { count: 3, value: 'd'},
+    ];
+
+    console.log("Index: " +  search(array, 'c'));
+    console.log("Index: " +  search(array, '2'));
+  #+end_src
+
+  #+RESULTS:
+  : Index: 2
+  : Index: -1
+
+  #+begin_question
+  What can you say about the time-complexity of your solution assuming
+  the input is an RLE array? Look at the worse and best cases. How
+  would you approach the average case? What about if we now assume a
+  non-compressed array as input?
+  #+end_question
+
+  Let's first work out the complexity with respect to a RLE array?
+  Since we are using the same algorithm, the time-complexity are the
+  same. That is, the best case is $\Theta(1)$ and the worst case is
+  $\Theta(n)$.
+
+  But what about if we consider the efficiency with respect to the non
+  compressed array? Somehow, our compressed array is shorter, so can
+  we characterize the time saving?
+
+  Well that value depends on the probability that the given value lies
+  into the a given run, and the probability that the average run length.
+
+  That is the RLE has the value lies in bucket B, the average length
+  with respect to the uncompressed array is
+
+  average run length * B-1
+
+** Starting from a linear search on the RLE?
+
+  
+  
+** Starting from the linear search on an uncompressed array
+
+  \begin{align*}
+   Ex[time(n, B)=\frac
+  \end{align*}
+
+  If the array had been compressed, how many run would we have passed?
+  We would have passed, in average $space(B, A)$:
+
+  
+  
 * Insertion
 
 * Deletion
@@ -478,6 +581,137 @@ course.
                  & = \frac{4} {2} = 2 \\
    \end{align*}
 
+** Average number of run of length $r$
+
+
+   Seems that the number of position of a run of length $r$ in an
+   array of length $\ell$ is given by the formula: $n = \ell - r + 1$.
+
+   So if this is true, with an alphabet of 2 symbols, and an array of length 3, there are:
+
+   | input |     encoded |  r=1 |  r=2 | r=3 |  r=4 |
+   |-------+-------------+------+------+-----+------|
+   |  0000 |          40 |      |      |     |    1 |
+   |  0001 |        3011 |    1 |      |   1 |      |
+   |  0010 |      201110 |    2 |    1 |     |      |
+   |  0011 |        2021 |      |    2 |     |      |
+   |  0100 |      101120 |    2 |    1 |     |      |
+   |  0101 |    10111011 |    4 |      |     |      |
+   |  0110 |      102110 |    2 |    1 |     |      |
+   |  0111 |        1031 |    1 |      |   1 |      |
+   |  1000 |        1130 |    1 |      |   1 |      |
+   |  1001 |      112011 |    2 |    1 |     |      |
+   |  1010 |    11101110 |    4 |      |     |      |
+   |  1011 |      111021 |    2 |    1 |     |      |
+   |  1100 |        2120 |      |    2 |     |      |
+   |  1101 |      211011 |    2 |    1 |     |      |
+   |  1110 |        3110 |    1 |      |   1 |      |
+   |  1111 |          41 |      |      |     |    1 |
+   |-------+-------------+------+------+-----+------|
+   |       |       Total |   24 |   10 |   4 |    2 |
+   |       | Probability |  0.6 | 0.25 | 0.1 | 0.05 |
+   #+tblfm: @>>$3=vsum(@I$3..@II$3)::@>>$4=vsum(@I$4..@II$4)::@>>$5=vsum(@I$5..@II$5)::@>>$6=vsum(@I$6..@II$6)::@>$3=@>>$3 / vsum(@I$3..@II$6)::@>$4=@>>$4 / vsum(@I$3..@II$6)::@>$5=@>>$5 / vsum(@I$3..@II$6)::@>$6=@>>$6 / vsum(@I$3..@II$6)
+
+
+
+   \begin{align*}
+    run(\ell, \mathcal{A}, L) &= \max(0, \ell-r-1) \cdot (a-1)^2 \cdot a^{\ell-r-1} + 2 \cdot (a-1) \cdot a^{\ell-r}
+   \end{align*}
+
+
+   \begin{align*}
+    Ex[run(\ell, \mathcal{A}, L)] &= \sum_{run()
+   \end{align*}
+
+   
+   What are the sequence that have one or more run of length 2
+   - to have a run of 2:
+     - either of XX?? X??X or ??XX
+       - How many have XX0? -> 2 (x 2) = 4 
+       - How many have 0XX0 -> 1 (x) = 2
+       - How many haave ?0XX -> 2 (x 2) = 4
+       - Total = 10
+
+   - In we consider words of 5 character on an alphabet of 3 characters
+     - How many runs length 1
+       - XY??? = A * A-1 * A * A * A  = 3 * 2 * 3 * 3 * 3 = 162 = A^l-1 * A-1
+       - YXY?? = A-1 * A * A-1 * A * A = 2 * 3 * 2 * 3 * 3 =  108 = A^l-2 * A-1^2
+       - ?YXY? = A * A-1 * A * A-1 * A = 3 * 2 * 3 * 2 * 3 = 108 = A^l-2 * A-1^2
+       - ???YX = A * A * A * A-1 * A = 162 A^l-1 * A-1
+     - How many runs of length 2?
+       - XXY?? = A * 1 * A-1 * A * A = 3 * 1 * 2 * 3 * 3 = 54 A-1 * A^l-2
+       - YXXY? = A-1 * A * 1 * A-1 * A = 2 * 3 * 1 * 2 * 3 = 36 = A-1^2 * A^2
+       - ?YXXY = 36 A-1*2 * A^2
+       - ??YXX = 54 = A-1 * A^l-2
+     - How many runs of length 3
+       - XXXY? = A * 1 * 1 * A-1 * A = 3 * 1 * 1 * 2 * 3 = 18 = R * A-1 * A
+       - YXXXY = A-1 * A * 1 * 1 * A-1 = A-1 R A-1
+       - ?YXXX = 18
+     - How many runs of length 4
+       - XXXXY = A * 1 * 1 * 1 * A -1 = 6
+       - YXXXX = 6
+     - How many runs of length 5
+       - XXXXX = 3
+   - 
+          
+   - tp have a run of one:
+     - XY?? -> 4 x 2 = 8
+     - YXY? -> 2 x 2 = 4
+     - ?YXY -> 2 x 2 = 4
+     - ??YX -> 4 x 2 = 8
+     - Total: 24
+   - to have a run of 3
+     - XXXY = 1 * 2
+     - YXXX = 1 * 2
+     - 4
+
+   - there is at most 2 runs of two
+   - number with exactly 1 run of 2 + 2 runs of 2
+     - how many partition have exactly 2 runs of 2
+       - 1 * 2 = 2
+     - how many there is of choosing exactly the position of one run of 2
+       - l - r + 1 = 4 - 2 + 1 = 3
+       - 3 * 2 symbols = 6
+   - What about if l = 7
+     - Maximum number of runs of 2 = 7 // 2 = 3
+     - How many runs with exactly 1 run of 2
+       - l -r + 1 = 7 - 2 + 1 = 6
+       - 6 * 2 =
+     - How many with 2 runs of 2
+       - 00?????
+         - 0011000
+         - 0011010
+       - 
+        
+
+   | input |  runs |
+   |-------+-------|
+   |  0010 | 2+1+1 |
+   |  0011 |   2+2 |
+   |  0100 | 1+1+2 |
+   |  0110 | 1+2+1 |
+   |  1001 | 1+2+1 |
+   |  1011 | 1+1+2 |
+   |  1100 |   2+2 |
+   |  1101 | 2+1+1 |
+   |-------+-------|
+   |       |       |
+
+   How runs of length 2 can we have? l // 2
+
+   ?????
+   - 11???
+     - 1100?
+       - 11001
+   - 00???
+     - 0011?
+       - 00110
+   - ?11?
+     -0110
+   - ??11
+     - 
+   
+   
    
      | sequence | encoded |   s |
      |----------+---------+-----|

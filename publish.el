@@ -17,8 +17,13 @@
  '((python . t)
    (C . t)
    (R . t)
+   (java . t)
    (shell . t)
-   (screen . t)))
+   (screen . t)
+   (js . t)
+   (ditaa . t)))
+
+(setq org-ditaa-jar-path "/opt/homebrew/Cellar/ditaa/0.11.0_1/libexec/ditaa.jar")
 
 (setq python-indent-guess-indent-offset t)
 (setq python-indent-guess-indent-offset-verbose nil)
@@ -57,7 +62,7 @@
          )
         ("org-assets"
          :base-directory "./assets"
-         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|pptx"
          :publishing-directory "site/assets"
          :recursive t
          :publishing-function org-publish-attachment
