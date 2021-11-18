@@ -1,0 +1,75 @@
+#+title: Orders of Growth
+#+subtitle: Algorithmic Complexity and the Big-Oh notation
+#+author: Franck Chauvel
+#+date: May 25, 2021
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+
+* Introduction
+
+  - Where did we stop?
+    - model efficiency as a function of the input size
+    - We also saw how to address unknown situation using 
+
+  - How to compare algorithms?
+    - How to compare functions?
+    - Classification
+
+  - Why looking at larger inputs?
+    - It is often that the runtime and memory rises when input increases
+    - The different matters only when it gets big! No one give a penny
+      about a couple of cycles more.
+
+  - Intractability
+    - intractable = no efficient solution
+    - efficient = polynomial
+      - Example of intractable/problems
+        - factorization in prime numbers
+        - SAT
+        - TSP
+        - Bin packing
+        - Knapsack problem
+  
+  - Classification of functions?
+    - Classification is about scenario, not algorithms! For a given
+      algorithm worst and best case can very well belong to different
+      classes.
+    - Constant, Logarithmic
+    - Ordered classes?
+
+  - How to establish the class of a function/scenario?
+    - The notion of bounds
+    - formula
+    - 
+ 
+  - The big-Oh Notation
+         
+  - Type of Bounds
+    - How to characterize the growth of a function?
+      - 
+      - 
+  - In Practice
+    - How to intuit the class of an algorithm
+
+  - Pitfalls
+    - Comparing algorithms of the same class
+    - Worst best, and where is the average
+  - 
+    
+        
+* Growth factors
+
+* Big-Oh
+
+* Big-Omega
+
+* Big-Theta
+
+* Other type of bounds
+
+* In Practice
+  
+* Pitfalls

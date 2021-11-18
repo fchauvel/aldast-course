@@ -1,0 +1,513 @@
+#+title: Algorithm Efficiency
+#+subtitle: Lab Session 2.1
+#+author: NTNU IDATA 2302
+#+date: Aug. 30, 2021
+#+language: en
+
+#+OPTIONS: H:3 num:2
+
+* Introduction
+
+In Week 1, we defined what is an algorithm (as opposed to a program)
+and we looked at techniques to assess correctness. We now turn to
+efficiency, which is one of the core topic of this course. For
+the record, efficiency relates to two resources: Runtime and
+memory. Runtime captures the time the underlying RAM architecture needs to
+run an algorithm until it terminates. Memory reflects how many memory
+cells the algorithm needs beyond what it uses to store the
+algorithm's instructions.
+
+In this lab session, we will practice evaluating runtime and memory
+consumption. We will start with RAM assembly programs, and then move
+on to higher-level languages such as Java, C, Python and the likes. We
+will look at three short algorithms that illustrate different control
+structures:
+
+  1. /Adding Three Numbers/ is a short program that reads three
+     numbers from the user and print their sum. This illustrates the
+     basic concepts.
+  2. /Maximum/ is a program that accepts two numbers and prints the
+     largest one. It shows how to evaluate the runtime and memory of a
+     conditional statement.
+  3. /Multiplication/ is a program that prints the product of two numbers,
+     but unfolds the multiplication as a series of additions using a
+     loop. It shows how to evaluate the runtime and memory of loops.
+
+* Adding Three Numbers
+
+** From RAM Assembly
+
+Let us start with a short RAM assembly program, which reads three
+number from the user and outputs their sum. Listing
+[[code:adding-three-numbers]] shows the corresponding RAM assembly code. 
+
+#+name: code:adding-three-numbers
+#+caption: A RAM assembly program that adds up three numbers given by the user.
+#+begin_src asm -n -r
+SEGMENT: data       ; The variables
+      value 1 0       ; value is 1 memory cell initialized at 0
+      total 1 0       ; total is 1 memory cell initialized at 0  
+
+SEGMENT: code       ; The instructions
+      load  0         ; ACC := 0          (ref:start)
+      read  value     ; value := user-input
+      add   value     ; ACC := ACC + value
+      read  value     ; value := user-input
+      add   value     ; ACC := ACC + value
+      read  value     ; value := user-input
+      add   value     ; ACC := ACC + value
+      store total     ; total := ACC
+      print total     ; 
+      halt  -1        ;                  (ref:end)
+#+end_src
+
+*The whole point is to evaluate---without running it---the time and
+memory it would take on a RAM*. Note that this is only /one possible
+program/: Others are possible. One could for instance reuse the
+~value~ variable to store the result (instead of another ~total~
+variable). In practice, such choices are made by the compiler or
+interpreter and we will later work directly from higher-level
+languages.
+
+*** Memory
+
+In Lecture 2.1, we defined /memory consumption/ as the number of
+memory cells that we need to run our algorithm. How many do we need
+here? First, let us look at the ~code~ segment, which contains 10
+instructions, and, since each instruction takes 2 memory cells, that
+is a total of 20 cells. In practice, we will not account for the code
+segment, so we can just omit this. What remains is the data segment,
+where we declared two variables, namely ~value~ and ~total~. The
+~value~ variable is however used to hold user inputs, and such
+variables are often excluded, so that gives us *a total of 1 memory
+cells*.
+
+*** Runtime
+
+Moving now to the runtime. It captures how much time our program will
+take on a RAM architecture. To estimate it, we must know two things:
+ - How much time each RAM instruction takes to run;
+ - and how many times it will run.
+
+We therefore need a /cost model/, which is our assumptions about the
+time each RAM instruction takes to complete. For the sake of
+simplicity, I will assume (as in most textbooks) that every
+instruction takes 1 single unit of time.
+
+Now, if we look at Listing [[code:adding-three-numbers]], we see that it
+does not contain any ~jump~ instruction: The machine start with ~LOAD
+0~ (Line [[(start)]]) and ends with ~HALT -1~ (Line [[(end)]]). Each of the 10
+instructions will run once, so *it takes exactly 10 units of time*.
+
+** From Java
+
+Let us now look at higher-level languages. How can we evaluate the
+runtime and memory of Java programs without compiling them explicitly
+to RAM assembly?
+
+Listing [[code:add-three-java]] shows a Java program, equivalent to the
+RAM assembly program that adds three numbers given by the user (see
+Listing [[code:adding-three-numbers]]).
+
+#+name: code:add-three-java
+#+caption: A Java program that adds three numbers given by the user
+#+begin_src java -n -r
+  public int main(String[] args) {
+      Scanner input = new Scanner(System.in); (ref:input)
+      int total = 0;    (ref:setup)
+      total = total + input.nextInt(); (ref:add1)
+      total = total + input.nextInt(); (ref:add2)
+      total = total + input.nextInt(); (ref:add3)
+      System.out.println(total);  (ref:print)
+  }
+#+end_src
+
+*** Memory
+
+To estimate the memory consumption of a Java program, we simply count
+the number of variables it uses. In this case, there are two,
+namely ~input~ and ~total~. The ~input~ variable (see Line [[(input)]]) is
+not part of our algorithm: It is only some "plumbing" needed in the
+Java implementation, so we are left *with one single variable*.
+
+*** Runtime
+
+Now, if we look at the runtime, we need a way to estimate the time a
+Java instruction would take on a RAM architecture. Again, we need the
+same two things:
+ 1. How much time is spent executing each Java statement, the cost per
+    statement;
+ 2. The number of times each line is executed, its frequency count.
+
+As for the cost per statement, we look at every statement and estimate
+the minimum number of RAM instructions needed. Note that the statement
+~int total=0~ is a variable declaration and translate into the data
+segment, so we skip it. The Java statement "~total = total +
+input.nextInt()~" translates into at least three instructions: a
+~READ~, an ~ADD~, and a ~STORE~. By contrast, the Java statement
+"~System.out.println(total)~" (see Line [[(print)]]) translates into at
+least a ~PRINT~ instruction. Table [[tab:add3-summary]] summarizes the
+cost of each line.
+
+Regarding the frequency count, Listing [[code:add-three-java]] does not
+include any control structures (i.e., loops, conditionals, or goto
+statement), so each statement is executed only once. Table
+[[tab:add3-summary]] summarizes the frequencies of each statement.
+
+#+name: tab:add3-summary
+#+caption: Summary of lines' costs and frequency of Listing [[code:add-three-java]] 
+| Java Code                         | Line    | Cost |         Freq. | Total |
+|-----------------------------------+---------+------+---------------+-------|
+| ~total = total + input.nextInt()~ | [[(add1)]]  |    3 |             1 |     3 |
+| ~total = total + input.nextInt()~ | [[(add2)]]  |    3 |             1 |     3 |
+| ~total = total + input.nextInt()~ | [[(add3)]]  |    3 |             1 |     3 |
+| ~System.out.println(total)~       | [[(print)]] |    1 |             1 |     1 |
+|-----------------------------------+---------+------+---------------+-------|
+|                                   |         |      | *Grand Total* |    10 |
+
+Finally we can compute the total runtime of our algorithm by summing
+up all these costs as follows:
+
+\begin{align*}
+  \text{total time} &= (3 \times 1) + (3 \times 1) + (3 \times 1) + (1 \times 1) \\
+                    &= 10 \\
+\end{align*}
+
+Here we get the same evaluation as for the RAM assembly program, but
+it is only because this program does not contain any control structure.
+
+* Maximum
+
+Now, we will look at a conditional statement (i.e., ~if-then-else~
+in Java). As before, we will start with a RAM assembly program and
+move on to the same Java program.
+
+** From RAM Assembly
+
+Listing [[code:maximum-asm]] shows one possible RAM assembly program that
+selects the maximum between two values. Note that these values, named
+~left~ and ~right~ are not given by the user, but instead predefined
+in the data segment (see Lines [[(left)]] and [[(right)]]). We will see in the
+next lecture how to account for unknown values.
+
+To compare these ~left~ and ~right~ variables, we check whether their
+difference is negative (see Line [[(test-max)]])[fn:1]. In that case, we
+jump to the ~lmax~ label where we assign ~maximum~ with ~left~ and
+print it. Otherwise. we assign ~maximum~ with right and we jump to the
+~done~ label (see Line [[(done-max)]]) where we print the ~maximum~
+variable.
+
+[fn:1] Keep in mind that the original RAM architecture only offers one
+single ~JUMP~ instruction, which jumps only when the ~ACC~ register is
+positive or null.
+
+
+#+name: code:maximum-asm
+#+caption: RAM program that prints the largest of two predefined numbers
+#+begin_src asm -n -r
+  SEGMENT: data           ; Variables
+          left    1 25      ; left := 25    (ref:left)
+          right   1 45      ; right := 45   (ref:right)
+          maximum 1 0       ; maximum := 0
+        
+  SEGMENT: code          ; Instructions
+          load 0         ; (ref:start-max)
+          add left       ;
+          subtract right ;
+          jump lmax      ; if left - right < 0 (ref:test-max)
+          load 0         ;
+          add right      ;
+          store maximum  ;   maximum := right 
+          load 0         ;
+          jump done      ; (ref:goto-done-max)
+  lmax:   load 0         ; else                (ref:lmax)
+          add left       ;
+          store maximum  ;   maximum := left
+  done:   print maximum  ; print(maximum)      (ref:done-max)
+          halt -1
+#+end_src
+
+*** Memory
+
+Evaluating the memory consumption boils down to counting the variables
+our program uses. There are three, ~left~, ~right~ and ~maximum~. It
+is customary to omit the user inputs, that is ~left~ and ~right~
+here. We are left with 1 variable.
+    
+*** Runtime
+
+As for the runtime of such a conditional statement, only one part is
+executed, depending on how the condition evaluates. In this case, we
+do know the value of the ~left~ and ~right~ variables (25 and 45,
+respectively), so we know which branch will be executed. At line
+[[(test-max)]], the ~ACC~ register contains $25 - 45 = -20$, and the
+machine does /not/ jump to ~lmax~, but proceeds with the next
+instruction. Once it reaches Line [[(goto-done-max)]], it jumps directly
+to the label ~done~ (because ~ACC~ was explicitly set to 0
+before). The block starting at label ~lmax~ is thus never executed.
+
+In total, the machine only executes 11 instructions: It starts at
+~LOAD 0~ (Line [[(start-max)]]) and continues until ~JUMP done~ (9
+instructions until Line [[(goto-done-max)]]). It then directly jumps to
+the label ~done~ (Line [[(done-max)]] and continues from there to the end
+(2 instructions).
+
+Provided a cost model, where every RAM instruction takes 1 unit of time,
+these 11 instructions take 11 units of time to run.
+
+** From Java
+
+Again, let us look at the same algorithm but implemented in Java this
+time. Listing [[code:maximum-java]] shows the Java code, which boils down
+to a condition statement followed by a print statement.
+
+#+name: code:maximum-java
+#+caption: A Java implementation of the maximum algorithm (cf. Listing [[code:maximum-asm]])
+#+begin_src java -n -r
+public static void main(String[] args) {
+    int left = 25;
+    int right = 45
+
+    int maximum = 0;
+    if (left < right) { (ref:max-test-java)
+        maximum = right;
+    } else {
+        maximum = left; (ref:skipped)
+    }
+
+    System.out.println(maximum);
+}
+#+end_src
+
+*** Memory
+
+The memory is very similar to the RAM assembly program. The Java code
+from Listing [[code:maximum-java]] defines three variables, two of which
+are inputs (~left~ and ~right~). So we are left with one variable.
+
+*** Runtime
+
+Regarding the runtime, we proceed as we did in for adding three
+numbers (see Section [[Adding Three Numbers]]). We first estimate the cost
+of each Java statement by translating it into a set of RAM
+instructions. Then, we calculate how many times each statement runs.
+
+Listing [[code:maximum-java]] contains four different types of statements,
+namely /variable declaration/, /assignment/, /conditional/ and
+/output/. Let us look at them in turn:
+
+ - Variable declarations translate into the data segment, so there is
+   no need to account for them.
+
+ - Evaluating a condition (e.g., Line [[(max-test-java)]]) translates into
+   at least an arithmetic operation (e.g., ~SUBTRACT~) and one ~JUMP~.
+   So the cost is 2
+   
+ - Assignments translate into a single ~STORE~ instruction, so they
+   cost 1.
+
+ - Outputs translate into a single ~PRINT~ statement, so they also cost 1
+   unit of time.
+
+Turning to the frequencies, the ~else~ branch will never be executed,
+because ~left~ is less than ~right~. All other instructions will be
+executed only once. Table [[tab:max-summary]] summarizes these costs and
+frequencies. In total, we are left with the following:
+
+\begin{align*}
+   \text{time} &= (2 \times 1) + (1 \times 1) + (1 \times 1) \\
+               &= 4 \\
+\end{align*}
+
+Here we get a results that further away from what we calculated for
+the equivalent RAM program. The difference comes from the conditional
+statement, which in practice include more instructions than the two
+we accounted for, but this depends on the compiler in practice.
+
+#+name: tab:max-summary
+#+caption: Summary of the cost and frequencies of Listing [[code:maximum-java]]
+| Line | Java Code                     | Cost |  Freq.  |  Total |
+|------+-------------------------------+------+---------+--------|
+|    6 | ~if (left < right) {~         |    2 |       1 |      2 |
+|    7 | ~maximum = right;~            |    1 |       1 |      1 |
+|    8 | ~} else {~                    |    0 |       0 |      0 |
+|    9 | ~maximum = left;~             |    1 |       0 |      0 |
+|   10 | ~}~                           |    0 |       1 |      0 |
+|   12 | ~System.out.println(maximum)~ |    1 |       1 |      1 |
+|------+-------------------------------+------+---------+--------|
+|      |                               |      | *Total* |      4 |
+
+
+* Multiplication
+
+Finally, we now look at a program that contains a loop. This program
+unfolds a multiplication as a series of additions. /This is useless in
+practice, and only illustrates the concept of loop/.
+
+** From RAM assembly
+
+Listing [[code:multiplication:asm]] shows a RAM assembly program that
+implements such a multiplication. We first initialize a ~counter~
+variable to zero (see the data segment). When the program starts, it
+first computes the difference between the ~counter~ and the
+~multiplier~ variables. If this is greater or equals to zero, the
+program jumps at Line [[(loop-done)]] and prints the ~product~. Otherwise
+the program increments the ~product~ with the ~multiplicand~,
+increment the ~counter~ by 1, and continues at Line [[(loop-start)]].
+
+#+name: code:multiplication:asm
+#+caption: A RAM assembly program that multiplies two numbers predefined in memory
+#+begin_src asm -n -r
+  segment: data
+          multiplicand  1   10       ; the multiplicand = 10
+          multiplier    1    4       ; the multiplier = 4
+          counter       1    0       ; the loop index
+          product       1    0       ; the product
+
+  segment: code
+  loop:   load          0            ; (ref:loop-start)
+          add           counter      ;
+          subtract      multiplier   ; ACC := counter - multiplier 
+          jump          done         ; if ACC >= 0, goto done (ref:loop-jump)
+          load          0            ; (ref:loop-body)
+          add           product      ;
+          add           multiplicand ;
+          store         product      ; product += multiplicand
+          load          1            ;
+          add           counter      ;
+          store         counter      ; counter += 1
+          load          0            ;
+          jump          loop         ; goto loop (ref:loop-back)
+  done:   print         product      ; (ref:loop-done)
+          halt          -1
+#+end_src
+
+*** Memory
+
+Listing [[code:multiplication:asm]] declares four variables (see the data
+segment), each taking one memory cell. If we omit the two inputs (i.e.,
+~multiplier~ and ~multiplicand~), we are left with two memory cells.
+    
+*** Runtime
+
+To evaluate the runtime of Listing [[code:multiplication:asm]], we will
+assume a cost where every RAM instruction takes one unit of time. The
+challenge with loops is to understand how many time the body runs.
+
+In Listing [[code:multiplication:asm]], Lines [[(loop-start)]] to [[(loop-jump)]]
+test whether we should exit the loop. These 4 lines will be executed
+once every time the condition holds, but also once when ~counter~
+exceeds ~multiplier~. Since we know that ~multipler~ is 4, these lines
+will execute 5 times. The body of loop (i.e., the 9 instructions from
+Lines [[(loop-body)]] to [[(loop-back)]]) will run each time the test
+condition holds, that is, 4 times. Finally, the last two instructions
+(from Line [[(loop-done)]]) will be executed once. We are thus left with
+the following:
+
+\begin{align*}
+ \text{time} &= (5 \times 4) + (4 \times 9) + 2 \\
+             &= 20 + 36 + 2 \\
+             &= 58
+\end{align*}
+
+Listing [[code:multiplication:asm]] takes 58 units of time to execute.
+
+** From Java
+
+Finally, we can now look at an equivalent Java program. In Listing
+[[code:multiplication:java]], we first defined the ~multiplicand~ and the
+~multiplier~ as two integer variables, and we then use a ~while~ loop
+to add the ~multiplicand~ many times.
+   
+#+name: code:multiplication:java
+#+caption: A Java program that multiplies two predefined variables (cf. Listing [[code:multiplication:asm]])
+#+begin_src java -n -r
+  public static void main(String[] args) {
+      final int multiplicand = 10;
+      final int multiplier = 4;
+
+      int product = 0;
+      int counter = 0;
+      while (counter < multiplier) {
+          product = product + multiplicand;
+          counter = counter + 1;
+      }
+
+      System.out.println(product);
+  }
+#+end_src
+
+*** Memory
+
+Listing [[code:multiplication:java]] declares four variables, namely
+~multiplicand~, ~multiplier~, ~product~, and ~counter~. Two of them
+are inputs, so we are left with two as a memory consumption.
+
+*** Runtime
+
+As we did before, we need to first estimate the cost of each Java
+statement and then calculate how many times each statement is
+executed.
+
+If we put aside variable declarations, we are left with a loop whose
+body contains two assignments.
+
+ - Assignments translate into RAM assembly as one ~STORE~
+   instructions. Here however, both assignments include an arithmetic
+   expression, which we should account for, because it translates into
+   an ~ADD~ instruction. Such assignments thus cost 2 units of time.
+
+ - The loop and its condition take one comparison and one ~jump~
+   instructions, for a cost of 2. Note that the loop body includes an
+   extra jump to return at the beginning of the loop.
+
+ - The print statements translates to a single ~PRINT~ instruction.
+
+Regarding the frequencies, we know that the loop condition will be
+executed as many times as the condition holds, and one time when the
+condition breaks. Here that is 5 times. By contrast, the loop body
+executes only when condition holds, that is, 4 times in our case. Table
+[[tab:multiplication:summary]] summarizes these costs and frequencies.
+
+Eventually we can model the time required by Listing
+[[code:multiplication:asm]] as follows:
+
+\begin{align*}
+ \text{time} & = (5 \times 2) + [ 4 \times (2 + 2 + 1) ] + 1 \\
+             & = 10 + 20 + 1 \\
+             & = 31 \\
+\end{align*}
+
+Here, again, the estimation we get differ from the one we got for the
+RAM assembly. The difference is wider because our errors are amplified
+each time the loop runs.
+
+#+name: tab:multiplication:summary
+#+caption: Summary of the cost and frequencies of Listing [[code:multiplication:java]]
+| Line | Java Code                           | Cost |  Freq.  |  Total |
+|------+-------------------------------------+------+---------+--------|
+|    6 | ~while (counter < multiplier) {~    |    2 |       5 |     10 |
+|    7 | ~product = product + multiplicand;~ |    2 |       4 |      8 |
+|    9 | ~counter = counter + 1;~            |    2 |       4 |      8 |
+|   10 | ~}~                                 |    1 |       4 |      4 |
+|   12 | ~System.out.println(product)~       |    1 |       1 |      1 |
+|------+-------------------------------------+------+---------+--------|
+|      |                                     |      | *Total* |     31 |
+
+
+* Conclusions
+
+The first take-away from this lab session is that, in practice,
+estimating the cost of a Java statement boils down to counting
+arithmetic operations, comparisons, logical operations, and
+assignment. As for the memory consumption, we simply count the
+variables.
+  
+The second take-away is that we only *estimate* the runtime and memory
+consumption. Since we do not know exactly how our code will be
+compiled to a RAM architecture, we cannot know the exact number of
+memory cells nor the number of instructions executed. We can however
+get an estimation, which, as we shall see in the next lectures, is
+good enough to compare algorithms.
+
+

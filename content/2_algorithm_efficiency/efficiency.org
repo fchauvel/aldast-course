@@ -1,0 +1,31 @@
+#+titile: Efficiency
+#+subtitle: Comparing Algorithm
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+* Counting Steps
+
+  #+header: :results output
+  #+begin_src C
+     #include <stdio.h>
+
+     #define LIMIT 100
+
+    int main(int argc, char* argv[]) {
+      int total = 0;
+      int each = 0;
+      while (each <= LIMIT) {
+        if (each % 2 == 0) {
+           total = total + each;
+        }
+        each = each + 1;
+      }
+      printf("Total: %d\n", total);
+    }
+  #+end_src
+
+  #+RESULTS:
+  : Total: 2550

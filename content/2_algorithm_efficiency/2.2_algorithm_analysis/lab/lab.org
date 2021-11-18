@@ -1,0 +1,378 @@
+#+title: Algorithm Analysis
+#+subtitle:Lab Session 2.2
+#+author: NTNU IDATA 2302
+#+date: Aug 30, 2021
+
+
+* Introduction
+
+So far we have seen that algorithms consume two key resources: Memory
+and CPU time. We have seen how the RAM architecture gives them precise
+enough meanings so that both can be measured.
+  
+In this lab session, we practice find best, worst and average
+cases. We will look at several programs and we model how their
+efficiency varies according to their input size. We will look at the
+maximum between two numbers, a rock-paper-scissor game. In each case,
+we will focus on the runtime efficiency, since memory efficiency does
+not bring much hindsight for such short programs.
+
+* Maximum of Two Numbers
+
+  Let us first look at a program that finds the maximum between two
+  given integers. Listing [[code:maximum]] shows a possible Java
+  implementation. We compare the two given values and we return the
+  greatest one.
+
+  #+name: code:maximum
+  #+caption: Selecting the maximum between two given numbers
+  #+header: :results output
+  #+header: :classname Maximum
+  #+begin_src java -n -r
+    public class Maximum {
+
+        public static int maximum(int left, int right) {
+            if (left < right) {
+                return right; (ref:right)
+            }
+            return left; (ref:left)
+        }
+
+        public static void main(String[] args) {  
+            System.out.println(maximum(10, 5));
+        }
+    
+    }
+ #+end_src
+
+ 
+** Problem Size?
+
+When looking at an algorithm, the first question is to understand what
+determines the size of problem, and what happen when the size
+grows. How does our algorithm perform? Does it consume the same amount
+of memory? Does it takes more time?
+
+For our ~maximum~ function, the size of the problem is fixed: It is
+two numbers, which the function accepts as inputs. But nonetheless,
+the runtime efficiency can still vary as we shall see.
+
+** Worst and Best Case?
+
+Finding out the worst case (with respect to runtime) boils down to
+finding the input that maximize the time spent by the underlying
+machine running our program.
+
+Because I assume a random access machine and a cost model where every
+instruction takes 1 unit of time, the worst case is thus finding the
+input that maximizes the number of instructions executed. In this case
+there are only two possible "execution paths":
+
+1. Either ~left~ is strictly less than ~right~, in which case the program
+   directly returns ~right~ (see Line [[(right)]]).
+
+2. The ~left~ variable is greater or equal to ~right~, in which case
+   our function returns ~left~ (see Line [[(left)]]).
+
+** Explicit Conversion to RAM assembly
+
+To compute how many instructions the machine execute in each case, one
+could---in principle---convert it to a RAM assembly program and count
+how many time each instruction is executed. Figure [[code:maximum-asm]]
+gives a possible assembly program.
+
+#+name: code:maximum-asm
+#+caption: A possible RAM assembly implementation of our Java maximum function
+#+begin_src asm -n -r
+  segment: data
+        left     1        0           ; left takes 1 cell, set to 0
+        right    1        0           
+        maximum  1        0
+
+  segment: code
+                 READ     right       ; left := user-input (ref:start)
+                 READ     left        ; right := user-input 
+                 LOAD     0
+                 ADD      left
+                 SUBTRACT right
+                 JUMP     lmax        ; Go to 'lmax' if left >= right (ref:jump)
+                 LOAD     0           (ref:rmax)
+                 ADD      right
+                 STORE    maximum     ; maximum := right
+                 LOAD     0
+                 JUMP     done        ; Go to done (ref:jump2)
+        lmax:    LOAD     0           (ref:lmax)
+                 ADD      left
+                 STORE    maximum     ; maximum := left
+        done:    PRINT    maximum     ; print(maximum) (ref:done)
+                 HALT     -1          ; stop the machine
+#+end_src
+
+The only complexity is how we compare left and right. We have only a
+single JUMP instruction, which jumps only when the ~ACC~ register is
+positive or null. To jump when left is greater, we must first place in
+~ACC~ the difference between ~left~ and ~right~. Here, the two
+execution paths we have identified earlier surface as follows:
+
+1. If ~left~ is strictly less than ~right~, then the machine would
+   start at Line [[(start)]], proceed until the ~JUMP~ instruction
+   (Line [[(jump)]]). At this point, the ~ACC~ register contains a
+   negative value so we /do not/ jump, but we continue with Line
+   [[(rmax)]], until we reach the second ~jump~ (Line [[(jump2)]]). There we
+   always jump to Line [[(done)]] and execute the final ~print~ and ~halt~
+   instructions. This is a total of 13 instructions executed.
+
+2. If ~left~ is greater or equals to ~right~, the programs will start
+   at Line [[(start)]] but jump Line [[(lmax)]] when it reaches the first
+   ~jump~ instruction (the ~ACC~ register would be positive or
+   null). The machine then continues from there until the end. This
+   gives us a total of 11 instructions executed.
+   
+From this we can conclude that the first case is the worst, although
+the difference is not much.
+
+** Implicit Conversion to RAM assembly
+
+Making explicit RAM assembly programs *is not only impractical, but
+also captures specific compilation choices*. The results we got in the
+previous section are valid, /provided our RAM assembly is the one
+yielded by the compiler/. Unfortunately there may be other ones and so
+different results are possibles.
+
+To circumvent that, we can estimate this number of instruction by find
+the places in our Java programs that requires a RAM
+instructions. These are:
+ + assignments, which translate into a ~STORE~ instruction. For
+   example ~int i = 0~ in Java. We can also consider a 
+   ~return~ statement as a form of assignment.
+ + arithemtic operations, such as ~+~, ~-~, ~*~, ~/~, etc. The minimal
+   RAM model only provides ~ADD~ and ~SUBTRACT~ but one often assumes
+   additional instructions for other operations.
+ + comparison operators, such as ~~==~, >~, ~!=~, etc. in Java. These
+   translate to at least one ~JUMP~. As for the aritmetic we can also
+   assumes additional instructions that jumps on other
+   conditions.
+ + Logical operators, such as ~&&~, ~||~ or ~!~ in Java. They would
+   also translate into at least one JUMP instructions.
+
+With this approach, we simply count the occurrence of such
+statements. In our Java function (see Figure [[code:maximum]]), we found 1
+comparison and 2 assignment (return), as follows:
+
+1. If ~left~ is strictly less than ~right~, the program does 1
+   comparison and 1 assignment. So a total of 2 instructions.
+
+2. If ~left~ is greater of equal to ~right~, then the machine carries
+   out 1 comparison and 1 assignment. So a total of 2 instructions.
+
+What we see here is that, if we abstract away the technical details of
+the compilation, the two scenario are the same in this
+example. Further, because the two scenario are equivalent, /the average
+complexity is also the same/, because in all case, we compute 1
+comparison and 1 assignment.
+
+ 
+* Rock Paper Scissor
+
+Let's look at the "Rock Paper Scissor" program, which we started
+implementing during our lab session on unit testing.
+
+It is a Java function that takes as input two integer values
+representing the choices made by the two players. The body of this
+function is a long conditional statement that selects the winning player
+depending on the players' choice. For instance, if Player 1
+chooses ~ROCK~ and Player 2 ~PAPER~, then it returns the value 2 to
+indicate that Player 2 won. When both players choose the same valid value,
+the function returns the value 0 to indicate a draw. If any
+player chooses anything else but ~ROCK~, ~PAPER~ or ~SCISSOR~ (say
+for instance $-8$), the function throws an exception.
+
+#+name: rock-paper-scissor
+#+header: :results output
+#+header: :classname RockPaperScissor
+#+begin_src java -n -r 
+  public static int play(int player1, int player2) {
+      if (player1 == ROCK && player2 == ROCK) {
+          return 0;
+      } else if (player1 == ROCK && player2 == PAPER) {
+          return 2;
+      } else if (player1 == ROCK && player2 == SCISSOR) {
+          return 1;
+      } else if (player1 == PAPER && player2 == ROCK) {
+          return 1;
+      } else if (player1 == PAPER && player2 == PAPER) {
+          return 0;
+      } else if (player1 == PAPER && player2 == SCISSOR) {
+          return 2;
+      } else if (player1 == SCISSOR && player2 == ROCK) {
+          return 1;
+      } else if (player1 == SCISSOR && player2 == PAPER) {
+          return 1;
+      } else if (player1 == SCISSOR && player2 == SCISSOR) {
+          return 0;
+      } else {
+          throw new RuntimeException("Invalid Input");
+      }
+  }
+#+end_src
+
+Note the use of ~return~ statements within the conditional. They
+interrupt the normal flow of execution and directly terminate the
+function. No further instruction is executed. The same holds for the
+~throw~ statement, no further instruction is executed.
+
+In this exercise, we will look at the *runtime efficiency*.
+
+** Worst Case Analysis
+
+So what is the worst possible scenario with respect to the runtime
+efficiency. The worse possible scenario results from choosing inputs
+(or unknown) that maximize the "execution path", that is, it maximise
+the number of instruction executed by the machine.
+
+In this case, the inputs that maximizes the execution path are these
+inputs that trigger an exception. For example, if Player 1 chooses
+~ROCK~ but Player 2 chooses an invalid number, say $1243$. This is
+because every single condition will be evaluated before the function
+throws an exception. Note that while every condition is evaluated, all
+the return statements will be skipped since none of these conditions holds
+if any value given by the players is invalid.
+
+*How much time will this worse case scenario take?*
+
+For the sake of simplicity, I assume a RAM machine with an extended
+instruction set including comparison operators (~==~, ~>~, ~<=~, etc.)
+and logical operators (~&&~, ~||~, and ~!~). I also assume that each
+of these new operations /takes 1 unit of time/ to complete. Finally, I
+assume a ~return~ statement takes 1 unit of time as well.
+
+To find how long it take in the worse case scenario, we must find
+which Java instructions will be executed, and for each, how long it
+would take for a RAM machine to execute a similar job.
+ 
+Let us look first at one single condition like ~player1 == ROCK &&
+player2 == ROCK~ (all conditions follow this very pattern). Such an
+expression contains two comparisons and one logical test, each taking
+1 unit of time to execute. So a single condition takes $3 \times 1 =
+3$ units of time.
+
+Now, to reach the line where our function throws an exception, we must
+evaluate each of the nine conditions. That gives $3 \times 9 = 27$
+units of time, to which we can add one more to account for the throw
+statement. All together, *the worst case takes 28 units of time*.
+
+** Best case Analysis
+
+By contrast with the worst case, the best case occurs for inputs that
+trigger the shortest possible execution path. This occurs when the
+first condition is true, that is, when both player choose ~ROCK~. This
+is the first case our function checks, and since it works, the
+function immediately returns 0.
+
+In this case, only one condition is evaluated, followed by a return
+statement. That gives *a total of 4 units of time*: 3 units for the
+condition and 1 for the return statement.
+
+** Average case Analysis
+
+The limitation of the best and worst case analysis is that they do not
+say much about what we should expect in average. In many situations,
+these worse and base are rare events that are not representative of
+a random execution.
+
+The first step is to model the runtime efficiency. To to that, I would
+define a function that maps the values chosen by the user to the time
+it take our algorithm to complete.
+
+\[
+time(p_1, p_2) = \begin{cases}
+4 & \text{if } p_1 = \text{rock} \land p2 = \text{rock} \\
+7 & \text{if } p_1 = \text{rock} \land p2 = \text{paper} \\
+10 & \text{if } p_1 = \text{rock} \land p2 = \text{scissor} \\
+13 & \text{if } p_1 = \text{paper} \land p2 = \text{rock} \\
+16 & \text{if } p_1 = \text{paper} \land p2 = \text{paper} \\
+19 & \text{if } p_1 = \text{paper} \land p2 = \text{scissor} \\
+22 & \text{if } p_1 = \text{scissor} \land p2 = \text{rock} \\
+25 & \text{if } p_1 = \text{scissor} \land p2 = \text{paper} \\
+28 & \text{if } p_1 = \text{scissor} \land p2 = \text{scissor} \\
+28 & \text{otherwise} \\
+\end{cases}
+\]
+
+The challenge here is that, /without any further assumption/, we do know
+often a given case shows up.
+
+To estimate an average case, we must make an assumption about the
+behavior of the players. How likely is it for Player 1 to choose
+~ROCK~, to choose ~PAPER~,to choose ~SCISSOR~, or to provide an
+invalid value?. The very same holds for Player 2.
+
+
+To do this rigorously---at least as much as I can---I replace the two
+variable $p_1$ and $p_2$, by two /random variables/ named $P_1$ and
+$P_2$, which represent the values chosen by Player 1 and Player 2,
+respectively. These two random variables have the following properties
+ - $P_1 \in C$ where $C = \{\text{ROCK}, \text{PAPER}, \text{SCISSOR}, \text{ERROR}\}$
+ - $P_1$ and $P_2$ are uniformly distributed, that is $\forall c \in C, \Pr[P_1 =
+   c] = \Pr[P_2=c] = \frac{1}{4}$
+
+With this we can now express the average case as the expected value of
+the time function:
+
+\begin{align*}
+    \text{average runtime} &= \text{Exp}[time(P_1, P_2)] \\
+                           &= \sum_{(p_1, p_2) \in C^2} \Pr[P_1=p_1 \land P_2=p_2] \cdot time(p_1, p_2) \\
+                           &= \sum_{(p_1, p_2) \in C^2} \Pr[P_1=p_1] \cdot \Pr[P_2=p_2] \cdot time(p_1, p_2) \\
+\end{align*}
+
+The definition of an /expected value/ in Probability tells us that it
+equals the sum of all possible values weighted by their probability. I
+do not know how to further simplify this expression, but we can solve
+it by enumerating all the cases, as I do in Table [[table:cases]], where I
+list each all input cases, the runtime and its probability. We obtain
+an average runtime execution of 21.25 unit of time.
+
+#+name: table:cases
+#+caption: All the possible inputs and their probability
+|----------+-----------+--------------+----------+---------|
+| Player 1 |  Player 2 |  Probability |  Runtime | Product |
+|----------+-----------+--------------+----------+---------|
+| rock     | rock      | 1/16         |        4 |    0.25 |
+| rock     | paper     | 1/16         |        7 |  0.4375 |
+| rock     | scissor   | 1/16         |       10 |   0.625 |
+| paper    | rock      | 1/16         |       13 |  0.8125 |
+| paper    | paper     | 1/16         |       16 |      1. |
+| paper    | scissor   | 1/16         |       19 |  1.1875 |
+| scissor  | rock      | 1/16         |       22 |   1.375 |
+| scissor  | paper     | 1/16         |       25 |  1.5625 |
+| scissor  | scissor   | 1/16         |       28 |    1.75 |
+|----------+-----------+--------------+----------+---------|
+| invalid  | rock      | 1/16         |       28 |    1.75 |
+| invalid  | paper     | 1/16         |       28 |    1.75 |
+| invalid  | scissor   | 1/16         |       28 |    1.75 |
+| invalid  | invalid   | 1/16         |       28 |    1.75 |
+| rock     | invalid   | 1/16         |       28 |    1.75 |
+| paper    | invalid   | 1/16         |       28 |    1.75 |
+| scissor  | invalid   | 1/16         |       28 |    1.75 |
+|----------+-----------+--------------+----------+---------|
+|          | Totals    | 1.           |          |   21.25 |
+#+tblfm: @>$5=vsum(@I..@II) 
+
+You may have noted that the way we model the user is a gross
+simplification. In practice, there is not four possible values, but a
+large number since our program accepts integer values as
+inputs. I see two alternatives:
+ -  If we assume a more realistic computation model, for example where
+   memory cells are bounded to 32 bits values, then the probability of
+   an erroneous input would dominate and we would obtain a result very
+   close to the worse case. Note that $\Pr[P=\text{invalid}] =
+   1 - \frac{1}{2^{32}-3} = 0.99999999976$.
+ - We could also adhere to the RAM model. There is thus an infinity
+   of erroneous cases. I not very confident I could solve this one.
+
+Regardless, the takeaway is that the result we obtain depends on the
+assumption we make, that is how we model the behavior of the user.
+
+  
+
+  

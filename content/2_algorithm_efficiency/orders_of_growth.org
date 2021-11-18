@@ -1,0 +1,866 @@
+#+title: Orders of Growth
+#+subtitle: Algorithmic Complexity and the Big-Oh notation
+#+author: Franck Chauvel
+#+date: May 25, 2021
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+ 
+
+* Introduction 
+
+  We saw in the last lecture how to measure time- and space-
+  complexity of programs. We used an abstract machine, the RASP, and
+  rewrote our programs to accordingly. Then, we could measure both
+  time- and space- complexity by measuring the number of CPU cycle and
+  the memory cells, respectively.
+
+  One problem is that our sum of even integers example is very
+  simple. It does not accepts inputs from the user. The other issue is
+  that our measures are now dependent of this RAM machine.
+
+  In this lecture we will see how to compute both time and space
+  complexity for programs that have inputs, and how to express these
+  in a way get rid of details about the RAM machine using
+  the big-Oh notation.
+
+
+* Programs with Arguments
+
+** The faster solution
+
+  Returning first to the solution we developed to compute the sum of
+  even integer. The trick was to use a formula as shown in Listing
+  [[code:asm-formula-input]]. Here we add a ~READ~ instruction at Line
+  [[(input)]] so that the user chooses the limit.
+  
+  #+caption: Sum of even integers that accepts user input
+  #+name: code:asm-formula-input
+  #+begin_src asm -n -r
+    segment: data 
+       limit      1    100
+       half       1    0
+       divisor    1    2
+       increment  1    1
+       result     1    0
+
+    segment: code
+       read       limit       ;; limit := user-input()   (ref:input)
+       load       0
+       add        limit
+       div        divisor
+       store      half
+       add        increment
+       mul        half 
+       store      result
+       print      result
+       halt
+  #+end_src
+
+  The good thing is that the value the user provides does not affect
+  the time- and space- complexity. In the last lecture, we set ~limit~
+  to 100, our programs required 8 CPU cycles and 5 memory cells. Let
+  us now check what happen with the user provides 20 instead.
+
+   * As for the /time-complexity/, this program now takes 9 CPU
+     cycles. The only change is the ~READ limit~ instruction that
+     takes an extra cycle.
+
+   * The /space-complexity/ remains unchanged, the programs still
+     needs 5 memory cells.
+
+  The same holds for whatever values the user provide. Such a program
+  runs in *constant -time and -space*.
+
+** The slower solution
+
+   Let us now look at our slower program, where we simply iterate over
+   the integer, accumulating only the even ones. The RAM code is shown
+   in Listing [[code:asm-loop-input]], we add an extra ~READ
+   limit~ instruction on line [[(input2)]] to let the user choose the
+   ~limit~.
+
+   #+caption: Our C-program, rewritten for the RASP machine
+   #+name: code:asm-loop-input
+   #+begin_src asm -n -r
+     segment: data
+        limit          1    100
+        sum            1    0
+        any_integer    1    0
+        divisor        1    2
+        shift          1    1
+
+     segment: code
+                read   limit        ; limit := user-input (ref:input2)
+        loop:   load 0              ; (ref:loop-test-start)
+                add  any_integer    ; 
+                subtract limit      ; 
+                jump done           ; while any_integer < limit (ref:loop-test-end)
+                load 0              ; (ref:test-even-start)
+                add any_integer     ; 
+                mod divisor         ; 
+                subtract shift      ; 
+                jump skip           ; if any_integer % 2, go to skip (ref:test-even-end)
+                load 0              ; (ref:even-start)       
+                add sum             ; 
+                add any_integer     ; 
+                store sum           ;    sum := sum + any_integer (ref:even-end)
+        skip:   load 1              ; (ref:next-start)
+                add any_integer     ; 
+                store any_integer   ;   any_integer := any_integer + 1
+                load 0              ; 
+                jump loop           ;   goto loop (ref:next-end)
+        done:   print sum           ; (ref:done)
+                halt                ; 
+   #+end_src
+
+   In the previous lecture, we saw that this program takes 1 606 CPU
+   cycles and 5 memory cells.  Now, if the user sets ~limit~ to 50 for
+   example, time-complexity changes. Let's look at the different
+   section of the program:
+
+    1. Line [[(input2)]] is the line we just added. It runs only regardless
+       of the value the user provides. That is 1 cycle.
+    2. The exit-condition of the loop (4 lines from Line
+       [[(loop-test-start)]] to Line [[(loop-test-end)]]) will be executed for
+       every integer lesser than the given limit, plus one time where
+       the exit condition does not hold anymore. If $n$ represent the
+       value provided by the user, that's $4 \times (n+1)$ CPU cycles.
+    3. The test to detect even integer (5 lines from Line
+       [[(test-even-start)]] to Line [[(test-even-end)]]) runs for every
+       integer lesser than the given limit. That is another $5n$ CPU
+       cycles.
+    4. The update of the sum variable (4 lines from line [[(even-start)]] to line [[(even-end)]])
+       runs only for every second integers (the even ones). That is
+       $\frac{4n}/{2} = 2n$ CPU cycles.
+    5. The switch to the next integer (5 lines from Line [[(next-start)]] to Line [[(next-end)]])
+       runs for every integers. That is another $5n$ CPU cycles.
+    6. Finally, the output of the result (from Line [[(done)]]) take 2 extra CPU
+       cycles.
+
+   In total the time-complexity is a function of the value provided by
+   the user such as:
+
+   \[t(n) = 1 + (4n + 4) + 5n + 2n + 5n + 2 \]
+   \[t(n) = 16n + 7\]
+
+   We say that this slower solution has a /linear time-complexity/, since
+   there exist a linear relationship between the number cycles it
+   takes and the user input.
+
+** Comparison, finally!
+
+   Figure [[fig:comparison]] graphically depicts the time complexity of
+   our two solutions when the value of ~limit~ grows until 100. This
+   shows the penality associated with using a loop and the linear
+   relationship between the given input and the number of CPU
+   cycles. Our formula solution is definitely faster: Our two
+   solutions exhibit different /orders of growth/.
+
+   #+header: :R-dev-args bg="transparent"
+   #+begin_src R :file ../assets/images/test.png :exports results :results graphics file
+    formula_time <- function(n) { 8 };
+    loop_time <- function(n) { 16 * n + 7 };
+    limits <- seq(1, 100, 10);
+    plot(limits, sapply(limits, loop_time),
+         col="red",
+         type="b",
+         lty=1,
+         pch=18,
+         xlab="Value chosen for limit",
+         ylab="CPU cycles",
+         bty="n"
+    );
+    lines(limits, sapply(limits, formula_time),
+          col="darkgreen",
+          type="b",
+          lty=2,
+          pch=19,    
+    );
+    abline(h=seq(0,1500,250), lty="dashed", col="grey");
+    legend("topleft", inset=0.05,
+            legend=c("Loop-based", "formula-based"),
+            box.lty=0,
+            col=c("red", "darkgreen"),
+            lty=1:2,
+            pch=c(18,19),
+            cex=0.8)
+   #+end_src
+
+   #+caption: Plotting the two time-complexities
+   #+name: fig:comparison
+   #+RESULTS:
+   [[file:../assets/images/test.png]]
+
+
+* Algorithm Analysis
+
+  We have built a simple time-complexity model for our two solutions:
+
+  - For our formula based solution (cf. Listing
+    [[code:asm-formula-input]]), we got $time(n) = 8$
+  - For our loop-based solution (cf. Listing [[code:asm-loop-input]]), we
+    got $time(n) = 16 \cdot n + 7$
+
+
+  Quite a good start, but our programs remain "toy-programs", and, in
+  practice, efficiency models are more convoluted. Consider for
+  example a variation of the sum of even integers, where the user
+  provides a list of integers, and our program should sum the even
+  ones. Our formula-based solution does not apply in that case, and we
+  are left with our loop-based approach. Listing [[code:user-sum-python]] below
+  shows the associated Python code.
+
+  #+name: read-mock
+  #+header: :python python3
+  #+header: :exports none
+  #+begin_src python
+    def create_sequence():
+        for each in INPUTS[0]:
+            yield int(each)
+
+    sequence = create_sequence()
+
+    def input():
+       return next(sequence)
+  #+end_src
+
+  #+caption: A variation where the user provides thEe list of value where our algorithm should find and sum evens one.
+  #+name: code:user-sum-python
+  #+header: :python python3
+  #+header: :noweb strip-export
+  #+header: :var INPUTS=data-inputs
+  #+header: :results output
+  #+header: :exports both
+  #+begin_src python -n
+    <<read-mock>>
+    total = 0
+    count = input()
+    for _ in range(count):
+       value = input()
+       if value % 2 == 0:
+          total += value
+    print("Total: ", total)
+  #+end_src
+  
+  Provided the user input the values listed in Table [[data-inputs]], this
+  program output 36, that $8 + 10 + 12+ 2+ 4$, as shown below.
+  
+  #+caption: Sample values provided by the user
+  #+name: data-inputs
+  |     10 |  3 | 17 | 5 | 8 | 9 | 10 |  13 | 12 | 2 | 4 |
+
+  #+RESULTS: code:user-sum-python
+  : Total:  36
+
+  As we have done before, we can rewrite this program for our RAM
+  architecture, as shown below by Listing [[code:user-sum-asm]].
+
+  #+caption: The RAM program equalivanet to Listing [[code:user-sum-python]]
+  #+name: code:user-sum-asm
+  #+begin_src asm -n -r
+    segment: data
+        total     1    0
+        count     1    0
+        counter   1    0
+        value     1    0
+        DIVISOR   1    2
+        SHIFT     1    1
+
+    segment: code
+                read     count             ; count := input()
+        loop:   load     0
+                add      counter
+                subtract count
+                jump     done              ; while counter < count
+                read     value             ;    value := input()
+                load     0
+                add      value
+                mod      DIVISOR   
+                subtract SHIFT
+                jump     next              ;    if value % 2 > 0, go to next
+                load     0                 ;    (ref:increment2-start)
+                add      total             ;
+                add      value             ;
+                store    total             ;    total += value (ref:increment2-end)
+        next:   load     0
+                jump     loop              ; done
+        done:   print    total
+                halt
+  #+end_src
+
+  This programs follows the same blueprint as [[]], the only
+  difference We know how many loops we do, that limit, but we don't
+  know which of the user input will be even. So how can we model the
+  time-complexity? We can look at two cases, the "best-case" and the
+  "worst-case".
+
+** Best Case
+
+   So what is the best-case? Regarding CPU cycles, the less cycles out
+   program uses, the better off we are. So our best-case is the one
+   with less CPU cycles, that is when we skip adding the given ~value~
+   to the ~total~ (cf. Lines [[(increment2-start)]] to [[(increment2-end)]]).
+
+   In this case we can calculate the time-complexity. We proceed as we
+   did for Listing [[code:asm-loop-input]].
+
+   \[ time(n) = 1 + 4 \cdot (n+1) + 6n + 2n + 2 \]
+     \[ time(n) = 1 + 4n + 4 + 6n + 2n + 2 \]
+     \[ time(n) = 12n + 7 \]
+
+** Worst Case
+
+   Let's now look at the worst case, that is, when the user gives us
+   only even number. Again, this is worse, because it demands more CPU
+   cycles: We have to add the given ~value~ to the current ~total~
+   (cf. Lines [[(increment2-start)]] to [[(increment2-end)]]). As we did
+   before, we can also calculate the time-complexity as follows:
+   
+     \[ time(n) = 1 + 4 \cdot (n+1) + 6n + 6n + 2 \]
+     \[ time(n) = 1 + 4n + 4 + 6n + 6n + 2 \]
+     \[ time(n) = 18n + 7 \]
+
+** Average Case
+
+  Now we know the best case and the worst case, but what shall we
+  expect in average? Without more knowledge about the user's behavior
+  this as far as one can go. We could assume that the user will input
+  as many odd number as even number. Better even, if we knew the
+  probability of the user inputting an even number (denoted as
+  $p_e$), we could merge these two cases into:
+
+  \[ time(n, p_e) = \left[ p_e\cdot (18n + 7) \right] + (1 - p_e) \cdot (12n + 7) \]
+  \[ time(n, p_e) = 18np_e + 7p_e + \left[ 12n \cdot (1 - p_e) \right] + \left[ 7 \cdot (1 - p_e) \right] \]
+  \[ time(n, p_e) = 18np_e + 7p_e + 12n - 12np_e +  7 - 7p_e \]
+  \[ time(n, p_e) = 12n + 6n p_e + 7 \]
+  
+  Figure [[fig:cases]] shows the three cases we have identified, namely
+  the best case when all number are odd, the worst case when all
+  number are even and the average case when every second number is
+  even. In practice, we generally focus on the worst-case scenario,
+  because its brings the strongest guarantee: Nothing worst can
+  happen. By contrast, the best case carries less useful
+  information. As for the average case, its usefulness depends on how
+  far it is from the worst case.
+  
+  #+header: :R-dev-args bg="transparent"
+  #+header: :results graphics file
+  #+header: :exports results
+  #+header: :file ../assets/images/sampling.png
+  #+begin_src R
+  random_case <- function(n, p) { 12*n + 6*n*p + 7 };
+  best_case <- function(n) { 12*n + 7 };
+  average_case <- function (n) { random_case(n, 0.5) };
+  worst_case <- function(n) {18 * n + 7};
+  N <- 300;
+  counts <- sample(0:100, N, replace=T);
+  probabilities <- runif(N);
+  data <- data.frame(counts, probabilities);
+  predictions <- mapply(random_case, data$counts, data$probabilities);
+  plot(data$counts, predictions,
+       pch=4,
+       col="blue",
+       xlab="Number of user input (n)", 
+       ylab="CPU cycles");
+  lines(seq(1:N), sapply(1:N, worst_case), col="red", lty=2);
+  lines(1:N, sapply(1:N, best_case), col="darkgreen", lty=4);
+  lines(1:N, sapply(1:N, average_case), col="darkgrey", lty=1);
+  legend("topleft",
+         inset=0.05,
+         cex=0.8,
+         box.lty=0,
+         legend=c(expression(paste("worst case (", p[e] == 1, ")")),
+                  expression(paste("best case (", p[e] == 0, ")")),
+                  expression(paste("average case (", p[e] == 0.5, ")")),
+                  expression(paste("random sampling of ", p[e]))),
+         lty=c(2, 3, 1, NA),
+         pch=c(NA, NA, NA, 4),
+         col=c("red", "darkgreen", "darkgrey", "blue"))
+  #+end_src
+
+  #+caption: Visualization of the time-complexity of Listing [[code:user-sum-asm]], including best, worst and average cases.
+  #+name: fig:cases
+  #+RESULTS:
+  [[file:../assets/images/sampling.png]]
+
+  
+* The "Big-O" Notation
+  
+** Going Past RAM
+
+  We have created our first efficiency model---well done! Now we can
+  compare the efficiency of programs. Our model captures all possible
+  inputs (the "paths" through our program), including the worse, the
+  best and the average case. Here it is:
+
+  \[ time(n, p_e) = 12n + 6np_e+ 7 \]
+
+  where $n$ captures the input size (the number of integer values the user
+  provides) and $p_e$ captures the probability a given value be
+  even.
+   
+  Here is how we proceed to compare any two programs:
+   1. We define an abstract machine;
+   2. We translate our two candidates programs into RAM assembly code;
+   3. Calculate their efficiency model;
+   4. Compare their efficiency model for the scenario of interest.
+
+   But, let's face it: Working with assembly code is not really
+   practical. It is fun, but time-consuming and error-prone. Our toy
+   program already yields 30 lines of assembly code, what about
+   real-life algorithms!  If we have to do it for every pair of
+   programs we need to compare, that defeats the purpose.
+
+   That's one thing, but the harder problem is that our model is
+   tightly coupled with the abstract machine we choose at first. Our
+   model is sensitive to two things:
+
+   - It depends on the internal architecture of the abstract machine
+     we have chosen. If we choose a different machine, say with a
+     different instruction set or with more registers, we would get a
+     different efficiency model (see what happen without a ~MOD~
+     instruction in Exercise XYZ).
+
+   - It depends on how we translate our high-level programs into
+     assembly code. Given a high-level programs, there are many ways
+     to /compile/[fn:compiler_optimisations], but each yields
+     different assembly, and, in turn, different efficiency models (see
+     Exercise XYZ).
+
+   The downside is that we cannot build efficiency-models once and for
+   all. Our models all depends on the machine we choose, and---as far
+   as I know---there no one standard definition of random access
+   machine. Don't get me wrong, the RAM model is very useful. It is a
+   neat approximation of how a computer works that clarifies what we
+   mean by time- and space-efficiency. But what we need is a metric
+   that is independent of the underlying machine.
+
+   To extract the essence of efficiency models, we will borrow a tool
+   from mathematics called the "big-O" notation.
+  
+  
+** Entering "Big-O" & Friends
+
+   What is this "big-O" notation? It is a notation that captures us
+   efficient is our algorithm in a specific scenario (best, average or
+   worse case). It tells us, roughly, in which category this scenario
+   falls: super efficient, ok, average, poor, or useless. This Big-O
+   notation[fn:bigO] does two things:
+
+   1. It focuses on the "limiting behaviors" or our model, that is
+      their behavior when the input size grows to very large value, to
+      infinitely large values in fact.
+
+   2. It focuses on the general trend, the "growth order" as we shall
+      see. To do that it discards all coefficients and constants that
+      couple our model to the RAM architecture.
+
+   #+begin_note
+   *Why looking only at large values?* We look at large values because
+    algorithms seldom suffer from small input sizes. For small inputs
+    size, the differences do not matter: No one really care whether we
+    use 5 or 10 CPU cycles, that about a few nanoseconds at most. But
+    for very large values, the differences range from "I will get the
+    result in one hour" to "I will be long dead by then".
+   #+end_note
+
+   /How does it this notation works?/ The core idea is to search for
+   which classes of approximations can best describe a given
+   scenario. These class of approximations are defined by simple
+   functions (i.e, algebraic expressions) and we will use them to
+   describe the upper and lower bounds around our scenarios. Table
+   [[table:bigO]] below gives an overview of the classes of approximation
+   we will look at.
+
+   #+caption: Overview of the Big-O notation and its friends.
+   #+name: table:bigO
+   | Name          |  Notation         |  Intuition | Meaning                                |
+   |---------------+-------------------+------------+----------------------------------------|
+   | little-o      | $f \in o(g)$      | $f \lt g$  | f is dominated by functions like g     |
+   | big-O         | $f \in O(g)$      | $f \leq g$ | f is bounded above by functions like g |
+   | big-\Theta    | $f \in \Theta(g)$ | $f = g$    | f is in the order of g                 |
+   | big-\Omega    | $f \in \Omega(g)$ | $f \geq g$ | f is bounded below by functions like g |
+   | little-\omega | $f \in \omega(g)$ | $f \gt g$  | f dominates functions like g           |
+ 
+   That's where it gets more formal but please bear with me.
+
+   #+begin_warning
+   *Bounds vs. Scenarios* Don't confuse the best, average and worse
+   case scenario with the class of approximation shown in Table
+   [[table:bigO]]. Although we often use the upper-found of the worst case
+   and the lower-bound for the best case, all bounds can be computed
+   for all scenarios. Some specific combination gives however more
+   insight and are thus more common.
+   #+end_warning
+
+   
+*** Big-O for Upper Bounds
+
+   Let start with finding in which category lies an upper bound, that
+   is, functions that will always be greater than our scenario of
+   interest.
+    
+   Let's assume an efficiency model named $f$. It is function defined
+   by a formula (i.e., an algebraic expression) that maps input size
+   to efficiency (i.e., time or space).
+
+   This function $f$ admits another function $g(n)$ as an upper bound
+   if we can find two constants $c$ and $k$ such as the product $c
+   \cdot g(n)$ is greater than or equals to $f(n)$ for every $n$
+   greater than $k$. Formally, we define big-O as follows:
+
+   \[ f \in O(g) \iff \exists\, c,\; \forall\, n \geq n_0,\;
+   f(n) \leq c \cdot g(n) \]
+
+   We need an example here. Returning to our sum of integers where the
+   user provides a sequence of integer. Our efficiency model for worst
+   case (see Section [[*Worst Case]]) is $time(n) = 18n + 7$. This is our
+   function $f(n)$ and we want to find an upper bound. Following the
+   definition, we need to find a function $g(n)$ and values for the
+   $c$ and $n_0$ constants. Let's try with $g(n) = n$ ---that's the
+   simplest thing I can think of. Let's now turn to $c$. What value
+   could it take? From the definition, we need a value $c$ such that:
+   \[ 18n + 7 \leq c \cdot g(n) \]
+
+   My first attempt is $c = 19$. Let
+   see if we can find whether it holds, if for what value of n if
+   does.
+
+   \[ 18n + 7 \leq 19 \cdot n \]
+   \[ 7 \leq 19n - 18n \]
+   \[ 7 \leq n \]
+
+   Nice! We just nailed the value of $n_0$, that is $7$. We have just
+   shown that our worst-case model admits an upper bound $g(n) = n$,
+   with $c=19$ and $n_0 = 7$. Using the big-O notation, we write
+   $time(n) \in O(n)$, which reads as "$time(n)$ belongs to the
+   category of functions that admit a linear upper bound".
+
+   Figure [[fig:bounds]] portrays our upper bound.
+
+   #+header: :R-dev-args bg="transparent"
+   #+header: :results graphics file
+   #+header: :exports results
+   #+header: :file ../assets/images/bounds.png
+   #+begin_src R
+   plot(1:20, sapply(1:20, function(n) { 18*n + 7 }),
+        type="l",
+        col="darkred",
+        lty=3,
+        xlab="input size (n)",
+        ylab="CPU cycles");
+   lines(1:20, sapply(1:20, function(n) { 19*n }),
+         col="red",
+         lty=1);
+   lines(1:20, sapply(1:20, function(n) { 12*n + 7 }),
+         col="darkgreen",
+         lty=3);
+   lines(1:20, sapply(1:20, function(n) { 11*n + 10}),
+         col="green",
+         lty=1);
+   points(7, 19*7, pch=4, col="darkblue");
+   segments(x0 = 7, 
+         y0 = 0, 
+         x1 = 7, 
+         y1 = 19*7, 
+         col = "darkblue",
+         lty = 2);
+   mtext(expression(n[0]), side=1, line=1, at=7, col="darkblue");
+   legend("topleft",
+          inset=0.05,
+          cex=0.8,
+          box.lty=0,
+          legend=c(expression(paste("worst case: ", time(n) == 18 *n + 7)),
+                  expression(paste("upper bound: ", c %.% g(n), " with ", c==19, " and ", g(n)==n))),
+         lty=c(1, 1),
+         col=c("darkred", "red"))
+   #+end_src
+
+   #+caption: Upper and lower bounds for the worst case scenario from Figure [[fig:cases]], $time(n) = 18n + 7$
+   #+name: fig:bounds
+   #+RESULTS:
+   [[file:../assets/images/bounds.png]]
+
+
+*** Big-\Omega for Lower Bounds
+
+    Let's know turn to the lower bounds, which, as for algorithm are
+    concerned, we will use to qualify best case scenarios. A lower
+    bound will be a function of the input size, which past a given
+    value, remains lesser than or equal to our model.
+
+    Provided a function $f(n)$, we say that $f$ admits at lower bound
+    $g(n)$, if there exists two constants $c$ and $n_0$ such as the
+    product $c \cdot g(n)$ remains lesser than or equal to $f(n)$ for
+    each $n$ greater than or equal to $n_0$. We denote lower
+    bounds with the Greek letter Omega (big-\Omega) as follows:
+
+    \[ f(n) \in \Omega(g(n)) \iff \exists \: (c, n_0) \in \mathbb{R}^2, \ \forall \, n \geq n_0, \  c \cdot g(n) \leq f(n)  \]
+
+    Let's return to our sum of integer once again, and look at the
+    best case scenario we found in Section [[*Best Case]] as $time(n) =
+    12n + 7$. Again, we need to find a function $g(n)$ and the two
+    constants $c$ and $n_0$.
+
+    In practice to find $g(n)$, we will usually drop the less
+    significant terms and coefficients, $12$ and $7$ in our case. That
+    gives us the function $g(n) = n$.
+
+    Looking at $c$ and $n_0$, since our model is linear, so any
+    constant lesser than 12 will do the trick. Let's try with $c =
+    11$.
+
+    \begin{align*}
+    c \cdot g(n) & \leq time(n) \\
+    11 n & \leq 12n + 7 \\
+    -7 & \leq 12n - 11n \\
+    -7 & \leq n
+    \end{align*}
+
+    It works, although we found a negative value for $n_0$ and
+    negative value does not make sense for input since. The definition
+    however still holds for $n_0 = 1$. Using the big-Omega notation,
+    we write $time(n) \in \Omega(n)$, which reads as "our best-case
+    scenario is no better than a linear function.
+    
+
+*** Big-\Theta for Approximations
+
+    Finally we can also search for a range within which lays our
+    model. This is the big-Theta notation, which finds both an upper
+    and a lower bound. In algorithm analysis, we will often use it for
+    the average scenario.
+
+    Provided a function $f(n)$, we say that $f$ is the range of
+    $g(n)$, if there exists three constants $c_1$, $c_2$ and $n_0$
+    such as the product $c_1 \cdot g(n)$ remains below $f(n)$ and the
+    product $c_2 \cdot g(n)$ remains above $f(x)$ for each $n$ greater
+    than or equal to $n_0$. We denote ranges with the Greek letter
+    Theta (big-\Theta), which we formally define as follows:
+
+    \begin{align*} 
+     & f(n) \in \Theta(g(n)) \iff \\
+     & \qquad \exists \: (c_1, c_2, n_0) \in \mathbb{R}^3, \\
+     & \qquad \qquad \ \forall \, n \geq n_0, \\
+     & \qquad \qquad \qquad c_1 \cdot g(n) \leq f(n) \ \land \ c_2 \cdot g(n) \geq f(n)
+    \end{align*}
+
+
+*** Other bounds
+
+    There are two additional classes of approximations' which are less
+    commonly used, but I add them here for the sake of
+    completeness. They are the /little-o/ and little-\omega/.
+
+    /Little-o/ also represents a family of functions that accept an
+    upper bound, but the definition is stricter. Small-o is about
+    finding $g(n)$ but demands that the product $c
+    \cdot g(x)$ be /*strictly greater than*/ $f$, and *forall*
+    possible values of $c$.  Formally, we defined /little-o/ as follows: 
+
+    \[ f(n) \in o(g(n)) \iff \forall \, c \in \mathbb{R}^+, \  \exists \, k \in \mathbb{R}, \ \forall \, n \geq k, \  c \cdot g(n) \gt f(n)  \]
+
+    Another way to look at the little-o approximation are those
+    function that are upper-bounds but not range. Formally $f\in o(g)
+    \iff f \in O(g) \land f \not\in \Theta(g)$.
+          
+    Just as big-Omega is the counter part of big-O, /little-omega/ is
+    the counter-part of little-o. Little-omega denotes the class of
+    functions that accepts g(n) as a lower bound such */for every possible
+    constant $c$ /*, there exist a constant $f$, such that the product $c
+    \cdot g(n)$ be */strictly lower/* than $f(x)$ for all values of n
+    greater than $k$. Formally, we define /little-omega/ as follows:
+
+    \[ f(n) \in \omega(g(n)) \iff \forall \, c \in \mathbb{R}^+, \  \exists \, k \in \mathbb{R}, \ \forall \, n \geq k, \  c \cdot g(n) \lt f(n)  \]
+
+    Both little-o and little-omega place stronger constraints on the
+    bounds and therefore lie further away from the model they
+    describe. The are so called "loose" bounds.
+
+    #+begin_note
+    *Tights bounds* A bound is said to be "tight", when there is no
+     better approximation for a given function (see Chap. 3 in
+     [[cite:preiss2008]]). Note that the expression "tight bounds"
+     sometimes refer big-\Theta.  Intuitively, the tightest bound is
+     the "minimum" bound, that is, the bound that is smaller than all
+     the others. Formally, given two functions $f$ and $g$, such that
+     $f \in O(g)$, would be the "tightest" bound if and only if: \[
+     \forall h, \, f \in O(h) \implies g \in O(h) \]
+    #+end_note
+  
+
+** Orders of Growth
+   
+   Now we can get rid of the RAM model and give efficiency models that
+   are independent on the hardware, the software! Neat, from $time(n,
+   p_e) = 12n + 6np_e + 7$, we progressed to $time(n) \in /Theta(n)$,
+   which reads as /"time grows linearly with the input size"/. This
+   describes just the gist of our programs, that is the algorithm.
+
+   Here the category is $g(n) = n$. We call this the "order of growth"
+   and the good thing is that there are not so many categories of
+   functions that are useful for algorithm analysis. I listed the
+   common ones in [[table:order-of-growth]], ordered from the most
+   efficient (constant) to least efficient, factorial. The linear time
+   is somehow the border between efficient and inefficient algorithms.
+   If a have a linear solution, with twice the time, doubling the
+   input size, double the time (or space) needed. With an efficient
+   solution (root-n, logarithmic, or constant), doubling the input
+   size increases the time (or space) by a much smaller factor. In the
+   contrary, using a inefficient algorithm (polynomial, exponential,
+   or factorial), doubling the input size increase the time (or space)
+   by a much larger factor.
+   
+  #+caption: Overview of orders of growth. Show the time it would take to an input of size n
+  #+name: table:order-of-growth
+  |-------------+--------------------+-------------------+------------+-------------+-------------|
+  |             |                    |        Efficiency | Max. $n$   | Max $n$.    | Max. $n$    |
+  | Name        | Formula            | $n=100$ and $c=2$ | in 1 sec.  | in 1 min.   | in one hour |
+  |-------------+--------------------+-------------------+------------+-------------+-------------|
+  | Constant    | $1$                |                 1 | infinity   |             |             |
+  | Logarithmic | $log_c(n)$         |                 6 |            |             |             |
+  | Root-n      | $\sqrt[c]{n}$      |                10 | 1 x 10^18  | 3.6 x 10^21 | 1.2 x 10^25 |
+  | Linear      | $n$                |               100 | 1 x 10^9   | 6.0 x 10^10 | 3.6 x 10^12 |
+  | Log-linear  | $n \cdot log_c(n)$ |               600 | 3.9 x 10^6 | 1.0 x 10^9  | 9.8 x 10^10 |
+  | Polynomial  | $n^c$              |            10 000 | 31 623     | 244 449     | 1.8 x 10^6  |
+  | Exponential | $c^n$              |      1.26 x 10^30 | 29         | 35          | 41          |
+  | Factorial   | $n!$               |     9.33 x 10^157 | 12         | 14          | 15          |
+  |-------------+--------------------+-------------------+------------+-------------+-------------|
+
+  Figure [[fig:growth_orders]] show these growth orders
+  visually. Different growth order make incredible differences for
+  large input sizes. The key thing is that the linear growth is often
+  where its becomes to slow for very large inputs. Beyond algorithm
+  will not scale to large enough input to be practical.
+  
+   #+header: :R-dev-args bg="transparent"
+   #+begin_src R :file ../assets/images/orders_of_growth.png :exports results :results graphics file
+    limits <- seq(1, 50, 0.5);
+    
+    plot(limits, sapply(limits, function (n) { n }),
+         col="goldenrod1",
+         lty=1,
+         type="l",
+         xlab="Input Size",
+         ylab="CPU cycles",
+         bty="n"
+    );
+    lines(limits, sapply(limits, function (n) { 1 }),
+          col="darkolivegreen4",
+          lty=2
+    );
+    lines(limits, sapply(limits, function (n) { log2(n) }),
+          col="darkolivegreen3",
+          lty=3,
+     );
+    lines(limits, sapply(limits, function (n) { sqrt(n) }),
+          col="darkolivegreen2",
+          lty=4,
+     );
+    lines(limits, sapply(limits, function (n) { n * log2(n) }),
+         col="darkorange", lty=6
+    );
+    lines(limits, sapply(limits, function (n) { n^2 }),
+         col="firebrick", lty=7
+    );
+    lines(limits, sapply(limits, function (n) { 2^n }),
+         col="firebrick3",
+         lty=8,
+    );
+    lines(limits, sapply(limits, factorial),
+         col="darkred",
+         lty=5
+    );
+    legend("right", inset=0.05,
+            legend=c("linear", "constant", "logarithmic", "n-root", "log-linear", "polynomial", "exponential", "factorial"),
+            box.lty=0,
+            col=1:8,
+            lty=1:8,
+            cex=0.8)
+   #+end_src
+
+   #+caption: Visualization of growth orders ($c=2$). Note the logarithmic scale on the vertical axis.
+   #+name: fig:growth_orders
+   #+RESULTS:
+   [[file:../assets/images/orders_of_growth.png]]
+
+** Pitfalls
+
+   In my experience, this notation is very useful, as it condenses a
+   lot of information in very few character. Say I want to sort huge
+   collections of books, I can quickly browse through existing sorting
+   algorithms and see that common have a log-linear time-efficiency,
+   while naive ones have polynomial time-efficiency. Neat.
+
+   But sometimes, two alternative fall in the same family while they
+   may be very different. Consider for example $f_1(n) = 1000n$ and
+   $f_2(n)=10n$. They both are in the order of linear functions, but
+   f_1 is 100 time faster. That's a huge speed up in practice.
+
+   Finally, one may also look at the constant $k$. Because below k,
+   this notation say nothing and in some cases, the application domain
+   may rule out large input size. Then it might very well be that for
+   small input sizes, some "inefficient" algorithms actually perform
+   better than the so called "efficient" one.
+
+   Again, don't get me wrong, this notation is very useful, but as
+   with many other things, it can be abused. It is important to
+   understand both the notation and the problems we are dealing with.
+     
+* Summary
+
+  That was a very long and dense chapter. We started from assembly
+  programs without any input and gradually worked out way to program
+  that can accepts inputs of various sizes.
+
+  We create efficiency models for our sum of even programs, that
+  captures all possible scenario, from the most favorable one where
+  the user provide only odd numbers to the most costly one, where she
+  provides only even numbers. That was a big step forward but our
+  model was still coupled to our RAM.
+
+  To get to the core of our algorithm we looked at the "big-O"
+  notation and see how we can find approximation of our models that
+  reveals the underlying order of growth. Finally, we see that there
+  are not so many order of growth, and that only a few have acceptable
+  efficiency.
+
+  Now we will set aside all these formulae and move to our first data
+  structure, the /array/.
+      
+
+* Additional Resources
+
+
+** Book Chapters
+   
+  - [[cite:skiena2020]] Chapter 2.
+
+  - [[cite:strorer2002]] Chapter 1. Give an overview of the RAM model,
+    but little details about the Big-O notation.
+  
+  - [[cite:wengrow2020][Chap. 3]] give an informal treatment of the
+    Big-O notation with examples of various orders of growth.
+  
+  - [[cite:goodrich2014]]
+
+  - [[cite:melhorn2008]]
+
+  - knuth?
+
+** Web Resources
+
+  - [[https://en.wikipedia.org/wiki/Big_O_notation][Big-O notation on Wikipedia]]
+  - [[https://en.wikipedia.org/wiki/Time_complexity][Time Complexity on Wikipedia]]
+  - [[https://www.youtube.com/watch?v=k6kxtzICG_g][Video on the Big-O notation]]
+    
+
+bibliographystyle:plain
+bibliography:~/notes/references.bib
+
+
+[fn:speed] I assume a machine where a CPU cycle takes 1 nanosecond.
+[fn:bigO] The big-O notation was introduced 1892 by P. Bachman in a
+book entitled "Analytishche Zahlen-theorie".
+[fn:compiler_optimisations] See [[https://en.wikipedia.org/wiki/Optimizing_compiler][See for example "Optimizing Compilers" on Wikipedia]].

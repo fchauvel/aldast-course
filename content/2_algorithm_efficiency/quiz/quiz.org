@@ -1,0 +1,140 @@
+#+title: Efficiency, Algorithm Analysis, and Big-Oh Notation
+#+subtitle: Week 2 Quiz 
+#+author: NTNU IDATA2302
+#+date: Sep. 5, 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+Here is a list of questions to assess our understanding of efficiency,
+algorithm analysis and the Big-Oh notation. Keep in mind than several
+answers can be correct.
+  
+1. How much time is required to execute the following RAM assembly
+   program?
+   #+begin_src asm
+     load 0
+     add 15
+     sub 15
+     jump 0
+   #+end_src
+
+   1. 4 units of time
+   2. 8 units of time
+   3. This program does not terminate
+   4. One cannot say
+   
+2. Given the following Python program, how many times is the condition of the
+   ~while~ loop evaluated?
+   #+begin_src python -n
+     limit = 100
+     i = 50
+     while i < limit:
+       print(i)
+       i = i + 2
+   #+end_src
+
+   1. 1 times
+   2. 25 times
+   3. 50 times
+   4. 100 times
+   5. Something else   
+   5. This program does not terminate
+   6. One cannot say
+
+3. Provided that Algorithm A runs in $O(n \log n)$ and Algorithm B runs in
+   $O(n^2)$, is Algorithm A always faster than Algorithm B?
+   1. Yes
+   2. No
+   3. One cannot say
+      
+4. Given a function $f(x)$ such that $f(x) = x^2 + 34x - 17$, is the
+   statement $f \in \Theta(x^3)$ correct?
+   1. Yes
+   2. No
+   3. One cannot say
+
+5. Given the same function $f(x)$, is the statement $f(x) \in
+   O(x!)$ correct?
+   1. Yes
+   2. No
+   3. One cannot say
+      
+6. Given the same function $f(x)$, is the statement $f \in O(x \log x)$
+   correct?
+   1. Yes
+   2. No
+   3. One cannot
+   
+7. If I know that $g \in O(x \log x)$, can I conclude that $g \in
+   \Theta(x^2)$?
+   1. Yes
+   2. No
+   3. One cannot say
+   
+8. Is it possible for a given algorithm to have its worst and best
+   cases in different efficiency class (e.g., $n^2$ and $n$)?
+   1. Yes
+   2. No
+   3. One cannot say
+   
+9. If I read somewhere that the runtime of a given algorithm is $\Theta(n)$,
+   what can I conclude?
+   1. It will /always grow linearly/ with respect to the problem size
+   2. It will /never grow any faster/ than linearly w.r.t to the problem size
+   3. It will /never grow any slower/ than linearly w.r.t to the problem size
+   4. One cannot say
+   
+10. For any given algorithm, can the average case be $O(n^2)$ whereas
+    the worse case is $O(\sqrt{n})$?
+    1. Yes
+    2. No
+    3. One cannot say
+
+       
+    
+* Solutions
+
+  Here are the solutions I would choose, with brief explanations. Feel
+  free to reach out if anything is unclear or wrong.
+
+  1. *Answer (d): One cannot say.* We don't know where in memory this
+     program is stored. If ~load 0~ is stored at address 0, then the
+     program would not terminate. The ~ACC~ register will always be
+     zero so we will loop forever.
+
+  2. *Answer (e): Something else.* The loop will be evaluated 26 times,
+     basically for 50, 52, 53, etc. until the variable ~i~
+     contains 102. Only then will the condition be false.
+
+  3. *Answer (c): One cannot say.* The big-Oh notation, dominance
+     relationships hold only beyond a specific problem size, which we
+     don't know in this case. However, it might very well be the case
+     that a function always dominate the other.
+
+  4. *Answer (b): No*. $f \in \Theta(x^3)$ implies that $f \in
+     \Omega(x^3)$, which is incorrect. $f \in O(x^3)$ is however
+     correct.
+  
+  5. *Answer (a): Yes.* Since $f \in O(x^3)$, $f$ also admits any
+     other upper bound that grow faster than $x^3$, including
+     $O(x^4)$, $O(2^x)$, or $O(x!)$.
+
+  6. *Answer (b): No.* $f \in \Theta(x^3)$ implies that $f \in
+     O(x^3)$. This is the tightest possible bound.
+
+  7. *Answer (b): No.* Big-O (the upper bound) is not sufficient to
+     establish Big-\Theta (in-the-order-of), because Big-\Theta
+     demands both the upper and the lower bound.
+
+  8. *Answer (a): Yes*. Nothing prevents this.
+
+  9. *Answer (a), (b), and (c)*. If will always grow linearly, which
+     implies that it never grows any faster and any slower than
+     linearly.
+
+  10. *Answer (b): No*. The average case cannot be worse than the
+      worst case.
