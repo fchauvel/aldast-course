@@ -17,6 +17,7 @@
  '((python . t)
    (C . t)
    (R . t)
+   (ruby . t)
    (java . t)
    (shell . t)
    (screen . t)
