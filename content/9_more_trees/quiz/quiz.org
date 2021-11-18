@@ -1,0 +1,173 @@
+#+title: Trees in Action
+#+subtitle: Week 9 Quiz 
+#+author: NTNU IDATA 2302
+#+date: Oct. 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+  1. Is the following tree a valid /minimum heap/?
+
+   #+name: fig:min-heap
+   #+header: :cache yes
+   #+header: :file heap1.png
+   #+begin_src dot
+     digraph {
+      node [shape=circle];
+      4 -> {34 58};
+      34 -> {56 25};
+      58 -> { x [style=invis] y [style=invis]};
+     }
+   #+end_src
+
+   #+attr_latex: :width 5cm
+   #+RESULTS[7ef5e569d12aaa58f6fd322f9f2213500d8558ec]: fig:min-heap
+   [[file:heap1.png]]
+
+  2. If we insert 10 in the following heap, where does it end up?
+
+         #+name: fig:heap-ops
+         #+header: :cache yes
+         #+header: :file heap2.png
+         #+begin_src dot
+           digraph {
+            node [shape=circle];
+            4 -> {34 58};
+            34 -> {56 37};
+            58 -> { x [style=invis] y [style=invis] };
+           }
+         #+end_src
+   
+         #+attr_latex: :width 5cm
+         #+RESULTS[47c84d25d7a045e6ecf4d8e9aafb3848ee3fea17]: fig:heap-ops
+         [[file:heap2.png]]
+
+  3. In the previous heap, what happen when we remove 4?
+     1. It yields two separate heaps
+     2. 4 is replaced by 58
+     3. 4 is replaced by 34
+     4. 4 is replaced by 58, which is then swapped with 34, which is itself swapped with 37.
+     5. 4 is replaced by 37, which is then swapped with 34.
+     6. None of the above.
+
+  4. In which situation can we use an array to implement/store a tree?
+     1. For binary trees
+     2. For ternary trees
+     3. For regular trees
+     4. For complete trees
+     5. For balanced trees
+
+  5. As opposed to RAM, the disk access model (DMA) includes
+     1. a network connection
+     2. more registers
+     3. more instructions
+     4. more RAM memory
+     5. an external storage
+     6. more CPUs
+
+  6. RAM memory is faster than external storage?
+     1. Yes
+     2. No
+
+  7. In a B-tree of order 5, what is the minimum number of children
+     that a node (other than the root and the leaves) must have to be
+     valid?
+     1. 1 child
+     2. 2 children
+     3. 3 children
+     4. 4 children
+     5. 5 children
+        
+  8. Tries rely on /sentinel/ characters, but what for?
+     1. To detect duplicate keys
+     2. To avoid collisions
+     3. To detect nested keys
+     4. None of the above.
+
+  9. Given the following trie, how many words start with the prefix
+     "tele"?
+
+      #+name: fig:trie
+      #+header: :cache yes
+      #+header: :file trie.png
+      #+begin_src dot
+        digraph {
+         node [shape=circle width=0.25];
+         root [label=""];
+         n1 [label=""];
+         n2 [label=""];
+         n3 [label=""];
+         n4 [shape=box label="telescope"];
+         n5 [shape=box label="television"];
+         n6 [shape=box label="tea"];
+         n7 [shape=box label="teapot"];
+         n8 [shape=box label="telephone"];
+         root -> n1 [label="te"];
+         n1 -> n2 [label="le"];
+         n1 -> n3 [label="a"];
+         n2 -> n4 [label="s"];
+         n2 -> n5 [label="v"];
+         n3 -> n6 [label="$"];
+         n3 -> n7 [label="p"];
+         n2 -> n8 [label="p"];
+        }
+      #+end_src
+
+      #+attr_latex: :width 8cm
+      #+RESULTS[90d97cdd38f92f98f41eb6dfef632dd5abdec907]: fig:trie
+      [[file:trie.png]]
+  
+  10. In the previous trie, if we delete tea, how many nodes are left?
+      1. 5 nodes
+      2. 6 nodes
+      3. 7 nodes
+      4. 8 nodes
+      5. None of the above  
+      
+  
+* Solutions
+
+  1. *No* because 25 is smaller than 34 and so the heap ordering is no
+     respected.
+
+  2. *In place of 58*. 10 would first be placed as the left child of
+     58, but since it is smaller than 58, those two would thus be
+     swapped. No further change will happen since 4 remains smaller
+     than 10.
+
+  3. *4 is replaced by 37, which is then swapped with 37*. When we
+     delete in a heap, we replace the root, with the last element,
+     which 37 in this case. However this move breaks the ordering of
+     the heap so we must swap it with 34 to restore it.
+  
+  4. *For regular trees*. Regular trees are trees where every node has
+     at most n children. Binary and ternary trees are regular trees
+     and it works for these as well.
+
+  5. *An external storage, more registers and two more
+     instructions*. The disk access model adds an external storage. To
+     access it, it provides two more instructions and two more
+     registers.
+  
+  6. *Yes*. RAM memory is about a million times faster than hard
+     drives.
+
+  7. *3* In a B-tree of order $k=5$, every node but the root and the
+     leaves must have at least $\left \lceil k/2 \right \rceil$, that
+     is 3.
+
+  8. *To detect nested keys*. Tries use sentinel characters to detect
+     keys which would be the prefix of another key, such as "app" and
+     "apple".
+
+  9. *3* There are three words that starts with the prefix "tele",
+     namely "television", "telescope" and "telephone".
+
+  10. *7*. At first the trie contains 9 nodes. If we delete tea, we
+      remove one node, but it yield a single-node branch is thus
+      compressed and loses another node.
+
+
