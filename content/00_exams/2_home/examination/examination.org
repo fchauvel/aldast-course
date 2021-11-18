@@ -1,0 +1,309 @@
+#+title:  Take-home Examination 2
+#+subtitle: 
+#+author: NTNU IDATA 2302
+#+date: Week 10
+#+language: en
+
+#+OPTIONS: toc:nil
+
+
+This home examination *does not account for your final grade*, but is
+an opportunity to practice. Like the final examination will, it
+contains four parts, each awarded 25 points (each question worths 5
+points). To make the most of it, I suggest you consider the following:
+ - During the final examination, you will only have 4 hours to solve
+   the given problems. You may want to time-box this home examination
+   as well.
+ - During the final examination, you *are allowed* to use *any*
+   written or online material.
+ - For this to mirror the conditions of the final examination, you
+   have to take it individually.
+ - I expect answers to be motivated. Questions that contain the word
+   /prove/ call for a formal and detailed proof. Otherwise, an
+   informal explanation (sound and complete of course) suffices.
+ - Please turn your solution in *by Friday, Nov. 5, 2021*, if you
+   would like me to grade it.
+
+These home examinations also help me find how much can be done in four
+hours and which topics I fail to convey clearly. Any *feedback is
+welcome*.
+
+* Basic Knowledge (25 pts)
+
+ 1. Given the following RAM program. If the user provides the value 5,
+    will it print anything on the output device? Explain why?
+   
+    #+begin_src asm -n
+              READ     10
+              LOAD      0
+              ADD      10
+              SUBTRACT 10
+              STORE    10
+              JUMP   done
+              PRINT    10
+      done:   HALT   
+    #+end_src
+
+ 2. Is the following statement correct: $O((x+y)^2) =
+    O(x^2+y^2)$. Prove it.
+
+ 3. Let us consider a hashtable using /separate chaining/, equipped with the hash
+    function $h(x) = x \mod 10$. What is the status of the table
+    after inserting the values 4371, 1323, 6173, 4199, 4344, 9679,
+    and 1989.
+
+ 4. In the following binary search tree, what tree would result from
+    inserting 88 and then deleting 87? Explain why.
+
+    #+name: fig:tree
+    #+header: :file bst.png
+    #+header: :cache yes
+    #+begin_src dot
+<      digraph {
+        node [shape=circle];
+        87 -> { 55 91 };
+        91 -> { 89 E3 [style=invis] };
+        55 -> { 44 E4 [style=invis] };
+      } 
+    #+end_src
+
+    #+attr_latex: :width 5cm
+    #+RESULTS[92833ac8b13ff3fe37ef57666b5dfdf2cdf11bd5]: fig:tree
+    [[file:bst.png]]
+
+
+
+ 5. Is the following tree a valid /maximum binary heap/? Explain why.
+
+    #+name: fig:heap
+    #+header: :cache yes
+    #+header: :file heap.png
+    #+begin_src dot
+      digraph {
+        node [shape=circle];
+        45 -> {23 41};
+        41 -> {28 46};
+        23 -> {25 12};
+      }
+    #+end_src
+
+    #+attr_latex: :width 5cm
+    #+RESULTS[1277e925ab680374e9930aa45597e64c07c991d7]: fig:heap
+    [[file:heap.png]]
+
+  
+* Algorithm Analysis (25 pts)
+
+  A palindrome is a word that can be read in both directions: from
+  left to right or from right to left. Radar, level, madam, or kayak
+  are examples of palindromes. In this section, we are interested into
+  algorithms that can decide whether a given word is a palindrome or
+  not, as shown by the following code snippet:
+
+  #+begin_src java
+    boolean isPalindrome(char[] givenWord) {
+       // Your logic here ...
+    }
+  #+end_src
+
+  1. Write an /iterative/ function that decides whether the given word is
+     a palindrome or not.
+
+  2. What are the worst case time and space efficiencies of your algorithm. Prove it.
+
+  3. Write a /recursive/ algorithm that does the same.
+
+  4. What are the worst case time and space efficiencies of your algorithm. Prove it.
+
+  5. Is possible to improve the time and space efficiency of the recursive
+     function. How would you proceed?
+
+     
+* Data Structure Design (25 pts)
+
+  A /cache/ is a system that holds in main memory elements that have
+  already been used so that there is no need to compute them or to
+  read them again from a slower device. Caches often help to speed
+  up access to disks, to databases, or to the network.
+
+  Let us assume for instance that we need to retrieve some users'
+  profile using a remote service. To avoid sending too many requests
+  over the network, we decide to use a cache to store locally the
+  profiles that we have already retrieved. The following Java code
+  illustrates the behavior of such a cache.
+
+  #+begin_src java -n
+    public class Cache {
+
+       private UserService remote;
+
+       public Cache(UserService givenRemote) {
+           this.remote = givenRemote;
+       }
+
+       public void findUserById(String userId) {
+           var userProfile = this.search(userId);
+           if (userProfile != null) {
+               return userProfile;
+           }
+           var userProfile = this.remote.findUserById(userId);
+           if (this.isFull()) {
+               this.discardOne();
+           }
+           this.add(userProfile);
+       }
+
+       private UserProfile search(String userId) { /* ... */ }
+
+       private void discardOne() { /* ... */ }
+    }
+  #+end_src
+
+  A cache has however a limited capacity, and when the cache is full,
+  one must choose an entry to discard. The challenge when designing
+  a cache is to maximize the probability of finding what we need in
+  the cache (so called a cache "hit", as opposed to a cache "miss").
+
+  1. What data structure would you use to implement such a cache?
+
+  2. Which element would you choose to discard, and why? Provide an
+     algorithm for both the ~search~ and ~discardOne~ function.
+
+  3. What are the best case runtime efficiencies of a user when
+     using your cache design?
+  
+  4. What are the worst case runtime efficiencies of finding a user
+     profile using the cache? (We can assume that the time to fetch a
+     remote profile through the network is $t_r$).
+
+  5. We decide to discard the /least-recently locally accessed/
+     strategy. What data structure would you use to implement this
+     strategy and guarantee constant search and discard runtime?
+
+
+* Algorithm Design (25 pts)
+
+  We are looking at now the file system, that is, the directory
+  structure offered by the operating system. In a nutshell, a
+  directory can contain two kinds of elements: files or directories. A
+  file system thus forms a n-ary tree structure where nodes are
+  directories and leaves files. The purpose of this exercise is to
+  define an algorithm that lists the content of a given directory,
+  including the content of its sub directories. The following figure
+  shows the tree structure formed by the directories of a simple Java
+  project.
+
+  #+name: fid:directory
+  #+header: :cache yes
+  #+header: :file directory.png
+  #+begin_src dot
+    digraph {
+        rankdir="LR";       
+        project [shape=tab, label="project"];
+        src [shape=tab, label="src"];
+        target [shape=tab, label="target"];
+        main [shape=tab, label="main"];
+        test [shape=tab, label="test"];
+        java1 [shape=tab, label="java"];
+        resources1 [shape=tab, label="resources"];
+        java2 [shape=tab, label="java"];
+        resources2 [shape=tab, label="resources"];
+        pom [shape=note, label="pom.xml"];
+        class [shape=note, label="MyClass.java"];
+        testClass [shape=note, label="MyClassTest.java"];   
+        project -> { src target pom };
+        src -> { main test };
+        main -> { java1 resources1 };
+        java1 -> { class };
+        test -> { java2 resources2 };
+        java2 -> { testClass }; 
+    }
+  #+end_src
+
+  #+attr_latex: :width 10cm
+  #+RESULTS[9670db56f52f48e36e7bff8d1b81082e1c223171]: fid:directory
+  [[file:directory.png]]
+
+
+
+  In this picture, different icons denote directories and files. For
+  example, the root directory ~project~ contains two sub-directories,
+  namely ~src~ and ~target~, and one file named ~pom.xml~. Provided
+  with this tree, your algorithm should print something like:
+
+  #+begin_src
+  project
+     src
+        main
+           java
+               MyClass.java 
+           resources
+        test
+           java
+               MyClassTest.java
+           resources
+     target
+     pom.xml
+  #+end_Src
+
+  To avoid having to deal with a real and complicated file system API, we will assume
+  the following simplified interface. 
+  
+  #+begin_src java -n
+    interface FileSystem {
+        // Return a handler to the file
+        File get(String path);
+
+        // Check whether a file is a directory of not
+        boolean isDirectory(File file);
+
+        // Returns the content of the givenj directory or an empty list if
+        // given a file.
+        List<File> contentsOf(File file);
+
+        // return the name of the file
+        String getName(File file);
+    }
+  #+end_src
+
+  1. Propose an algorithm that formats the content of a given directory as
+     shown previously. The key point here is to indent each entry so
+     that nested elements appear further on the right (compared to
+     their container).
+
+     #+begin_src java
+          void list(FileSystem fileSystem, String givenPath) {
+              // Your logic goes here
+          }
+     #+end_src 
+     
+  2. What are the time and space efficiencies of your
+     algorithm? Explain your reasoning.
+
+  3. Propose a second algorithm that only lists the files (and not the
+     directories), but displays their name together with the path
+     that leads to them.
+
+     #+begin_src java -n
+       void listFilesOnly(FileSystem fileSystem, Path givenPath) {
+            // Your logic gooes here
+       }
+     #+end_src
+
+     Given the Java project previously shown, this algorithm should
+     display the following:
+
+     #+begin_src
+     project/src/main/java/MyClass.java
+     project/src/test/java/MyClassTest.java
+     project/pom.xml
+     #+end_src
+
+  4. What are the worst-case time and space efficiencies? Explain your
+     reasoning.
+
+  5. How would you estimate the average case runtime efficiency?
+     Explain your reasoning.
+
+--------
+*End of the examination*

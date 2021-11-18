@@ -1,0 +1,193 @@
+#+title:  Take-home Examination 1
+#+subtitle: Optional
+#+author: NTNU IDATA 2302
+#+date: Week 4
+#+language: en
+
+#+OPTIONS: toc:nil
+
+
+This home examination *does not account for your final grade*, but is
+an opportunity to practice. Like the final examination will, it
+contains four parts, each awarded 25 points (each question worth 5
+points). To make the most of it, I suggest you consider the following:
+ - During the final examination, you will only have 4 hours to solve
+   the given problems. You may want to time-box this home examination
+   as well.
+ - During the final examination, you *are allowed* to use *any* written
+   or online material.
+ - For this to mirror the conditions of the final examination, you
+   have to take it individually.
+ - I expect answers to be motivated (except when otherwise stated). I
+   will not give points for results that comes from nowhere.
+ - Please turn your solution in *by Friday, October 1, 2021*, if you
+   would like me to grade it.
+
+These home examinations also help me find how much can be done in four
+hours and which topics I fail to convey clearly. Any *feedback is
+welcome*.
+
+
+* Basic Knowledge (25 pts)
+
+  1. Provided that the following RAM assembly program is written from
+     memory address ~0~. What value is stored at memory address ~2~
+     once the machine has stopped?
+     #+begin_src asm -n
+     LOAD 2
+     ADD  2
+     ADD  2
+     STORE 2
+     HALT
+     #+end_src
+
+  2. Can a RAM assembly program modify its own instructions? Give an
+     example.
+
+  3. How many /execution paths/ result from the following Java
+     program?
+     #+begin_src java
+       static int maximum(int a, int b, int c) {
+          if (a < b) {
+             if (b < c) {
+                return c;
+             } else {
+                return b;
+             }
+          } else {
+            if (a < c) {
+               return c;
+            } else {
+               return a;
+            }
+          }
+       }
+     #+end_src
+
+  4. Why does the insertion in an array have a linear worst case
+     runtime efficiency?
+
+  5. Why does the insertion in a linked list also have a linear runtime
+     efficiency in the worst case?
+
+
+* Algorithm Analysis (25 pts)
+
+  We look here at the worst case runtime complexity of the insertion
+  sort. To simplify, we will *only count comparisons* (~==~, ~>~,
+  ~<=~, etc.), in the worst case.
+
+  The listing below shows an implementation of the "insertion sort" in
+  Java. Insertion sort builds a sorted array by inserting new elements
+  at their proper position.
+  
+  #+begin_src java -n -r
+    public static void insertionSort(int[] array) {
+        for (int current=1 ; current<array.length ; current++) {
+            int itemToInsert = array[current]; (ref:memento)
+
+            // We select where to insert the current item
+            int selectedPosition = current; (ref:default)
+            for (int position=0 ; position < current ; position++){
+                if (array[position] > itemToInsert) {
+                    selectedPosition = position;
+                    break; (ref:break)
+                }
+            }
+
+            // We insert the current element at the selected position
+            for (int index=current; index>selectedPosition; index--) {
+                array[index] = array[index-1];
+            }
+            array[selectedPosition] = itemToInsert;
+        }
+    }
+  #+end_src
+
+ 1. Rewrite the code so that the inner ~for~ loops become two separate
+    functions named ~findInsertionPosition~ and ~insert~,
+    respectively. Also expand all three ~for~ loops into while loops.
+
+ 2. Looking at the ~findInsertionPosition~ function, what is the
+    problem size and how many comparisons are needed in the worst
+    case?
+         
+ 3. Looking at the ~insert~ function, what is the problem size and how
+    many comparisons are needed in the worst case?
+
+ 4. Looking now at the ~insertionSort~ procedure, what is the
+    problem size and how many comparisons are needed in the worst
+    case?
+
+ 5. So what is the worst case for the overall ~insertionSort~? Show
+    that it has, in the worst case, a quadratic runtime.
+
+* Data Structure (25 pts)
+
+  In this problem, we look at the /Josephus problem/, which goes as
+  follows. A group of $n$ players (numbered from 1 to $n$) forms a
+  circle and a ball is passed from one player to the next, $k$
+  times. The last player that receives the ball is excluded. The
+  excluded player gives the ball to her successor, the circle then
+  closes and the game restarts
+  with ball going through another $k$
+  passes. The last person in the game wins.
+
+  1. In one single run of this game, how many time will we need to
+     exclude a player? How many time will we need to pass the ball?
+  
+  2. Which data structure would you choose to simulate a run of this
+     game: An array or a linked list? How would this help with
+     deletion and traversal.
+
+  3. Outline an algorithm which simulates this process and outputs the
+     identifier of the wining player.
+
+  4. What is the space-efficiency of your solution? Argue /informally/.
+
+  5. What is the runtime-efficiency of your solution? Argue
+     /informally/.
+
+  
+* Algorithm Design (25 pt)
+
+  The problem here is to design an algorithm that checks whether a
+  given algebraic expression has balanced parentheses. In other words,
+  we detect missing or extra parentheses. If the given expression has
+  well-balanced parentheses, our algorithm should return ~-1~,
+  otherwise it should output the index of first invalid parenthesis.
+
+  #+begin_src java
+    static int checkParentheses(char[] expression) {
+       // Your logic goes here
+    } 
+  #+end_src
+
+ Consider the four following test cases as examples.
+   - Checking ~(a+1)/(2+c)~ should return ~-1~ because the given input
+     has balanced parentheses;
+   - Checking ~(a+(2-c)*3~ should return ~0~ because the first
+     parenthesis is never closed;
+   - Checking ~(a+b)*3)+c~ should return ~7~ because the closing parenthesis
+     at index 7 has no match
+   - Checking ~a+b/c~ should return ~-1~ because it does not contain
+     any parenthesis.
+
+  For the sake of simplicity, we assume the algebraic expression comes
+  as an array of characters. We also assume that it only contains a
+  single type of parentheses, namely '(' or ')'.
+
+  1. Outline an algorithm that implements such a check.
+     
+  2. Explain why your algorithm satisfies the four test cases listed
+     previously.
+  
+  3. What is the worst case runtime efficiency of your algorithm?
+
+  4. What is the worst case space efficiency of your algorithm?
+
+  5. Do you think there is a better solution, regarding runtime and
+     space? Why?
+
+--------
+*End of the examination*

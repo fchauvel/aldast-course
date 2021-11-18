@@ -1,0 +1,10 @@
+
+
+* Ideas of exercices
+
+ - find duplicate in a list
+ - Histogram
+ - LRU
+ - Pagination
+ - Tree traversal
+   

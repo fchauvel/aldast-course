@@ -1,0 +1,18 @@
+
+
+* Topics to conver
+
+  1. RAM model
+  2. Algorithmic complexity
+  3. Big O notation
+  1. Data Structures
+     1. List
+     2. Array / Hashtables
+     2. Trees
+     4. Graphs
+        
+  1. Recursion vs Iteration
+  2. Testing
+  3. Data structure selection
+  4. Refactoring
+  5. Improvement

@@ -1,0 +1,504 @@
+#+title:  Take-home Examination 1
+#+subtitle: Elements of Solution
+#+author: NTNU IDATA 2302
+#+date: Week 4
+#+language: en
+
+#+OPTIONS: toc:nil
+
+
+I present below some elements of what I think are valid
+solutions. There may be other approaches just as correct. Just let me
+know if you disagree or if anything is unclear.
+
+
+* Basic Knowledge (25 pts)
+
+** Provided that the following RAM assembly program is written from memory address ~0~. What value is stored at memory address ~2~ once the machine has stopped?
+     #+begin_src asm -n
+     LOAD 2
+     ADD  2
+     ADD  2
+     STORE 2
+     HALT
+     #+end_src
+
+     This program puts the value $2$ in the ~ACC~ register, then adds
+     the value stored at address 2, which is the operation code for
+     ~ADD~, say 6 for instance (it is just a convention). It adds
+     again this value to the ~ACC~ register and then stores it back
+     into the cell at address ~2~, which then contains $2+6+6=14$.
+
+
+** Can a RAM assembly program modify its own instructions? Give an example.
+
+   Yes, the previous program illustrates this point. This
+   program can runs only once, since at the end of the program, the
+   second instruction has an invalid operation code.
+
+** How many /execution paths/ result from the following Java program?
+     #+begin_src java -n
+       static int maximum(int a, int b, int c) {
+          if (a < b) {
+             if (b < c) {
+                return c;
+             } else {
+                return b;
+             }
+          } else {
+            if (a < c) {
+               return c;
+            } else {
+               return a;
+            }
+          }
+       }
+     #+end_src
+     
+     This programs includes two nested conditionals. The outer
+     conditional yields two execution paths (i.e., either ~a < b~ or
+     ~a >= b~). The first case leads to another conditional with 2
+     possible paths, as does the second case. In total we are left
+     with 4 possible execution paths.
+
+** Why does the insertion in an array have a linear worst case runtime efficiency?
+
+   Inserting at an arbitrary position in an array implies to make room
+   for the new element. To do that, we must move each element at the
+   insertion point and beyond by one bucket towards the end of the
+   array. In the worst case, we insert "in front" (i.e., in bucket 0)
+   and we must move every single bucket to make space.
+
+** Why does the insertion in a linked list also have a linear runtime efficiency in the worst case?
+
+   Inserting at an arbitrary position in a linked list implies to
+   traverse the list, from the first node to the insertion point. In
+   the worst case, we have to insert at the back of the list, and we
+   must hence traverse the whole list.
+
+* Algorithm Analysis (25 pts)
+
+  In this part, we will look at the worst case runtime complexity of
+  the insertion sort. To simplify the calculation, we will *only count
+  comparisons*.
+
+  The listing below shows a Java implementation of the insertion
+  sort. Insertion sort builds a sorted array by inserting new elements
+  a their proper position.
+
+  #+name: code:insertion-sort
+  #+begin_src java -n -r
+    public static void insertionSort(int[] array) {
+        for (int current=1 ; current<array.length ; current++) {
+            int itemToInsert = array[current]; (ref:memento)
+
+            // We select where to insert the current item
+            int selectedPosition = current; (ref:default)
+            for (int position=0 ; position < current ; position++){
+                if (array[position] > itemToInsert) {
+                    selectedPosition = position;
+                    break; (ref:break)
+                }
+            }
+
+            // We insert the current element at the selected position
+            for (int index=current; index>selectedPosition; index--) {
+                array[index] = array[index-1];
+            }
+            array[selectedPosition] = itemToInsert;
+        }
+    }
+  #+end_src
+
+** Rewrite the code so that the inner ~for~ loops become two separate functions named ~findInsertionPosition~ and ~insert~, respectively. Also expand all three ~for~ loops into while loop.
+
+    One way to do this is shown in the Java code below. To preserve
+    the control flow, we replace the original ~break~ statement (line
+    [[(break)]]) by a ~return~ statement.
+
+    #+begin_src java -n -r
+      static void sort(int[] array) {
+          int current = 1;
+          while (current < array.length) {
+              int selectedPosition =
+                  findInsertionPosition(array, current);
+              insert(array, selectedPosition, current);
+              current = current + 1;
+          }
+      }
+
+      static int findInsertionPosition(int[] array, int limit) {
+          int position = 0;
+          while (position < limit){ (ref:comp1)
+              if (array[position] > array[limit]) { (ref:comp2)
+                  return position;
+              }
+              position = position + 1;
+          }
+          return limit;
+      }
+
+      static void insert(int[] array, int selectedPosition, int limit) {
+          int itemToInsert = array[limit];
+          int index = limit;
+          while (index > selectedPosition) { (ref:comp3)
+              array[index] = array[index-1];
+              index = index - 1;
+          }
+          array[selectedPosition] = itemToInsert;
+      }
+    #+end_src
+
+** The ~findInsertionPosition~ function
+
+*** What is the problem size, that is, what governs the runtime of this procedure?
+
+    The problem size is given by ~limit~ parameter, which decides
+    how far we must look into the given array.
+       
+*** In the worst case, how many comparisons are necessary?
+    
+    There are two comparisons in the ~findInsertPosition~ function:
+    One at Line [[(comp1)]] where we check whether we should exit the
+    while loop, and one at Line [[(comp2)]] where we check whether we have
+    found the right position to insert.
+    
+    In the worst case, we have to iterate all the way to the limit
+    and eventually return the given limit as the insertion
+    position. This implies that:
+      - The while loop condition will be evaluated $\text{limit} + 1$
+        times;
+      - The conditional statement (line [[(comp2)]]) will be evaluated
+        $limit$ times. 
+
+    In the worst case, the total number of comparisons performed is
+    given by $\text{time}_{fip}(\ell, i)=2 \ell + 1$, where $\ell$
+    denotes the given ~limit~.
+
+** The ~insert~ function
+
+*** What is the problem size, that is, what governs the number comparisons?
+
+    In this insert function, we iterate (backward) from the current
+    position (the ~limit~ parameter) down to the
+    selected position. The further away are these two values, the
+    more comparisons we will perform.
+
+*** In the worst case, how many comparisons are needed?
+
+    There is only one comparison in the ~insert~ function (line
+    [[(comp3)]]), which is the loop condition. It will be evaluated for
+    every index between the given limit and the selected position, and
+    once more when the index goes below the selected position. In the
+    worst case, the selected position points to the first bucket and
+    so we should shift all the elements forward. That is we get $\ell$
+    comparisons, where $\ell$ denotes the given ~limit~.
+
+    In the worst case, the total count of comparisons performed by the
+    ~insert~ function is given by $\text{time}_{i}(\ell, i)=\ell$,
+    where $\ell$ denotes the given ~limit~.
+
+    
+** The ~insertionSort~ procedure
+
+*** What is the problem size?
+
+    We iterate across the given array so its length directly drives
+    how many comparisons we will perform.
+
+*** In the worst case, how many comparisons are needed?
+
+    The worst case occurs when every iteration triggers the worst case
+    of both  ~insert~ and ~findInsertionPosition~.
+
+       \begin{align*}
+         time &= \ell + \sum_{i=1}^{\ell} time_{fip}(\ell, i) + \sum_{i=0}^{\ell} time_{i}(\ell, i) \\
+              &= \ell + \left[ \sum_{i=1}^{\ell} 2i + 1 \right] + \sum_{i=1}^{\ell} i \\
+              &= \ell + \left[ \sum_{i=1}^{\ell} 2i + \sum_{i=1}^{\ell} 1 \right] + \frac{\ell\cdot(\ell+1)}{2} \\
+              &= \ell + \left[ \sum_{i=1}^{\ell} 2i + \ell \right] + \frac{\ell\cdot(\ell+1)}{2} \\
+              &= \ell + \left[ 2 \cdot \sum_{i=1}^{\ell} i + \ell \right] + \frac{\ell\cdot(\ell+1)}{2} \\
+              &= \ell + \left[ 2 \cdot \frac{\ell\cdot(\ell+1)}{2}  + \ell \right] + \frac{\ell\cdot(\ell+1)}{2} \\
+              &= 2\ell + (\ell\cdot(\ell+1))  + \frac{\ell\cdot(\ell+1)}{2} \\
+              &= \frac{4\ell+3\ell\cdot(\ell+1)}{2} \\
+              &= \frac{3\ell^2 + 7\ell}{2} \\
+       \end{align*}
+
+    This is will never happen in practice because these two worst
+    cases can never happen simultaneously. In the worst case, the
+    ~findInsertPosition~ (we insert at last) triggers the most
+    favorable case for ~insert~ (i.e., inserting at the end of the
+    array).
+
+** What is the upper bound of the runtime of the insertion sort?
+
+   Let us assume that $time(n) \in O(n^2)$. In the that, there must
+   exist a constant $c$ and a constant $n_0$ such that $\forall n_0
+   \geq n, f(n) \leq c \cdot n^2$. Assuming $c=2$, we get:
+
+   \begin{align*}
+        f(n) & \leq c \cdot n^2 \\
+        \frac{3n^2 + 7n}{2}  & \leq 2 \cdot n^2 \\
+        3n^2 + 7n  & \leq 4 \cdot n^2 \\
+        0  & \leq n^2 - 7n \\
+        0 & \leq n (n-7) \\
+   \end{align*}
+     
+   Which holds for $n \geq 7$, that is $n_0=7$. We can thus conclude
+   that $time \in O(n^2)$.
+
+
+* Data Structure (25 pt)
+
+  In this problem we look at the /Josephus problem/ which goes as
+  follows. A group of $n$ players (numbered from 1 to $n$) forms a
+  circle and a ball is passed from one player to next, $k$ times. The
+  last player that receives the ball is excluded. The excluded player
+  gives the ball to her successor, the circle then closed and the game
+  restarts, with ball going through another $k$ passes. The last person
+  in the game wins.
+
+  
+** In one single run of this game, how many time will we need to exclude a player? How many time will we need to pass the ball?
+
+   The winner is the last player that stands, which means that all
+   other players must have been excluded before, each one on a
+   separate round. In total, we will as many rounds as there are
+   players and exclude a total of $n-1$ players.
+
+   In each round, in order to eliminate one player, we pass the
+   ball $k$ times. So in total we will pass the ball $k(n-1)$.
+
+** Which data structure would you choose to simulate a run of this game? An array or a linked list? How would this help with deletion and traversal?
+
+   I would use a doubly linked-list. To make the programming easier, I
+   would make it /circular/, that is, I would make the last element
+   points towards the first one, just like in the circle of
+   players. The following picture illustrates this idea.
+   
+     #+header: :file josephus.png
+     #+begin_src ditaa
+            +------+--+
+            |First |  +----+
+            +------+--+    |
+       +-------------------+
+       |    +------+--+         +------+--+          +------+--+
+       +--->|  P1  |  |<------->|  P2  |  |<-------->|  P3  |  |
+            +--o---+--+         +------+--+          +------+-++
+               ^                                              ^
+               |                                              |
+               +----------------------------------------------+
+     #+end_src
+
+     #+RESULTS:
+     [[file:josephus.png]]
+
+     The circular list simplifies the traversal, since it avoids
+     handling going back to the beginning of the list. This is just an
+     optimization and it is not strictly necessary.
+
+     The back pointer (which makes our list a doubly linked list)
+     helps with the deletion. I can traverse the list just like the
+     ball goes around the circle of players, and when I have counted
+     $k$ passes, I can simply delete---in constant time---the current
+     player.
+
+
+** Outline an algorithm which simulates this process and outputs the identifier of the wining player.
+
+   The overall idea is to mimic the behavior of the ball. The
+   following program iterates through the players until there is only
+   one left into the circle. Each $k$ players (i.e., each $k$ ball
+   exchanges), it deletes the player ID that "has the ball" and moves
+   the ball the next player. Since the list is circular, there is no
+   complicated condition to handle to restart from the beginning.
+   
+   The following code snippet illustrates the main steps of the
+   algorithm in Java.
+   #+begin_src java -n -r
+     int josephus(int playerCount, int passCount) {
+         CustomList players = new CustomList();
+         for (int playerId=1 ; playerId<=playerCount ; playerId++) {
+             players.insert(playerId);
+         }
+
+         Node playerWithTheBall = players.first; (ref:node)
+         while (players.length > 1) {
+             for (int counter=0 ; counter<passCount ; counter++) {
+                 playerWithTheBall = playerWithTheBall.next;
+             }
+             players.delete(playerWithTheBall);
+             playerWithTheBall = playerWithTheBall.next;
+         }
+         return players.first.playerId;
+     }
+   #+end_src
+
+   We manipulate the ~Nodes~ that make the list (see Line [[(node)]]) and
+   not only the players' ID. By doing so, the ~delete~ operation takes
+   constant time, because a node directly points towards its successor
+   and its predecessor.
+     
+** What is the space-efficiency of your solution? Argue /informally/.
+
+   This solution requires a linked list of $n$ nodes, where each node
+   contains an integer that identifies the player. Each node also
+   contains two pointers: One to the next node and one to the previous
+   node. That is a total of $3n$ values, to which we must add a
+   pointer to the beginning of the list, a variable to hold the length
+   of the list and a 2 loop indexes. That gives something around $3n +
+   4$. Thus the memory consumption is linear with respect to the
+   number of players.
+     
+** What is the runtime-efficiency of your solution? Argue /informally/.
+
+   This algorithm goes through the following steps:
+   
+     1. It creates a list by inserting as many nodes as there are
+        players. The insertion in a doubly linked list takes constant
+        time, provided we have a pointer to the last element. Here we
+        have it since the list is circular: The last element, is the
+        one before the first one.
+        
+     2. The second step is to iterate through this circular list and
+        to remove players until only one remains. This outer loop will
+        run $n-1$ times. In each run, we iterate $k$
+        times (to simulate the ball going through $k$ players). Getting
+        the next item in a linked list takes constant time, as does
+        the deletion. These two nested loops executed in $k(n-1)$
+        steps.
+        
+     All together we get $n + k(n - 1)$, which is linear with respect
+     with respect to the size of the players and the number of ball
+     exchange needed to exclude a player. This $\Theta(k \cdot n)$.
+     
+
+* Algorithm Design (25 pt)
+
+  The purpose of this problem is to design algorithm that checks
+  whether a given algebraic expression has balanced parentheses. If
+  the given expression is well-balanced parentheses, the algorithm
+  should return ~1~, otherwise it should output the index of first
+  invalid parenthesis.
+
+  #+begin_src java
+    static int checkParentheses(char[] expression) {
+       // Your logic goes here
+    }
+  #+end_src
+
+  For the sake of simplicity, we assume the algebraic expression comes
+  as an array of character. We also assume that it only contains a
+  single type of parentheses, namely '(' or ')'.
+
+  Consider the following test cases:
+   - Checking ~(a+1)/(2+c)~ should return ~-1~ because the given input
+     has balanced parentheses;
+   - Checking ~(a+(2-c)*3~ should return ~0~ because the first
+     parenthesis is never closed;
+   - Checking ~(a+b)*3)+c~ should return ~7~ because the parenthesis
+     at index 7 has no match
+   - Checking ~a+b/c~ should return ~0~ because it does not contain
+     any parentheses.
+
+** Outline an algorithm that implements such a check.
+
+     I would traverse the expression character by character and count
+     the number of parentheses that need to be closed later on. To do
+     that I would initialize a variable ~bracketToClose~ such that each time
+     I find an open bracket, I would increment this variable, and each
+     time I find a closing bracket, I would decrement it. At any
+     point, if this variable becomes negative, there are too many
+     closing brackets. At the end, if the value is strictly positive,
+     we miss some closing brackets.
+
+     To return the index of the first invalid bracket, we must
+     distinguish between two cases:
+
+     1. If the invalid bracket is an extra closing bracket, then we
+        know it as soon as the ~braketToClose~ variable becomes
+        negative. So we simply return the position of the current
+        character.
+
+     2. If the invalid bracket is a missing opening bracket, then we
+        must remember where was the first opening bracket. There may
+        be several one but we only return the first one. So we need an
+        extra variable, which holds the position where a group of
+        bracket starts. Each time ~braketToClose~ goes back to zero,
+        we know the group was balanced, and we can then reset it when
+        a new group starts (i.e., when we found a new opening
+        bracket).
+
+     The following listing outlines a possible Java implementation:
+
+     #+begin_src java -n
+       static int checkParentheses(char[] expression) {
+           int bracketToClose = 0;
+           int groupStart = -1;
+           for(int index=0 ; index<expression.length ; index++) {
+               if (expression[index] == '(') {
+                   bracketToClose += 1;
+                   if (bracketToClose == 1) {
+                       groupStart = index;
+                   }
+               } else if (expression[index] == ')') {
+                   bracketToClose -= 1;
+
+               } else {}
+               if (bracketToClose < 0) { return index; }
+           }
+           if (bracketToClose > 0) {
+               return groupStart;
+           }
+           return -1;
+       }
+     #+end_src
+
+** Explain why your algorithm satisfies the four test cases listed previously?
+
+     1. The algorithm traverses the first expression
+        ~(a+1)/(2+c)~. The first character is an open bracket, so
+        ~bracketToClose~ becomes 1 and ~groupStart~ becomes 0. At the
+        second bracket, which is a closing bracket, ~bracketToClose~
+        becomes 0.  At the 3rd bracket, which is an opening bracket,
+        ~bracketToClose~ becomes 1 and ~groupStart~
+        becomes 0. Finally, the last bracket set ~bracketToclose~ back
+        to zero so we return ~-1~, as expected;
+     2. The algorithm traverses the second expression ~(a+(2-c)*3~ as
+        follows. The first opening bracket sets ~bracketToClose~ to 1
+        and ~groupStart~ to 0. The second bracket increments
+        ~bracketToClose~ to 2, whereas the 3rd bracket decreases it
+        back to ~1~. At the end, the ~bracketToClose~ is positive so
+        we return ~groupStart~, which is 0, as expected.
+     3. The algorithm traverses the third expression ~(a+b)*3)+c~ as
+        follows. The first bracket sets ~bracketToClose~ to 1 and
+        ~groupStart~ to 0. The second brackets restores
+        ~bracketToClose~ to zero, and the third one decrements it
+        further to ~-1~. At that point, we break out of the loop and
+        return the current position, that is, 7 as expected.
+     4. The fourth expression does not contain any parentheses so the
+        none of the conditional statement is executed and we simply
+        return ~-1~ at the end, as expected.
+
+** What is the worst case runtime efficiency of your algorithm?
+
+   In the worst case, the expression is only made out of brackets, but
+   the expression is either balanced or not. Both cases force the
+   algorithm to traverse the whole expression, whereas an extra
+   closing bracket only interrupt the traversal. In the worst case, we
+   traverse the whole expression of brackets and we get runtime in
+   $\Theta(n)$.
+
+** What is the worst case space efficiency of your algorithm?
+
+   This algorithm does not allocate any memory besides the two
+   variable and the loop index. It therefore consume a constant amount
+   memory, regardless of the size of the expression to check.
+
+** Do you think there is a better solution, regarding runtime and space?
+
+   Regarding runtime, I do not think there exist a faster algorithm,
+   because I cannot see how to avoid checking all the characters of the
+   expression. I think the lower bound is $\Omega(n)$.
+
+   Regarding space, this algorithm is already running in constant space
+   so there is no room for improvement.
