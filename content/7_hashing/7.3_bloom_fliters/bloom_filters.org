@@ -1,0 +1,86 @@
+
+
+#+begin_src java
+ static int cardinality(value) {
+    value = (value & 0x55555555) + ((value >>> 1) & 0x55555555);
+    value = (value & 0x33333333) + ((value >>> 2) & 0x33333333);
+    value = (value & 0x0F0F0F0F) + ((value >>> 4) & 0x0F0F0F0F);
+    value = (value & 0x00FF00FF) + ((value >>> 8) & 0x00FF00FF);
+    value = (value & 0x0000FFFF) + ((value >>> 16) & 0x0000FFFF);
+    return value;
+  }
+#+end_src
+
+
+#+header: :R-dev-args bg="transparent"
+#+header: :file ./collision_probability.png
+#+header: :exports results
+#+header: :results graphics file
+#+begin_src R
+  full_proba <- function(k,n,m) { (1-(1-(1/n))^(k*m))^k };
+
+  proba <- function(k, l) { full_proba(k, 100, round(100*l)) }
+
+  loads <- seq(0, 2, 0.01)
+
+  plot(loads,
+       sapply(loads, function(l) {proba(1, l)}),
+       xlab="load factor (%)",
+       ylab="collision probability",
+       col=1,
+       lty=1,
+       type="l");
+
+  lines(loads,
+        sapply(loads, function(l) {proba(2, l)}),
+        col=2,
+        lty=2);
+  lines(loads,
+        sapply(loads, function(l) {proba(3, l)}),
+        col=3,
+        lty=3);
+  lines(loads,
+        sapply(loads, function(l) {proba(4, l)}),
+        col=4,
+        lty=4);
+  lines(loads,
+        sapply(loads, function(l) {proba(5, l)}),
+        col="pink",
+        lty=5);
+
+  legend("bottomright", inset=0.05,
+         legend=c("k=1", "k=2", "k=3", "k=4", "k=5"),
+         box.lty=0,
+         col=1:5,
+         lty=1:5,
+         cex=0.8)
+#+end_src
+
+#+RESULTS:
+[[file:./collision_probability.png]]
+
+
+
+#+header: :R-dev-args bg="transparent"
+#+header: :file ./hash_function.png
+#+header: :exports results
+#+header: :results graphics file
+#+begin_src R
+  count_hash <- function(n,m) { (n/m) * log(2)}
+
+  
+
+  loads <- seq(0, 1, 0.01)
+
+  plot(loads,
+       sapply(loads, function(l) {count_hash(100, round(l*100))}),
+       xlab="load factor (%)",
+       ylab="hash function count",
+       col=1,
+       lty=1,
+       type="l");
+
+#+end_src
+
+#+RESULTS:
+[[file:./hash_function.png]]

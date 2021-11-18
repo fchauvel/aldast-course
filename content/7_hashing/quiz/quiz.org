@@ -1,0 +1,108 @@
+#+title: Hashing
+#+subtitle: Week 7 Quiz 
+#+author: NTNU IDATA 2302
+#+date: Oct. 8, 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+1. A hash function is used to
+   1. Compute the value to be stored
+   2. Compute the address of a bucket
+   3. Compute the index of a bucket
+   4. None of the above
+  
+2. How would you choose to implement a hash table?
+   1. Using an array
+   2. Using an linked-list
+   3. Using a bitset
+      
+3. A good key should be
+   1. unique
+   2. immutable
+   3. mutable
+   4. anything works
+
+4. A collision occurs when
+   1. Two pieces of information are the same
+   2. Two pieces of information have the same keys
+   3. Two pieces of information have keys that are "hashed" into the same bucket
+   4. All of the above
+
+5. The main challenge when using the "open addressing" strategy is that
+   1. It consumes too much memory
+   2. It runs in quadratic time
+   3. It wastes memory
+   4. Entries are likely to form isolated clusters
+
+6. Separate chaining is more space efficient than open addressing.
+   1. True
+   2. False
+   3. One cannot say
+
+7. A bitset is used to store subsets of a fixed universe.
+   1. True
+   2. False
+   3. One cannot say
+
+8. In Java, a bitset is necessarily implemented by an ~int~.
+   1. True
+   2. False
+
+9. What are the advantage of using a bitset, as opposed to using an
+   array of boolean values?
+   1. A bitset consumes less memory
+   2. The set operations run faster with a bitset
+   3. All of the above.
+
+10. Searching in a bloom filter can yield false negatives.
+    1. True
+    2. False.
+    3. One cannot say
+
+      
+* Solutions
+
+1. *Compute the index of a bucket.* The hash function convert a key
+   into an index, so that we know where to store (resp. to read) the
+   information associated with a the given key.
+  
+2. *Using an array.* It is possible to implement a hash table using a linked list,
+   but accessing the i-th element takes $\theta(n)$, so all that would
+   defeat the purpose of hashing.
+
+3. *Unique and immutable.* Keys must be unique otherwise every piece
+   of information that have the same key will end up in the same
+   bucket. Besides, keys must be immutable because if a key was to
+   change, we would not be able to find it anymore.
+
+4. *All of the above*. If two pieces of information are the same, they
+   have---by definition---the same key and will be hashed in the same
+   bucket.
+
+5. *Entries are likely to form clusters*. This is can be mitigated by
+   using alternative probing techniques, such as quadratic probing or
+   double hashing.
+
+6. *False*. Separate chaining often leads to space wasted because in
+   average, a third of the bucket will remains empty.
+
+7. *True*. A bit set captures the presence (or the absence) of every
+   member of the universe with a single bit.
+
+8. *False* Any fragment of memory can be used, regardless of the type we
+   associate with it. The package ~java.util~ contains a ~BitSet~
+   class for example.
+
+9. *All of the above* A bitset consume less memory /and/ operations
+   can be performed more efficiently than when using an array of
+   boolean.
+
+10. *False* Searching in a bloom filter can yield /false positive/, that
+    is, the bloom filter can say it contains an element while that
+    element was never insert. A false negative would means that the
+    bloom filter returns false when searching an element that was
+    inserted.
