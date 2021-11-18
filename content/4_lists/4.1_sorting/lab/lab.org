@@ -1,0 +1,276 @@
+#+title: Selection Sort Analysis
+#+subtitle: Lab Session 4.1
+#+author: NTNU IDATA 2302
+#+date: Sep. 2021
+
+
+
+* Introduction
+
+In this lab session, we will apply algorithm analysis and big-Oh
+notation to derive the best, worst and average case of the /selection
+sort/.  As a reminder, the idea of the selection sort is to pick the
+minimum of the given array, and move to swap it with the first
+position. Because it is the minimum, it is, by definition, in the
+first bucket of the sorted array. Now, we proceed in a similar fashion
+with remaining elements: We pick the minimum of the remaining array,
+and we put in the first place, until have looked at every element.
+
+Listing [[code:selection:ruby]] shows one possible implementation of the
+selection sort in Ruby. For the sake of simplicity, I have expanded
+fancy Ruby loops into some plain old ~while~ loops, so that every is
+step is explicit.
+
+#+name: code:selection:ruby
+#+caption: A Ruby implementation of the selection sort
+#+begin_src ruby -n -r
+  def selection_sort(array)                 
+    index = 0                               
+    while index < array.length-1            
+       minimum = find_minimum(array, index) 
+       swap(array, index, minimum)          
+       index = index + 1                    
+    end
+  end
+
+  def find_minimum(array, start)   
+    minimum = start                
+    index = start+1                
+    while index < array.length     
+      if array[index] < array[minimum] 
+        minimum = index                
+      end
+      index = index + 1                
+    end
+    return minimum   
+  end                
+
+  def swap(array, left, right)
+     tmp = array[right]       
+     array[right] = array[left] 
+     array[left] = tmp          
+  end                           
+#+end_src
+
+We will analysis this algorithm from the bottom up: We start with the
+"helpers" functions and the then plug our results into the analysis of
+the selection sort.
+
+* The ~swap~ function
+
+  The ~swap~ is the simplest because it does not contain any control
+  structures, such as loops or conditionals. We can look at it line by
+  line and estimate their respective cost and frequencies.
+
+  Each line is an assignment, which translates into a ~STORE~
+  instruction on the RAM machine. So each line takes 1 unit of time to
+  run. Besides, as there is no loops or conditions, the code of the
+  ~swap~ simply executes sequentially: The machine simply executes
+  each line once.
+
+  We can thus write down our estimation of the runtime of the swap
+  function (denoted as $\text{swap}_t$), as
+  \begin{align*}
+    \text{swap}_t &= (1 \times 1) + (1 \times 1) + (1 \times 1) \\
+                  &= 3 \\
+  \end{align*}
+
+  Note that the best case, the worst case and the average case are the
+  same, because the code runs sequentially.
+
+* The ~find_minimum~ function
+
+  Let us look at the ~find_minimum~ function, which returns the index
+  of the minimum. It accepts two arguments: An array where it must
+  find the minimum and a starting position, from which it should start
+  searching. First, the function takes the element at the starting
+  position and then iterates over the remaining items. For each item,
+  it compares it to value in the bucket currently considered as the
+  minimum, and, if the value is smaller it remember it as the "new"
+  minimum. Eventually it returns the index of the minimum.
+
+  Going through this function line by line, we get:
+
+  1. The first line ~minimum = start~ is a simple assignment, which
+     would translates into a ~STORE~ instruction in RAM assembly. This
+     instruction executes once. So its total cost is 1 unit of time.
+
+  2. The second line ~index = start + 1~ contains an assignment and an
+     addition, so it would translate into at least to RAM assembly
+     instructions, namely a ~ADD~ and a ~STORE~. Besides, it runs only
+     once, so takes 2 units of time.
+  
+  3. The third line is the loop condition ~while index <
+     array.length-1~. It contains a comparison and a subtraction and
+     would translate into at least 2 instructions, ~SUBSTRACT~ and
+     ~JUMP~. It will run for every bucket from the given starting
+     position (excluded), until first value beyond the length of the
+     array that is, $\ell-s+1$.
+
+  4. The fourth line is a condition that compares the value at the
+     current accepted minimum with the value at the current index.  It
+     contains a comparison so it cost 1 unit of time. we know that it
+     will be executed each time the machine enters the loop, that
+     $\ell-s$ times. Its total cost is thus $1 \times (\ell-s)$.
+     
+  5. At Line 15, we reassign the ~minimum~ variable with the current
+     index. So it takes 1 unit of time. The problem is that we do not
+     know how many times this line will be executed, because it
+     depends on the result of the comparison on the previous
+     line. Here we have several cases:
+
+     - In *the worst case*, we always reach this line because the
+       previous test always succeed. This line would thus be executed
+       each time we enter the loop, that is $\ell-s$ times.
+
+     - In *the best case*, we never reach this line, because the
+       previous test always fails. This line would thus never be
+       executed and its total cost would be zero.
+
+     - In *the average case*, we need to know how many times do does the
+       test succeed to know how many time this line is executed. To
+       model this, we need to make an assumption. We can formalize
+       this using a random variable, say $N$, which denotes how many
+       times we will update this minimum variable.
+
+       - $N$ can take $l-s$ values, from $s+1$, $s+2$, \ldots, $\ell-1$.
+
+       - We can assume that each of this value has the same
+         probability to occurs, that $\Pr[N=s+1] = \Pr[N=s+2] = \ldots =
+         \frac{1}{\ell-s}$
+
+       With this we can express the average case as a function of $N$
+       such as $N \times (\ell - s)$.
+       
+  6. Next, at Line 17, we increment the index by 1. This would entail
+     a ~STORE~ and an ~ADD~ instruction and cost at least 2 units of
+     time. It gets executed each time we enter the loop that is
+     $\ell-s$ times. So the total cost is $2 \times (\ell-s)$.
+
+  7. Finally, once the index exceeds the length of the array, we exit
+     the ~while~ loop and return the index where we found the minimum
+     (see Line 19). This costs 1 unit of time and is executed only
+     once.
+       
+If we put all these costs together we can estimate the best, worst and
+average case. In the best case, the body of the conditional (Line 15)
+never runs, so we are left with:
+\begin{align*}
+   \text{best} & = 1 + 2 + [2 (\ell-s) + 2] + (\ell-s) + [2(\ell-s)] + 1 \\
+               &= 5 (\ell-s) + 6 \\
+\end{align*}
+
+By contrast, in the worst case, the body of the conditional (Line 15)
+is always executed, so we are left with:
+\begin{align*}
+   \text{worst}(\ell, s) & = 1 + 2 + [2 (\ell-s) + 2] + (\ell-s) + (\ell-s) + [2(\ell-s)] + 1 \\
+               &= 6 (\ell-s) + 6 \\
+\end{align*}
+
+Finally, the average case requires a new parameter, namely the random
+variable $N$, but can be described as:
+\begin{align*}
+   \text{average}(\ell, s, N) & = 1 + 2 + [2 (\ell-s) + 2] + (\ell-s) + N + [2(\ell-s)] + 1 \\
+                              &= 5(\ell-s) + N + 6 \\
+\end{align*}
+
+We can further simplify this expression by expressing it as the
+expected value for all the possible values of $N$:
+\begin{align*}
+   \text{average}(\ell, s) & = \text{Exp}[\text{average}(\ell, s, N)] \\
+                           & = \sum_{n\,\in\, N} \Pr[N=n] \times \text{average}(\ell, s, n) \\
+                           & = \sum_{n=0}^{\ell-s} \Pr[N=n] \times \text{average}(\ell, s, n) \\
+                           & = \sum_{n=0}^{\ell-s} \frac{1}{\ell-s} \times \text{average}(\ell, s, n) \\
+                           & = \frac{1}{\ell-s} \times \sum_{n=0}^{\ell-s} \text{average}(\ell, s, n) \\
+                           & = \frac{1}{\ell-s} \times \sum_{n=0}^{\ell-s} 5(\ell-s) + n + 6 \\
+                           & = \frac{1}{\ell-s} \times \left[ \sum_{n=0}^{\ell-s} 5(\ell-s) + \sum_{n=0}^{\ell-s} n + \sum_{n=0}^{\ell-s} 6 \right] \\
+                           & = \frac{1}{\ell-s} \times \left[ 5(\ell-s)^2 + \frac{(\ell-s)(\ell-s+1)}{2} + 6(\ell-s) \right] \\
+                           & = 5(\ell-s) + \frac{(\ell-s+1)}{2} + 6\\
+                           &= \frac{11(\ell-s) + 13}{2}\\
+\end{align*}
+   
+* The ~sort~ function
+
+Finally, in the ~sort~ function, we iterate through the given
+array. For each iteration, we find the index of the minimum and then,
+we swap it with current index. Line by line we get:
+
+  1. The first line is an assignment, so it costs 1 unit of time and
+     run only once.
+
+  2. The second line is the exit condition of the ~while~ loop. It
+     contains an addition and a comparison so it takes two unit of
+     time. It runs for every item in array and another time once
+     ~index~ exceeds the length of the array. That gives us a total
+     cost of $2 \times \ell$.
+
+  3. At line 4, we call the ~find_minimum~ function, whose cost we
+     know from Section [[The ~find_minimum~ function]]. The problem is
+     that the cost vary at each iteration, because we invoke this
+     function with different argument. We get something like:
+     \begin{align*}
+         \text{cost} & = \text{average}(\ell, 0) + \text{average}(\ell, 1) + \ldots + \text{average}(\ell, \ell) \\
+                     & = \sum_{i=0}^{\ell} \text{average}(\ell, i) \\
+                     & = \sum_{i=0}^{\ell} \frac{11(\ell-i) + 13}{2}\\
+                     & = \frac{1}{2} \sum_{i=0}^{\ell} 11(\ell-i) + 13\\
+                     & = \frac{1}{2} \left[ \sum_{i=0}^{\ell} 11\ell + 13 - \sum_{i=0}^{\ell} i \left] \\
+                     & = \frac{1}{2} \left[ (\ell+1)(11\ell + 13) - \frac{\ell(\ell+1)}{2} \left] \\
+                     & = \frac{1}{2} \left[ 11\ell^2 + 24\ell +13 - \frac{\ell(\ell+1)}{2} \left] \\
+                     & = \frac{21\ell^2+47\ell+26}{2}
+     \end{align*}
+
+  4. At Line 5, we swap the minimum with the current value, and we
+     know from Section [[The ~swap~ function]] that it has a constant cost
+     of 3. Since we execute this for every element of our array, we
+     get a total cost of $3\ell$.
+
+  5. At Line 6, we increment the ~index~ variable by 1, which cost 2
+     and occurs each time we enter the loop. We get a total cost of
+     $2\ell$.
+
+We can express the average runtime of the selection sort by summing
+all these costs as follows:
+\begin{align*}
+   \text{cost} & = 1 + 2\ell + \frac{21\ell^2+47\ell+26}{2} + 3\ell + 2 \ell \\
+               & =\frac{21\ell^2+61\ell+28}{2} \\
+\end{align*}
+
+
+
+   #+header: :R-dev-args bg="transparent"
+   #+header: :cache yes
+   #+header: :results graphics file
+   #+header: :exports results
+   #+header: :file ./visualization.pdf
+   #+begin_src R 
+      limit <- 25;
+      sizes <- seq(0, 25);
+      efficiency <- function(n) {(21*n^2 + 61*n + 28)/2};
+      upper_bound <- function(n) { 12 * n^2 }
+      lower_bound <- function(n) { 1 * n^2 }
+      plot(sizes, efficiency(sizes),
+           type="l",
+           col="darkred",
+           xlab="problem size",
+           ylab="runtime")
+      lines(sizes, upper_bound(sizes), col="darkblue", lty=2)
+      lines(sizes, lower_bound(sizes), col="darkgreen", lty=3)
+      abline(v=8, col="darkgrey", lty=2)
+      text(8, 1000, expression(n[0] == 8), pos=4, cex=0.8)
+      abline(v=0.25, col="darkgrey", lty=2)
+      text(0.25, 1000, expression(n[0] == 0.25), pos=4, cex=0.8)
+      legend("bottomright",
+             inset=0.05,
+             cex=0.8,
+             box.lty=0,
+             legend=c(expression(paste("runtime: ", 2*n^2 + 8*n + 7)),
+                      expression(paste("upper bound: ", 3*n^2)),
+                      expression(paste("lower bound: ", 2*n^2))),
+             lty=c(1, 2, 3),
+             col=c("darkred", "darkblue", "darkgreen"))
+   #+end_src
+
+   #+name: fig:plot
+   #+caption: Visualization of our average runtime efficiency model, together with its lower and upper bound.
+   #+RESULTS[2c79ec0869dfb6fc78c730cb81497b46cb65b73e]:
+   [[file:./visualization.pdf]]

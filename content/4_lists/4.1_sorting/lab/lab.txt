@@ -1,0 +1,33 @@
+def selection_sort(array)                  Cost   Freq.   Total Cost
+  index = 0                                   1      1
+  while index < array.length-1                2      l+1
+     minimum = find_minimum(array, index)     5(l-s) + 3           
+     swap(array, index, minimum)              3      l
+     index = index + 1                        1      l 
+  end
+end
+
+def find_minimum(array, start)         Cost   Freq.   Total Cost
+  minimum = start                         1      1          1
+  index = start+1                         2      1          2
+  while index < array.length              1      l-s-1      l-s-1
+    if array[index] < array[minimum]      1      l-s        l-s
+      minimum = index                     1      X          X
+    end
+    index = index + 1                     2      l-s        2(l-s)
+  end
+  return minimum                          1      1          1
+end                                                         4(l-s) + X + 3
+
+def swap(array, left, right)       Cost   freq   Tot. Cost
+   tmp = array[right]                 1      1       1
+   array[right] = array[left]         1      1       1
+   array[left] = tmp                  1      1       1
+end                                                  3
+
+
+Define a random variable X
+  - representys how many times do we enter the conditional
+  - Uniformly distributed:
+     - Pr[X=0] = Pr[X=1] = ... = Pr[l-s] = 1 / (l-s)
+

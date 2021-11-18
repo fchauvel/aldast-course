@@ -1,0 +1,98 @@
+#+title: Lists, Stacks & Queues
+#+subtitle: Week 4 Quiz 
+#+author: NTNU IDATA 2302
+#+date: Sep. 15, 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+1. What is the worst case runtime efficiency of the selection sort?
+   1. $\Theta(1)$
+   2. $\Theta(\log n)$
+   3. $\Theta(n)$
+   4. $\Theta(2^n)$
+   5. None of the above
+
+2. In average, bubble sort runs faster than insertion sort.
+   1. Yes
+   2. No
+   3. One cannot say
+      
+3. Sorting algorithms apply only on arrays.
+   1. True
+   2. False
+  
+4. Linked list have no fixed capacity
+   1. True
+   2. False
+
+5. Why does the insertion in a linked list have a runtime in $\Theta(n)$?
+   1. Because one must shift all nodes towards the end of the list.
+   2. Because one must traverse the list until one find the nodes
+      where the insertion should take place.
+   3. Because the memory allocation also takes $\Theta(n)$
+
+6. What is the runtime efficiency of the ~size~ operation on linked-lists?
+   1. $O(1)$
+   2. $O(n)$
+   3. $O(n^2)$
+
+7. Linked-lists consume more memory than arrays.
+   1. Yes
+   2. No
+   3. One cannot say
+
+8. Stacks adhere to FIFO discipline (first-in, first-out)?
+   1. Yes
+   2. No
+
+9. Compared to an interface (in Java), what does an abstract data type
+   brings?
+   1. The implementation of operations (or methods).
+   2. Constraints and dependencies across operations
+   3. Nothing
+
+10. Queues and stacks are data structures.
+    1. Yes
+    2. No
+    3. One cannot say
+      
+   
+* Solutions
+
+1. *None of the above.* In the worst case, the selection
+  sort runs in $\Theta(n^2)$.
+
+2. *No*. Bubble sort and selection sort both run in $\Theta(n^2)$ in
+   average.
+
+3. *False* Sorting algorithms apply to linked list or array
+  but the very details of their implementation vary.
+  
+4. *True* Linked lists allocate new memory fragments during each
+   insertion and therefore are constantly resizing.
+
+5. Because one must sequentially traverse the list until the nodes
+   where the insertion should take place. This takes $O(n)$ runtime.
+
+6. *Either $O(1)$ or $O(n)$* In its simplest form, a linked-list
+   requires a traversal to compute how many nodes are linked together,
+   which yields a runtime in $O(n)$. One can however improve this by
+   adding a ~length~ variable in the list itself and increment it on
+   each insertion. This would yield $O(1)$.
+
+7. *Yes* because we must store a pointer to the next record for each
+   item in the list.
+
+7. *No*. Stacks implement a Last-in first-out discipline. It is queues
+   that implement the FIFO discipline.
+
+8. Compared to an interface, an ADT adds constraints and dependencies
+   across operations.
+
+9. *No* Queues and stacks are abstract data types, which can be
+   implemented by various data structures, including linked lists or
+   arrays.

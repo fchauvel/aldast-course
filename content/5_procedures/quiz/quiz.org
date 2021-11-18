@@ -1,0 +1,135 @@
+#+title: Procedure Calls & Recursion
+#+subtitle: Week 5 Quiz 
+#+author: NTNU IDATA2302
+#+date: Sep. 23, 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+1. Does it exist an algorithm that one can write using iteration (a
+   loop) but not using recursion?
+   1. Yes
+   2. No
+   3. One cannot say
+
+2. What is the runtime efficiency of pointer dereferencing?
+   1. constant
+   2. linear
+   3. quadratic
+   4. exponential
+   5. One cannot say
+      
+3. What is the runtime efficiency of dynamic memory allocation?
+   1. constant
+   2. linear
+   3. quadratic
+   4. exponential
+   5. One cannot say
+
+4. Where do arguments are stored when calling a procedure?
+   1. In the data segment
+   2. In the heap
+   3. In the call stack
+   4. In the code segment
+   5. On the external storage (i.e., hard drive)
+
+5. Where does dynamic memory allocation reserve memory?
+   1. In the data segment
+   2. In the heap
+   3. In the call stack
+   4. In the code segment
+   5. On the external storage (i.e., hard drive)
+
+6. What happens when the call stack consumes all the free memory given
+   to a program?
+   1. The program is terminated by the operating system.
+   2. The program continues but we cannot know what will happen.
+   3. The program can never consume all the memory.
+   
+7. Why do recursive procedures consume more space than their iterative
+   counterpart?
+   1. Because every variable is allocated in the stack, and not in the
+      heap.
+   2. Because they rely on procedures calls that each requires a
+      specific frame in the stack
+   3. This is false, recursive procedures consume the same amount of
+      memory.
+
+8. Does this recursive procedure terminate?
+   #+begin_src java
+      int minimum(int[] array, int start) {
+         if (start >= array.length-1) {
+             return array[start];
+         } else {
+             int min = minimum(array, start);
+             return (min < array[start]) ? min : array[start];
+         }
+      }
+   #+end_src
+   1. Yes
+   2. No
+   3. One cannot say
+   
+9. What does a compiler do when it performs a "tail-call" optimization?
+   1. It uses the heap instead of the call stack
+   2. It transforms recursive calls into iteration (i.e., loops)
+   3. It reuses a single frame for every recursive call
+   4. It skips the recursive calls all together
+
+10. Is the following recursive function performing a "tail call"?
+    #+begin_src java
+      int minimum(in
+            t[] array, int start) {
+         if (start >= array.length-1) {
+             return array[start];
+         } else {
+             int min = minimum(array, start+1);
+             return (min < array[start]) ? min : array[start];
+         }
+      }
+    #+end_src
+    1. Yes
+    2. No
+    3. One cannot say
+    
+    
+* Solutions
+
+  1. *No*. Iteration and recursion have the same /expression power/,
+     there is no program that one can write with iteration that cannot
+     be written with recursion (but it is not necessarily
+     straightforward).
+
+  2. *Linear* Pointer manipulation may require multiple machine
+     instruction, but does not depends on the pointer value. It takes
+     linear time.
+
+  3. *One cannot say*. In practice, we do not know what algorithm the
+     underlying OS is using. But in theory (and in many textbooks) we
+     assume constant time.
+
+  4. *In the stack* The arguments (i.e., the values associated with
+     the parameters of a procedure) are placed onto the stack by the
+     caller and fetched by the callee.
+
+  5. *In the heap* Dynamic memory allocation (i.e., ~malloc~ in C,
+     ~new~ in Java) uses the heap to allocate memory.
+
+  6. *The program is killed by the OS* provided there is an OS.
+
+  7. *Because of the stack:* Each call passes arguments and result
+     through the stack and so, the more recursive calls there are, the
+     more memory the stack consumes.
+
+  8. *No* because the value of ~start~ is never modified (increased)
+     so it will call itself indefinitely. Contrast it with the program
+     given in Question 10.
+
+  9. It uses *a single frame for all recursive calls*, and therefore
+     tail-recursion has a constant memory consumption.
+
+  10. *No*. Because the last thing the function does before to return
+      is /not a recursive call/, it is a comparison.
