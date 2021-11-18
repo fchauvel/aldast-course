@@ -10,3 +10,19 @@ node_modules/*
 
 # Generated site
 site/*
+
+# LaTeX Minted
+**/_minted-*/**
+*.pdf
+*.odt
+*.png
+*.tex
+*.docx
+
+# Java
+*.class
+
+# C
+*.o
+
+.DS_Store
