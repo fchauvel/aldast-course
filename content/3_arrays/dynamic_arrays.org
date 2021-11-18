@@ -1,0 +1,684 @@
+#+title: Dynamic Arrays
+#+subtitle: Introduction to Amortized Analysis
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+* Introduction
+
+
+* Dynamic Arrays
+
+  #+headers: :results output
+  #+begin_src C
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    typedef struct Array {
+       unsigned int capacity;
+       unsigned int length;
+       int* content; 
+    } Array;
+
+    Array* create_array(unsigned int capacity) {
+        Array* result = malloc(sizeof(Array));
+        result->capacity = capacity;
+        result->length = 0;
+        result->content = malloc(capacity * sizeof(0));
+        return result;
+    }
+
+    void destroy(Array* array) {
+        free(array->content);
+        free(array);
+    }
+
+    void format(Array* array) {
+       printf("Usage: %d / %d\nContent: [ ", array->length, array->capacity);
+       for (int index=0 ; index<array->length ; index++) {
+          printf("%d ", array->content[index]);
+       }
+       printf("]\n");
+    }
+
+    int is_full(Array* array) {
+        return array->capacity == array->length;
+    }
+
+    void grow(Array* array, unsigned int factor) {
+      printf("Growing\n");
+      array->capacity = factor * array->capacity;
+      array->content = realloc(array->content, array->capacity);
+    }
+
+    void insert(Array* array, int value) {
+       if (is_full(array)) {
+          grow(array, 2);
+       }
+       array->content[array->length] = value;
+       array->length += 1;
+    }
+
+    int main() {
+      int capacity = 10;
+      Array* array = create_array(10);
+      format(array);
+      for(int counter=1 ; counter <= capacity + 5 ; counter++) {
+        insert(array, 12);
+      }
+      format(array);
+      destroy(array);
+    }
+  #+end_src
+
+  #+RESULTS:
+  : Usage: 0 / 10
+  : Content: [ ]
+  : Growing
+  : Usage: 15 / 20
+  : Content: [ 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 ]
+
+
+  
+  What is our expansion strategy?
+
+  - Every time I need, I expand by one
+
+    | insert x | length | capacity | Copy | time  |
+    |----------+--------+----------+------+-------|
+    |        1 |      0 |        0 |    0 |     1 |
+    |        1 |      1 |        1 |    1 |     2 |
+    |        1 |      2 |        2 |    2 |     3 |
+    |        1 |      3 |        3 |    3 |     4 |
+
+    total time $time(k) = \sum_{i=1}^k{i} = \frac{k+1}{2}$
+    O(n)
+
+
+  Let's me assume regular insertion at the end of the array, shown by
+  Listing [[code:static-push]] below.
+
+  #+name: code:static-push
+  #+begin_src C
+    int static_push(Array* array, int value) {
+       if (is_full(array)) return 2;
+       array->length += 1;
+       array->content[array->length] = value;
+    }
+  #+end_src
+
+  In all cases, the time efficiency is constant ($time \in
+  \Theta(1)$).
+
+  Let's now turn to the dynamic arrays, where instead of returning an
+  error code when the array is full, we resize it by adding 10 more
+  buckets. Listing [[code:dynamic-push]] shows the need C function.
+
+  #+name: code:dynamic-push
+  #+begin_src C
+    int dynamic_push(Array* array, int value) {
+       if (is_full(array)) {
+         Array* old_array = array->content;
+         array->capacity += 10;
+         array->content = malloc(array->capacity * sizeof(int));
+         for (int index=0 ; index<array->length ; index++) {
+            array->content[index] = old_array[index];
+         }
+         free(old_array);
+       }
+       array->length += 1;
+       array->content[array->length] = value;
+    }
+  #+end_src
+
+  So with this dynamic push, we have multiple scenarios. In th best
+  case, the array is not full, and the time efficiency is constant,
+  just like for the static push.
+
+  In the worst case, the array is full, and we must (i) allocate a new
+  and bigger array, (ii) copy the buckets of the previous array to
+  this new one, and (iii) insert the new value in the array. Provided
+  the memory allocation takes one step, that's $\ell$ steps to copy
+  all the existing buckets, and one extra step finally insert the
+  given value. That is $time(\ell) = 1 + \ell + 1$
+
+  What is the average case? Well we have to account for both the best
+  case and the worse case so our time efficiency becomes:
+
+  \begin{align*}
+    time(c, \ell) = \begin{cases}
+       1 & \text{if } \ell \lt c \\
+       \ell + 2 & \text{otherwise} \\
+    \end{cases}
+  \end{align*}
+
+
+  To compute the expected time, I assume that given a capacity $c$ I
+  assume that all possible length $\ell$ are equally probable. I this
+  define a random variable L, as the length of the array given its
+  capacity, such as:
+  - L can have $c + 1$ values in the range $[0, c]$
+  - L has a uniform probability distribution, given by
+    \begin{align*}
+       \Pr[L=k] = \frac{1}{c+1} \qquad \forall \, k \leq c
+    \end{align*}
+
+  We can formulate the expected time as follows:
+  \begin{align*}
+    E[time(c, L)] & = \sum_{k=0}^{c} \Pr(L=k) \cdot time(c, k) \\
+                  & = \sum_{k=0}^{c} \frac{1}{c+1} \cdot time(c, k) \\
+                  & = \frac{1}{c+1} \cdot \sum_{k=0}^{c} time(c, k) \\
+  \end{align*}
+
+  We can break the remaining summation in two parts, one when the
+  array is not full and one when it is full:
+
+  \begin{align*}
+    E[time(c, L)] & = \frac{1}{c+1} \cdot \sum_{k=0}^{c} time(c, k) \\
+                  & = \frac{1}{c+1} \cdot \left[ \sum_{k=0}^{c-1} time(c, k) + \sum_{k=c}^{c} time(c, k) \right] \\
+                  & = \frac{1}{c+1} \cdot \left[ \sum_{k=0}^{c-1} 1 + \sum_{k=c}^{c} k + 2 \right] \\
+                  & = \frac{1}{c+1} \cdot \left[ c - 1 + 1 + c + 2  \right] \\
+                  & = \frac{2c + 2}{c+1} = \frac{2 (c+1)}{c+1} = 2
+  \end{align*}
+  
+  What do we learn from that? The expected time tells us that given an
+  unknown array, we can expect to spend to time.
+  
+  It depends on the average array but this
+  is a bit tricky to define. I assume a given capacity $c$ and that
+  within this range, all the possible length are equally possible
+  (uniformly distributed).
+
+
+
+    - Every time I need, I add 10
+
+      | insert | length | capacity | copy | insert | total |
+      |--------+--------+----------+------+--------+-------|
+      |      0 |      0 |        0 |    0 |      0 |     0 |
+      |      1 |      0 |        0 |    0 |      1 |     1 |
+      |      2 |      1 |       10 |    0 |      1 |     1 |
+      |      3 |      2 |       10 |    0 |      1 |     1 |
+      |      4 |      3 |       10 |    0 |      1 |     1 |
+      |      5 |      4 |       10 |    0 |      1 |     1 |
+      |      6 |      5 |       10 |    0 |      1 |     1 |
+      |      7 |      6 |       10 |    0 |      1 |     1 |
+      |      8 |      7 |       10 |    0 |      1 |     1 |
+      |      9 |      8 |       10 |    0 |      1 |     1 |
+      |     10 |      9 |       10 |    0 |      1 |     1 |
+      |     11 |     10 |       10 |   10 |      1 |    11 |
+      |     12 |     11 |       20 |    0 |      1 |     1 |
+      |     13 |     12 |       20 |    0 |      1 |     1 |
+
+      time(k) = n+1 if k-1 % 10 = 1, else 1
+
+      time(k) = k-\floor{k/10} + floor{k/10) * k
+
+      | insert | length |  capacity |  copy | insert |  total |
+      |--------+--------+-----------+-------+--------+--------|
+      |      0 |      0 |         0 |       |        |        |
+      |      1 |      0 |         0 |     0 |      1 |      1 |
+      |      2 |      1 |         2 |     0 |      1 |      1 |
+      |      3 |      2 |         2 |     2 |      1 |      3 |
+      |      4 |      3 |         4 |     0 |      1 |      1 |
+      |      5 |      4 |         4 |     4 |      1 |      5 |
+      |      6 |      5 |         8 |     0 |      1 |      1 |
+      |      7 |      6 |         8 |     0 |      1 |      1 |
+      |      8 |      7 |         8 |     0 |      1 |      1 |
+      |      9 |      8 |         8 |     8 |      1 |      9 |
+
+
+      \[
+      time_a(k) = \sum_{i=1}^{k} time(i)
+      \]
+      where:
+      \[
+      time(k) = \begin{cases}
+      k+1 & if \exists i \in \mathbb{N}, \; k = 2^i \\
+      1 & \text{otherwise}
+      \end{cases}
+      \]
+      which gives us:
+      \begin{align*}
+      time_a(k) = & \sum_{i=1}^{k-\lfloor log_2(k)\rfloor} 1 + \sum_{i=0}{\lfloor log_2(k) \lfloor} k+1 \\
+                = & (k - \lfloor log_2(k) \rfloor) + \frac{\lfloor log_2(k) \rfloor (\lfloor log_2(k) \rfloor + 1)}{2}
+      \end{align*}
+
+
+      #+header: :R-dev-args bg="transparent"
+      #+header: :results graphics file
+      #+header: :exports results
+      #+header: :file ../assets/images/amortised_analysis.png
+      #+header: :cache: yes
+      #+begin_src R
+        cost_1 <- function(k){k+1}
+
+        cost_10 <- function(k){ if (k %% 10 == 0) k+1 else 1}
+
+        cost_x2 <- function(k) {
+          count <- sum(as.numeric(intToBits(k)))
+          if (count == 1) {
+            k+1
+          } else {
+            1
+          }
+        }
+
+        total <- function(n, cost) { sapply(1:n, function(k){ sum(sapply(1:k, cost)) })}
+
+        max <- 100;
+
+        plot(1:max, total(max, cost_10),
+             xlab="number of insertion",
+             ylab="total cost",
+             type="l",
+             col="blue",
+             lty=1);
+
+        lines(1:max, total(max, cost_1),
+              col="red",
+              lty=2);
+
+        lines(1:max, total(max, cost_x2),
+              col="darkgreen",
+              lty=3);
+
+        legend("topleft",
+               inset=0.05,
+               cex=0.8,
+               box.lty=0,
+               legend=c("k+1",
+                        "k+10",
+                        "k x 2"),
+               col=c("blue", "red", "darkgreen"),
+               lty=c(1, 2, 3));
+
+    #+end_src
+
+    #+RESULTS:
+    [[file:../assets/images/amortised_analysis.png]]
+    
+
+* Amortized Analysis
+
+ - asymptotic analysis allows us to assert that the complexity of the
+   algorithm when it is given a worst/average case input of size n is
+   bounded by some function f(n)
+
+ - amortised analysis allows us to assert that the complexity of the
+   algorithm when it is given an input of unknown characteristics but
+   known size n is no worse than the value of
+   a function f(n)
+  
+  - For example, rather than being given a set of n items up front, we
+    might have a series of n insert, lookup, and remove requests to
+    some database, and we want these operations to be efficient.
+  
+  - An amortized analysis is a diferent way of bounding the runtime of
+    a sequence of operations.
+  
+  - How is it different from average case?
+    
+    - Amortized analysis differs from average-case analysis in that
+      probability is not involved; an amortized analysis guarantees
+      the average performance of each operation in the worst case.
+
+    - gives "tighter" bounds than average case analysis?
+    
+  - Which method to choose, when and why?
+
+    - The Aggregate Method will always treat every operation the same
+      way, and cannot deduce different amortized costs for multiple
+      types of operations in a sequence. On the other hand, the
+      Accounting Method can be easily applied to multiple operation
+      types to deduce the amortized cost of each.
+
+** Aggregate Method
+
+   The aggregate methods simply computes the average efficiency over a
+   sequence of $n$ operations, as follows:
+
+   \begin{align*}
+      \text{amortized}(n) & = \frac{\text{total efficiency}}{\text{number of operations}} \\
+                          & = \frac{1}{n} \cdot \sum_{i=1}^{n} \text{efficiency}(i)
+   \end{align*}
+
+   #+header: :R-dev-args bg="transparent"
+   #+header: :results graphics file
+   #+header: :exports results
+   #+header: :file ../assets/images/aggregate_method.png
+   #+header: :cache: yes
+   #+begin_src R
+     c0 <- 5;
+     n <- 20;
+     cost <- function(i) { if (i < c0) 1 else i + 2 };
+
+     costs <- sapply(1:n, function(k) { cost(k) }) 
+     x <- barplot(costs,
+             names.arg=1:n,
+             xlab="Successive Insertion",
+             ylab="Time",
+             col="lightblue",
+             width=1);
+
+     average <- sum(costs) / n;
+
+     abline(h=average, col="red", lty=2);
+     abline(h=average, col="red", lty=2);
+
+     legend("topleft",
+            legend=c("average"),
+            col=c("red"),
+            lty=c(2),
+            inset=0.05,
+            cex=0.8,
+            box.lty=0);
+
+     text(x, costs+0.75, labels=as.character(costs), cex=0.8)
+
+   #+end_src
+
+   #+RESULTS:
+   [[file:../assets/images/aggregate_method.png]]
+
+*** Time Efficiency
+   
+   Let's see how this applies to the insertion in a dynamic array. The
+   first thing to do is to define what is the efficiency of the i-th
+   insertion. To do that, let us assume that we simply allocate one
+   single new cell when we insert into a "full" array, that is, we
+   extend its capacity by one.
+
+   \begin{align*}
+      time(i) & =  \begin{cases}
+1 & \text{if} \; i < c_0 \\
+i + 2 & \text{otherwise}
+\end{cases}
+   \end{align*}
+
+   where $c_0$ is the initial capacity of our dynamic array. From
+   here, the amortized time is the average efficiency for n
+   invocation. This equivalent to a worse case scenario, where we
+   disregard the favorable case where there is some initial free
+   space. We get:
+
+   \begin{align*}
+     \overline{time}(n) & = \frac{1}{n} \cdot \sum_{i=1}^{n} time(i) \\
+   \end{align*}
+
+   If we assume that $c_0$ is 0, then we get:
+   \begin{align*}
+     \overline{time}(n) & = \frac{1}{n} \cdot \sum_{i=1}^{n} i+2 \\
+                         & = \frac{1}{n} \cdot \left[ 2n + \sum_{i=1}^{n} i \right] \\
+                         & = \frac{1}{n} \cdot \left[ 2n + \frac{n(n+1)}{2} \right] \\
+                         & = \frac{1}{n} \cdot \frac{4n + n(n+1)}{2} \\
+                         & = \frac{1}{n} \cdot \frac{n(n+5)}{2} \\
+                         & = \frac{n+5}{2} \\
+     \overline{time}(n) & \in \Theta(n)
+   \end{align*}
+
+*** Space Efficiency
+
+    Let us look at the space efficiency now. Again the first step is
+    to define the space consumed by the i-th insertion. We get:
+
+    \begin{align*}
+      space(i) & =  \begin{cases}
+c_0 & \text{if} \; i < c_0 \\
+i & \text{otherwise}
+\end{cases}
+   \end{align*}
+
+   Focusing on the worst case again, we can compute the amortized
+   space efficiency as follows:
+   
+   \begin{align*}
+     \overline{space}(n) & = \frac{1}{n} \cdot \sum_{i=1}^{n} i \\
+                    & = \frac{1}{n} \cdot \frac{n (n+1)}{2} \\
+                    & = \frac{n+1}{2} \\
+     \overline{space}(n) & \in \Theta(n)
+   \end{align*}
+  
+** Accounting Method
+
+   - Unlike aggregated analysis, the accounting method assigns a
+     different cost to each type of operation.
+
+   The accounting methods gives you an upper bound.
+
+   Let us say that now, instead of allocated 1 new cell, when the
+   array is full, we allocate fix number more cells, which I will
+   denote by $k$. 
+
+   \begin{align*}
+      time(i) & =  \begin{cases}
+           i + 1 & \text{if} \; i \bmod k = 1 \\
+           1 & \text{otherwise}
+      \end{cases}
+   \end{align*}
+
+   #+header: :R-dev-args bg="transparent"
+   #+header: :results graphics file
+   #+header: :exports results
+   #+header: :file ../assets/images/banker_method_costs.png
+   #+header: :cache: yes
+   #+begin_src R
+     k <- 5;
+     cost <- function(i) {
+       if ( i %% k == 1) {
+          i + 1
+       } else {
+          1
+       }
+     }
+
+     n <- 20;
+     data <- rbind(costs=sapply(1:n, cost))
+
+     xs <- barplot(data,
+                   names.arg=1:n,
+                   beside=TRUE,
+                   col=c("darkred"),
+                   legend=rownames(data),
+                   args.legend = list(x = "topleft",
+                                      inset = 0.05,
+                                      cex=0.8,
+                                      box.lty=0));
+
+     #text(xs, data+1, labels=as.character(format(data, digits=1)), cex=0.5, srt=90)
+   #+end_src
+
+   #+RESULTS:
+   [[file:../assets/images/banker_method_costs.png]]
+   
+   If we consider the number of insertions between two extensions of
+   the array capacity. The number of insertions is defined by the
+   number of cell with which we expand our array (that is is $k$).
+   
+   The price we charge for any insertion between two extensions must
+   cover:
+   - the insertion of the associated value, that is 1.
+   - a part of the time spent allocating the next $k$ cells,
+     $\frac{1}{k}$. 
+   - a fraction of the cost of copying all the buckets once the array
+     gets full.  The challenge is to find when will be the
+     next expansion given the insertion rank $i$. This given by:
+
+     \begin{align*}
+       next(i) & = 1 + k \cdot \left \lceil \frac{i-1}{k} \right \rceil
+     \end{align*}
+
+     Once we know when is the next expansion, we know that, at that
+     point, we will have to copy all the bucket before that, that is
+     $next(i) -1$.
+
+   That gives us:
+   \begin{align*}
+     gain(i) & = 1 + \frac{1}{k} + \frac{next(i) - 1}{k} \\
+             & = 1 + \frac{1}{k} + \frac{k \cdot \left \lceil \frac{i-1}{k} \right \rceil}{k} \\
+             & = 1 + \frac{1}{k} + \left \lceil \frac{i-1}{k} \right \rceil
+   \end{align*}
+
+   The first allocation is different though, because while there is no
+   bucket to copy yet, we have to charge for the full allocation. That gives us:
+
+   \begin{align*}
+    gain(i) & =
+     \begin{cases}
+        2 & \text{if } i = 1 \\
+        1 + \frac{1}{k} + \left \lceil \frac{i-1}{k} \right \rceil & \text{otherwise}
+     \end{cases} 
+   \end{align*}
+
+   Let us first check if this works and cover the recurrent costs.
+
+   #+header: :R-dev-args bg="transparent"
+   #+header: :results graphics file
+   #+header: :exports results
+   #+header: :file ../assets/images/banker_method.png
+   #+header: :cache: yes
+   #+begin_src R
+
+      k <- 5;
+      cost <- function(i) {
+        if (i %% k == 1) {
+          i + 1
+        } else {
+          1
+        }
+      }
+
+     income <- function(i) {
+       if (i==1) {
+         2
+       } else {
+         1 + 1/k + ceiling((i-1)/k)
+       }
+     }
+
+     n <- 20;
+     balance <- rep(0, n);
+
+     pocket <- 0;
+     for(i in 1:n) {
+       pocket <- pocket + income(i) - cost(i);
+       balance[i] = pocket;
+     }
+
+     data <- rbind(costs=sapply(1:n, cost),
+                   income=sapply(1:n, income),
+                   balance);
+
+     xs <- barplot(data,
+                   names.arg=1:n,
+                   beside=TRUE,
+                   col=c("#D08770", "#A3BE8C", "#88C0D0"),
+                   legend=rownames(data),
+                   args.legend = list(x = "topleft",
+                                      inset = 0.05,
+                                      cex=0.8,
+                                      box.lty=0));
+
+        #text(xs, data+1, labels=as.character(format(data, digits=1)), cex=0.5, srt=90)
+   #+end_src
+
+   #+RESULTS:
+   [[file:../assets/images/banker_method.png]]
+
+
+  
+   Let us prove this by induction, that is, we show that:
+   - Starting with 0 money, our balance is not negative after the
+     first array expansion.
+   - Assuming that the balance is not negative after a given
+     expansion, the balance stays positive or null after the next one.
+
+   Let us start with the first case. At first, the balance is 0, but
+   the first insertion triggers an expansion of $k$ buckets.
+
+   after the first expansion. As we start with an array of zero
+   capacity, the first insertion triggers the first expansion. The
+   real cost of this insertion is given by:
+
+   \begin{align*}
+      cost(1) & = 1 + 1 \\
+              & = 2 \\
+      gain(1) & = 2 \\
+   \end{align*}
+
+   That works! After the first expansion, we have no money left, but
+   the balance is not negative.
+
+   Let us move to the second part of our induction proof: Showing that
+   for any expansion, provided the balance is not negative, the
+   the balance will still be positive after the next expansion.
+
+   Let us assume the the balance after the i-th insertion is $b_i$. So
+   what is the balance $b_{i+k}$ after the next expansion? Since every
+   expansion add $k$ buckets, the next expansion will occurs in $k$
+   insertion (i.e., each insertion fills exactly one bucket). Then we get:
+
+   \begin{align*}
+      b_{i+k} & = b_i + \sum_{j=i+1}^{i+k+1} gain(j) - cost(j) \\
+      b_{i+k} & = b_i + \sum_{j=i+1}^{i+k+1} gain(j) - \sum_{j=i+1}^{i+k+1} cost(j) \\
+   \end{align*}
+
+   Let us start with the sum of costs. We can first separate the two
+   cases of the cost functions as follows:
+   \begin{align*}
+      \sum_{j=i+1}^{i+k+1} cost(j) & = \sum_{j=i+1}^{i+k} cost(j) + \sum_{j=i+k+1}^{i+k+1} cost(j) \\
+      & = \sum_{j=i+1}^{i+k} 1 + \sum_{j=i+k+1}^{i+k+1} j+1 \\
+      & = k + i + k + 1 + 1 \\
+      & = i+2k+2 \\
+   \end{align*}
+
+   Let us now look at the sum of gains.
+   \begin{align*}
+      \sum_{j=i+1}^{i+k+1} gain(j) & = \sum_{j=i+1}^{i+k+1} 1 + \frac{1}{k} + \left \lceil \frac{j-1}{k} \right \rceil \\
+       & = k \cdot \left ( 1 + \frac{1}{k} \right ) + \sum_{j=i+1}^{i+k+1} \left \lceil \frac{j-1}{k} \right \rceil \\
+       & = k \cdot \left ( 1 + \frac{1}{k} \right ) + k \cdot \frac{i+k+1}{k} \\
+       & = k + 1 + i + k + 1 \\
+       & = i + 2k + 2 \\
+   \end{align*}
+     
+   The accounting method focuses on finding a value alternate costs
+   for each operation $\^t(i)$ such that.
+
+   \[
+      \sum_{i=0}^{n} time(i) \geq \sum_{i=0}^{n} \widehat{time}(i)
+   \]
+
+   Let say that $\widehat{time}(i) = \frac{i}{2}$, then we get
+
+   \begin{align*}
+     \sum_{i=0}^{n} time(i) & \leq \sum_{i=0}^{n} \widehat{time}(i) \\
+      & \leq \sum_{i=0}^{n} \frac{i}{2} \\
+
+   \end{align*}
+   
+
+** Potential Method 
+
+
+
+* Resources
+
+  - [[https://en.wikipedia.org/wiki/Amortized_analysis][Wikipedia on amortized analysis]]
+
+  - [[https://en.wikipedia.org/wiki/Accounting_method_(computer_science)][Wikipedia on the accounting method]]
+
+  - [[https://en.wikipedia.org/wiki/Potential_method][Wikipedia on the potentital method]]
+
+  - [[https://www.cs.cornell.edu/courses/cs3110/2012sp/lectures/lec21-amortized/lec21.html][Lectures Notes on Amortized Analysis at Cornell University]]
+
+  - [[https://brilliant.org/wiki/amortized-analysis/][Amortized Analysis at brilliant.org]]
+
+  - [[http://staff.ustc.edu.cn/~csli/graduate/algorithms/book6/chap18.htm][Lectures notes form USTC on Amortized Analysis]]
+
+  - [[https://www.baeldung.com/cs/amortized-analysis][Amortized Analysis at Baelung.com]]
+
+  - [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-046j-design-and-analysis-of-algorithms-spring-2012/lecture-notes/MIT6_046JS12_lec11.pdf][Lectures Notes from MIT]]
+
+  - [[https://www.dcc.fc.up.pt/~pribeiro/aulas/alg1819/slides/3_amortized_08102018.pdf][Spanish Lecture Notes]]

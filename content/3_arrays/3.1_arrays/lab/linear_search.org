@@ -1,0 +1,306 @@
+#+title: Linear Search
+#+subtitle: Average Case Analysis
+#+autho:r NTNU IDATA 2302
+#+date: Sep. 5, 2021
+#+language: en
+
+* Introduction
+
+  In Lecture 3.1, we introduced the linear search algorithm, which
+  finds the index of the first bucket that contains a given value. It
+  traverses the array from the first bucket to the last. In this
+  lecture, I take the opportunity to review and apply the concept of
+  /average case analysis/.
+
+  Recall how linear search works. We start looking at the first bucket
+  and we check the value it contains. If it is the value are looking
+  for, we returned the index and we are done. Otherwise, we move to
+  next bucket and look there. If the desired value is still not there,
+  we move the third bucket, and so on and so forth until we either
+  find the desired value or we reach the end of the array, in which
+  case we return -1 to indicate that we could not find the desired
+  value. Listing [[code:linear-search]] details a possible implementation
+  in C.
+
+ #+caption: The "linear search" algorithm for arrays
+ #+name: code:linear-search
+ #+headers: :results output
+ #+headers: :exports both
+ #+headers: :noweb strip-export
+ #+begin_src C -n -r
+   #include <stdio.h>
+
+   #define CAPACITY 20
+
+   int length = 5;
+   int array[CAPACITY] = {5, 4, 3, 2, 1};
+
+   int search(int value) {
+     for (int index = 0; index < length ; index++) { (ref:ls-loop)
+         if (array[index] == value) { (ref:ls-test)
+             return index; (ref:ls-exit)
+         }
+     }
+     return -1; (ref:ls-exit2)
+   }
+
+   int main(int argc, char** argv) {
+     printf("Found %d at: %d\n", 4, search(4));
+     printf("Found %d at: %d\n", 12, search(12));
+   }
+ #+end_src
+
+ Note that in C, there is no easy way to access the capacity nor the
+ length of the array, so these must be stored in separate variables.
+ Here I used global variables for the sake of simplicity, but global
+ variable should be avoided in practice. Note also that in Java, the
+ ~length~ stands for the capacity of the array, and its length is not
+ available.
+
+ #+RESULTS: code:linear-search
+ : Found 4 at: 1
+ : Found 12 at: -1
+
+* Problem size
+
+  Let's find the runtime complexity of this "linear search", shown
+  by Listing [[code:linear-search]]. Let's skip the memory analysis and
+  focus instead on the runtime since the memory consumption is
+  constant: We only use 1 single variable, namely ~index~.
+
+  As before, the first question to ask is "What governs the size of
+  the problem"? Here, it is the length of the array. The larger is the
+  given array, the more buckets we have to look and check. Note that
+  the array and its length are not input parameter of our algorithm
+  per se, but they are accessible nonetheless as a global variable,
+  and dictates the size of the problem.
+  
+  We don't want to return to the RAM machine and write some assembly
+  code. So the first step is to describe a cost model to make
+  explicit what we are counting.
+
+  Here, I suggest to count comparisons, that is the number of time we
+  execute Line [[(ls-test)]]. This is the only logic operation aside of
+  incrementing the index variable (cf. Line [[(ls-loop)]]). It keeps the
+  calculation simpler, and the difference vanishes once we classify it
+  using the Big-Oh notation. We are ready to analysis the best, worse
+  and average cases.
+
+* Best Case
+
+  Let's first look at the best case. It is the scenario where, given
+  an array and its length and capacity, our algorithm is the
+  fastest. The earlier we found the desired value, the earlier we exit
+  the loop (see Line [[(ls-exit)]]), and the shorter is the search. What
+  happens is that we check the first bucket (with index 0), and we
+  found the value there (see Line [[(ls-test)]]). So have made one single
+  comparison. Without any algebra, we can compute that our best case
+  of the order of $n$, that is $t \in \Theta(n)$. Nice and
+  sweet. Let's continue with the worse case.
+
+* Worse Case
+
+  What input makes our algorithm run the longest time? It is when we
+  must check every single bucket to find the value, in which case we
+  make as many comparison as there are buckets. That is our worse case
+  is of the order of $n$, or formally, $t\in \Theta(n)$. Not however
+  that this worse case occurs in two situation: When the desired
+  value is in the last bucket, but also when the desired value if
+  not in the array. In that case, we must still check every single
+  bucket but we found nothing and exit Line [[(ls-exit2)]].
+
+* Average Case
+
+  Finally, let's look at the average case. This is more involved,
+  but it's a good opportunity to apply algorithm analysis. Let's
+  take it informally first. Intuitively the average efficiency, if
+  the sum of efficiency for all possible cases divided by the number
+  of cases. So what are the possible cases?  There are $n+1$. The
+  desired value can be in any of the bucket (that's already $n$
+  cases), or it is not in the array (that's another case). So what
+  is the runtime if the desired value is in the first bucket? Well,
+  in that case, we do one single comparison, that's the value we are
+  looking for and we return the current index. If the desired value
+  is in the second bucket, we check the first one, it is not there,
+  we check the second, it is there. We have made two
+  comparisons. The same holds if the desired value is the last
+  bucket: We check all the buckets one by one, and we found the
+  value in the last one. That's $n$ comparisons. Finally, if the
+  value is not in any bucket, then we have checked all of them in
+  vain, and that also $n$ comparison. So if there were 3 items in
+  our array, the average complexity would be $t(n) =
+  \frac{1+2+3+3}{4} = 2.25$.
+
+  Let us formalize that. Let us first define a random variable B (for
+  bucket), whose value indicates in which bucket the desired value
+  lies.
+  - the random variable $B$ ranges from $-1$ to $n-1$. -1 indicates
+    that the desired value is not in the array, whereas other values
+    indicates the index of the bucket that contains it. That's $n+1$
+    values.
+  - I assume a uniform probability distribution for the sake of
+    generality. I denote by P(B=i) the probability that B=i, that is
+    the probability that the desired value lies in the i-th
+    bucket. This probability remains constant, regardless of the
+    value of $B$, that is $\Pr[B=i] = \frac{1}{n+1}$.
+
+  We can now express the runtime as a function of both the input
+  size $n$, and the random variable $B$ as follows:
+
+  \[
+  \text{time}(n,B) = \begin{cases}
+      B+1 &  \text{when } 0 \leq B \leq n-1 \\
+      n &  \text{when } B={-1} \\
+      \end{cases}
+  \]
+
+  With this definition the average runtime is the expected value
+  $\text{time}(n. B)$, which we can calculate as follows:
+
+  \begin{align*}
+    E[t(n,B)] & = \sum_{i=0}^{n-1}{ \big[\Pr[B\!=\!i] \cdot \text{time}(n,B) \big]} + \big[ \Pr[B\!=\!{-1}] \cdot t(n,-1) \big] \\
+              & = \sum_{i=0}^{n-1}{ \big[ \frac{1}{n+1} \cdot (i+1) \big]}+ \left[ n \cdot \frac{1}{n+1} \right] \\
+              & = \left[ \frac{1}{n+1} \cdot \sum_{i=0}^{n-1}{(i+1)} \right] + \frac{n}{n+1} \\
+              & = \frac{1}{n+1} \cdot \left[ \sum_{i=0}^{n-1}{i} + \sum_{i=0}^{n-1} 1 \right] + \frac{n}{n+1} \\
+              & = \frac{1}{n+1} \cdot \left[ \frac{(n-1)[(n-1)+1]}{2} + n \right] + \frac{n}{n+1} \\
+              & = \frac{1}{n+1} \cdot \left[ \frac{n(n-1)}{2} + n \right] + \frac{n}{n+1} \\
+              & = \frac{1}{n+1} \cdot \left[ \frac{n(n-1)}{2} + \frac{2n}{2} \right] + \frac{n}{n+1} \\
+              & = \frac{1}{n+1} \cdot \frac{n(n-1) + 2n}{2} + \frac{n}{n+1} \\
+              & = \left[ \frac{1}{n+1} \cdot \frac{n^2+n}{2} \right] + \frac{n}{n+1} \\
+              & = \frac{n^2+n}{2(n+1)} + \frac{n}{n+1} \\
+              & = \frac{n^2+n}{2(n+1)} + \frac{2n}{2(n+1)} \\
+    E[t(n,B)] & = \frac{n^2 + 3n}{2(n+1)} \\
+  \end{align*}
+
+  Quick sanity check before we continue: We see that $E[t(3,B)] =
+  2.25$ as we found previously intuitively. Figure [[fig:linear-search]]
+  show visually the runtime of the best, average and worse case of
+  the linear search.
+
+  #+header: :R-dev-args bg="transparent"
+  #+header: :results graphics file
+  #+header: :exports results
+  #+header: :file linear_search_runtime.pdf
+  #+begin_src R
+  random_distribution <- function(n) {
+     weights <- sample(0:100, n+1, replace=TRUE);
+     return(weights/sum(weights));
+  }
+
+  model <- function(n, B) {
+    if (B < n) {
+      return(B);
+    } else {
+      return(n);
+    }
+  }
+
+  pick_category <- function(probabilities) {
+      draw <- runif(1);
+      accumulator <- 0;
+      for (index in seq(length(probabilities))) {
+          accumulator <- accumulator + probabilities[index];
+          if (accumulator >= draw) {
+             return(index);
+          }
+      }
+      return(length(probabilities));
+  }
+
+  random_run <- function(n) {
+      distribution <- random_distribution(n);
+      category <- pick_category(distribution);
+      return(model(n, category));
+  }
+
+  random_average_run <- function(n) {
+      probabilities <- random_distribution(n);
+      return(sum(probabilities * sapply(1:n, function(x) {model(n, x)})));
+  }
+
+  sizes <- 1:100;
+  sample_count <- 500;
+  random_sizes <- sample(sizes, sample_count, replace=TRUE);
+  plot(random_sizes, sapply(random_sizes, random_run),
+       pch=4,
+       col="blue",
+       xlab="input size (n)",
+       ylab="Number of comparisons");
+
+  points(random_sizes, sapply(random_sizes, random_average_run),
+         col="grey",
+         pch=1)
+
+  expected <- function(n) { (n^2 + 3*n)/(2*n+2) };
+  lines(sizes, sapply(sizes, expected), col="black", lty=1);
+  worse_case <- function(n) { n };
+  lines(sizes, sapply(sizes, worse_case), col="darkred", lty=2);
+  best_case <- function(n) { 1 };
+  lines(sizes, sapply(sizes, best_case), col="darkgreen", lty=4);
+  legend("topleft",
+       inset=0.05,
+       cex=0.8,
+       box.lty=0,
+       legend=c("random runs",
+                "average for random distributions",
+                "average runtime for uniform distribution",
+                "worse case",
+                "best case"),
+       lty=c(NA, NA, 1, 2, 4),
+       pch=c(4, 1, NA, NA, NA),
+       col=c("blue", "grey", "black", "darkred", "darkgreen"))
+
+  #+end_src
+
+  #+caption: Visualization of the average time-complexity of the linear search algorithm, shown in Listing [[code:linear-search]]
+  #+name: fig:linear-search
+  #+RESULTS:
+  [[file:linear_search_runtime.pdf]]
+
+  Now we have found our formula for the average scenario. Let's find
+  an approximate upper bound. So, following the definitions in
+  [[file:orders_of_growth.org][orders of growth (Chapter 3)]], we must find a function, $g(n)$, a
+  constant $c$, and a constant $k$, such as the product $c \cdot
+  g(n) \geq t(n, B)$, for all $n \geq k$. As a first guess, I assume
+  that $g(n) = n$ and that $c=2$: Let's see where does that take us.
+  \begin{align*}
+     c \cdot g(n) & \geq t(n, B) \\
+     2n & \geq \frac{n^2 + 3n}{2(n+1)} \\
+     4n & \geq \frac{n^2 +3n}{n+1} \\
+     4n (n+1) & \geq n^2 +3n \\
+     4n^2 + 4n & \geq n^2 +3n \\
+     4n^2 - n^2 + 4n - 3n & \geq 0 \\
+     3n^2 + n & \geq 0 \\
+  \end{align*}
+
+  This second-degree inequality $3n^2 + n \geq 0$ holds
+  regardless of $n$, so we can pick $k$ as we please. So we have
+  shown that our average time-efficiency mode admits an upper bound
+  of linear order: \(t \in O(n), \forall \; k \geq 0\).
+
+  One down, one to go. Let's now turn to the lower bound. Again,
+  refer to the definition given in [[file:orders_of_growth.org][the previous lecture]]. To find an
+  approximate lower bound, we have to find a function $g(n)$, and
+  constant $c$, and a constant $k$, such as the product $ c\cdot
+  g(n)$ is lower than or equal to $t(n, B)$ for all $n \geq
+  k$. Again, as a first guess, I assume that $g(n) = n$, and that
+  $c=\frac{1}{2}$. Let see what we get:
+
+  \begin{align*}
+     c \cdot g(n) & \leq t(n, B) \\
+     \frac{n}{2} & \leq \frac{n^2 + 3n}{2(n+1)} \\
+     n & \leq \frac{n^2 +3n}{n+1} \\
+     n (n+1) & \leq n^2 +3n \\
+     n^2 + n & \leq n^2 + 3n \\
+     0 & \leq n^2 - n^2 + 3n - n   \\
+     0 & \leq 2n \\
+     0 & \leq n \\
+  \end{align*}
+
+  This gives use a value for the constant $k$. So we have shown that
+  our runtime model accepts and linear lower bound, that is $t \in
+  \Omega(n), \forall \; k \geq 0$.
+
+  We can conclude that our runtime is of the order of $g(n) = n$,
+  because for any $k \geq 0$, our models admits both a linear upper
+  bound and a linear lower bound, that is, $t \in \Theta(n)$.

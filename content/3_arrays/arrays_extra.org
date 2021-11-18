@@ -1,0 +1,19 @@
+#+title: Arrays (extra)
+#+subtitle: Storing Collections in Contiguous Memory Cells
+#+author: Franck Chauvel
+#+date: Aug. 22, 2021
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+
+#+begin_src c
+  #include <stdio.h>
+
+  int main(int argc, char* argv[]) {
+
+  
+
+  }
+#+end_src 

@@ -1,0 +1,112 @@
+#+title: Arrays
+#+subtitle: Week 3 Quiz 
+#+author: NTNU IDATA 2302
+#+date: Sep. 10, 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+1. Can a record contain an arbitrary large number of fields?
+   1. Yes
+   2. No
+  
+2. In an array, how to calculate the address of the i-th bucket?
+   1. $\text{base address} + i$
+   2. $\text{base address} + i + \text{bucket size}$
+   3. $\text{base address} * (i + \text{bucket size})$
+   4. $(\text{base address} * i) + \text{bucket size}$
+   5. None of the above
+
+3. How does the time efficiency of accessing the i-th bucket vary in an
+   array?
+   1. It varies depending on the index of the array.
+   2. It remains constant regardless of the value of ~i~.
+   3. It varies depending on the location of the base address.
+   4. None of the above.
+
+4. Why does the insertion (at an arbitrary position) take a linear
+  time?
+   1. Because we have to iterate through the array to find where to
+      insert.
+   2. Because we have to shift every subsequent bucket toward the
+      end.
+   3. Because accessing any bucket takes a linear time.
+   4. None of the above.
+
+5. For any array, which scenario takes the least runtime?
+   1. To delete the first bucket
+   2. To delete the last bucket
+   3. Both take the same amount of time
+      
+6. What differentiate a dynamic array from a static one?
+   1. Dynamic arrays increase their capacity when they are full.
+   2. Dynamic arrays decrease their capacity when they become empty.
+   3. Dynamic arrays have a fixed capacity but their length varies.
+   4. None of the above.
+
+7. What distinguishes /amortized analysis/ from /average
+   case analysis/?
+   1. Amortized analysis accounts for multiple operations on the same
+      data structure, whereas average case analysis characterizes a
+      single operation.
+   2. Average case analysis requires a probabilistic approach.
+   3. None of the above.
+
+8. Which of the following search algorithms can be used with any sorted
+   sequence?
+   1. Linear search
+   2. Jump search
+   3. Binary search
+   4. Interpolated search
+   5. Random search (we open buckets at random until we find what we are
+      looking for).
+   6. All of the above.
+
+9. Does the binary search always return a correct result?
+   1. Yes
+   2. No
+
+10. What best describes the worst case runtime efficiency of the binary
+    search?
+    1. $O(n)$
+    2. $O(n^2)$
+    3. $O(n \cdot \log n)$
+    4. $O(\log n)$
+    5. $O(\sqrt{n})$
+    
+* Solutions
+  
+ 1. *Answer (a)* Yes. There is no limit on how many fields a record
+    can have.
+  
+ 2. *Answer (c)* $\text{base address} * (i + \text{bucket size})$
+
+ 3. *Answer (b)*, it remains constant regardless of the value of ~i~.
+
+ 4. *Answer (b)*. We must make room for the new bucket to be inserted
+    and we do that by shifting every subsequent bucket toward the
+    end.
+
+ 5. *Answer (b)*. Deleting the last bucket takes constant time,
+    because there is no need to shift back all the subsequent buckets
+    toward the beginning.
+
+ 6. *Answers (a) and (b)*. Dynamic arrays allocate more (or less)
+    memory when they become full (or empty).
+
+ 7. *Answers (a) and (b)* Amortized analysis describes a sequence of
+    operation but does not requires a probabilistic approach. It
+    focuses on the average efficiency over multiple operations.
+
+ 8. *Answers (a), (b), (c), (e) and (f)*. Only the interpolated search
+    does not apply on sorted arrays, because it not only requires the
+    array to be sorted, but also that the values be uniformly
+    distributed.
+
+ 9. *Answer (a)* Yes. The binary search always returns a correct result, though
+    the desired value may not be in the array.
+
+ 10. *Answer (d)* The tightest bound is $O(\log n)$.
