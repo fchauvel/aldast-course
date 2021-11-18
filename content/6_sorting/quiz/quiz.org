@@ -1,0 +1,109 @@
+#+title: Sorting
+#+subtitle: Week 6
+#+author: NTNU IDATA 2302
+#+date: Sep. 29, 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+
+1. What is worst case runtime efficiency of the "quick sort"
+   algorithm?
+   1. $O(n^3)$
+   2. $O(n^2)$
+   3. $O(n \log n)$
+   4. $O(n)$
+   5. $O(\log n)$
+      
+2. In the /quick sort/, how would you *not* choose the pivot?
+   1. The middle element in the array
+   2. The last element
+   3. The first element
+   4. The maximum element
+   5. The minimum element
+
+3. In /quick sort/, what is the runtime efficiency of partitioning an
+   array?
+   1. $O(n^3)$
+   2. $O(n^2)$
+   3. $O(n \log n)$
+   4. $O(n)$
+   5. $O(\log n)$
+      
+4. What is the best case runtime efficiency of the merge sort?
+   1. $O(n^3)$
+   2. $O(n^2)$
+   3. $O(n \log n)$
+   4. $O(n)$
+   5. $O(\log n)$
+
+5. In the worst case, /merge sort/ runs theoretically faster than
+   quick sort?
+   1. Yes
+   2. No
+   3. One cannot say
+
+6. What is the correct recursive call of /merge sort/?
+   1. ~split(merge(sort(array))~
+   2. ~merge(sort(left), sort(right))~
+   3. ~sort(merge(left), right(right))~
+   4. None of the above
+
+7. Comparison-based sorting algorithms are bound by $n \log n$. What
+   kind of scenario does it relate to?
+   1. Worst case
+   2. Average case
+   3. Best case
+
+8. Comparison-based sorting algorithms are bound by $n \log n$. What
+   kind of bound is this?
+   1. An upper bound
+   2. A lower bound
+   3. Both a lower and an upper bound.
+
+9. The runtime complexity of the counting sort is $O(k + n)$ where $n$
+   denotes the length of the given array. What does $k$ stands for?
+   1. The capacity of the given array
+   2. The maximum element in the array
+   3. The number of symbol in the underlying alphabet
+   4. None of the above
+
+10. The runtime complexity of the /radix sort/ is $O(d \cdot
+    (n+k))$, where $n$ is the length of the array. What does $d$
+    represent?
+    1. The size of the symbol alphabet
+    2. The maximum symbol
+    3. The maximum number of digits
+    4. The distance between to symbol
+    5. None of the above
+
+  
+* Solutions
+
+  1. *Answer (b).* In the worst case, /quick sort/ runs in $O(n^2)$.
+
+  2. *Answers (d) and (e)*. Choosing the maximum or the minimum
+     precisely lead to the worst runtime for quick sort.
+
+  3. *Answer (d)* The partitioning used in quick sort runs in $O(n)$.
+
+  4. *Answer (c)* In all cases, merge sort runs in $O(n \log n)$.
+
+  5. *Answer (a)* Yes, in the worst case, merge sort runs in $O(n \log
+     n)$ whereas quick sort runs in $O(n^2)$.
+
+  6. *Answer (b)*. ~merge(sort(left), sort(right))~ is the correct
+     recursive call. We first split, then sort both sub-arrays using
+     merge sort, and then merge the results.
+
+  7. *Answer (a)*. It relates to the worst case.
+
+  8. *Answer (b)*. It relates to the lower bound.
+
+  9. *Answer (c)*. The number of symbols in the underlying alphabet.
+
+  10. *Answer (c)*. The maximum number of digits in the numbers to
+      sort.
