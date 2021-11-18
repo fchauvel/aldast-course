@@ -1,0 +1,99 @@
+
+
+* Brute force
+
+  #+begin_src java
+    int contains(char[] text, char[] pattern) {
+        for (int textSpot = 0; textSpot < text.length ; textSpot++) {
+            int offset = 0;
+            while (offset < pattern.length
+                   && text[textSpot + offset] == pattern[offset]) {
+                offset++;
+            }
+            if (offset == pattern.length) {
+                return textSpot;
+            }
+        }
+        return -1;
+    }
+
+  #+end_src
+  
+* String Matching with Finite Automata
+
+  #+begin_src java
+    Automaton createAutomaton(char[] pattern, char[] alphabet) {
+        var transitions = new int[pattern.length+1][alphabet.length];
+        for (int eachState=0 ; eachState<=pattern.length ; eachState++) {
+            for (var eachLetter: alphabet) {
+               var nextState = Math.min(eachState+1, pattern.length);
+               var found = pattern.prefix(eachState).endsWith(pattern.prefix(nextState)
+                                                              + eachLetter);
+               while (!found) {
+                   nextState--;
+                   var found =
+                       pattern.prefix(eachState).endsWith(pattern.prefix(nextState)
+                                                          + eachLetter);
+
+               }
+               transitions[eachState][eachLetter] = nextState;
+            }
+        }
+        return transitions;
+    }
+  #+end_src
+
+  #+begin_src java
+     int contains(char[] text, char[] pattern) {
+        var transitions = createTransitionTable(pattern, alphabet);
+        int currentState = 0;
+        for (int index=0 ; index<text.length ; index++) {
+            currentState = transitions[currentState][text[index]];
+            if (currentState == pattern.length-1) {
+               return index;
+            }
+        }
+        return -1;
+     }
+  #+end_src 
+
+* KMP
+
+  #+begin_src java
+    int contains(char[] text, char[] pattern) {
+        failures = createFailureTable(pattern);
+        int currentState = 0;
+        for (int index=0 ; index<text.length ; index++) {
+           while (currentState > 0 && text[index] != pattern[index]) {
+              currentState = failures[currentState];
+           }
+           if (text[index] == pattern[index]) {
+             currentState++;
+           }
+           if (currentState == pattern.length-1) {
+              return index;
+           }
+        }
+    }
+  #+end_src
+
+
+  #+begin_src java
+     int[] createFailureTable(char[] text, char[] pattern) {
+        int[] table = new int[pattern.length];
+        table[0] = 0;
+        int longestPrefix = 0;
+        for (int eachState=1 ; eachState<=pattern.length-1 ; eachState++) {
+            while (longestPrefix > 0
+                   && pattern[longestPrefix+1] != pattern[eachState]) {
+                longestPrefix = table[longestPrefix];
+            }
+            if (pattern[longestPrefix+1] != pattern[eachState]) {
+               longestPrefix++;
+            }
+            table[eachState] = longestPrefix;
+        }
+        return table;
+     }
+  #+end_src
+  

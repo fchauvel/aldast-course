@@ -1,0 +1,172 @@
+#+title: Text Processing
+#+subtitle: Week 12 Quiz
+#+author: NTNU IDATA 2302
+#+date: Nov. 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+  1. What is the runtime efficiency of finding a text fragment on a
+     larger text, using brute force? ($n$ is the length of the text
+     and $m$ the length of the pattern to find).
+     1. $O(n^2)$
+     2. $O(n^m)$
+     3. $O(n\cdot m)$
+     4. $O(n + m)$
+     5. $O(n \log m)$
+        
+  2. What is runtime efficiency of matching a text fragment in a
+     larger text using the KMP algorithm?
+     1. $O(n^2)$
+     2. $O(n^m)$
+     3. $O(n\cdot m)$
+     4. $O(n + m)$
+     5. $O(n \log m)$
+        
+  3. Does the following automaton recognizes the word "world"?
+     (accepting states are denoted with double circles).
+     #+header: :cache yes
+     #+header: :file dfa.png
+     #+begin_src dot
+       digraph {
+        rankdir=LR;
+        node [shape=circle];
+        s3 [peripheries = 2];
+       start [shape=none, label=""];
+       start -> s1;
+       s1 -> s2 [label="w"];
+       s2 -> s3 [label="o"];
+       s3 -> s4 [label="r"];
+       s4 -> s1 [label="l", constraint=false];
+       s1 -> s5 [label="d"];      
+       }
+     #+end_src
+
+     #+attr_latex: :width 7cm
+     #+RESULTS[08103a4a6840e054ff2964be653a46e657db6b82]:
+     [[file:dfa.png]]
+
+     1. Yes
+     2. No
+     3. One cannot say
+
+  4. Is the following automaton deterministic?
+     #+header: :cache yes
+     #+header: :file deterministic.png
+     #+begin_src dot
+       digraph {
+        rankdir=LR;
+        node [shape=circle];
+        s5 [peripheries = 2];
+       start [style=invis];
+       start -> s1;
+       s1 -> s2 [label="a"];
+       s2 -> s3 [label="b"];
+       s3 -> s4 [label="c"];
+       s3 -> s5 [label="c"];
+       s4 -> s2 [label="a", constraint=false];
+       s3 -> s1 [label="b", constraint=false];      
+       }
+     #+end_src
+
+     #+attr_latex: :width 8cm
+     #+RESULTS[0a122ea4b15950e3b4fbbc4dea770a322ef0fa83]:
+     [[file:deterministic.png]]
+     1. Yes
+     2. No
+     3. One cannot say
+
+  5. What regular expression does the following automata capture?
+     #+header: :cache yes
+     #+header: :file regex.png
+     #+begin_src dot
+       digraph {
+        rankdir=LR;
+        node [shape=circle];
+        s4 [peripheries = 2];
+       start [style=invis];
+       start -> s1;
+       s1 -> s2 [label="a"];
+       s2 -> s3 [label="b"]
+       s3 -> s1 [label="c", constraint=false];      
+       s1 -> s4 [label="d"];
+       }
+     #+end_src
+
+     #+attr_latex: :width 7cm
+     #+RESULTS[0f45a56985ce7f922d0104a9d62ac3486292c298]:
+     [[file:regex.png]]
+     1. (abcd)*
+     2. (abc)?d
+     3. (abc)+d
+     4. (abc)*d
+     5. abc|d
+
+  6. What other computing models are Turing-complete?
+     1. Random access machines (RAM)
+     2. Lambda calculus
+     3. Cellular automata
+     4. None of the above
+
+  7. Which problems does the complexity class P include?
+     1. Those that can be solved in polynomial times
+     2. Those that can be solved in polynomial time by a regular Turing machine
+     3. Those that can be solved in polynomial space
+     4. Those that can be solved in polynomial space by a regular Turing machine
+     5. Those that can be solved in polynomial time and space by a regular Turing machine
+             
+  8. Which problems does the complexity class NP include?
+     1. Those that can be solved in non-polynomial times
+     2. Those that can be solved in polynomial time by a non-deterministic Turing machine
+     3. Those that can be solved in non-polynomial time by a regular Turing machine
+     4. Those that can be solved in non-polynomial space
+     5. Those that can be solved in non-polynomial time and space by a regular Turing machine
+
+  9. What is an NP-complete problem?
+     1. It is as hard as any other problems in NP but no harder
+     2. It is at least as hard as any other problems in NP and possibly even harder
+     3. It is an NP problem whose which we know the complete set of solutions
+     4. None of the above
+        
+  10. Does P = NP?
+      1. Yes
+      2. No
+      3. One cannot say (we can't decide)
+      4. We do not know yet
+  
+* Solutions
+
+  1. *Answer (c)*. Brute force runs in $O(m \cdot n)$.
+  
+  2. *Answer (d)*. KMP runs in $O(m + n)$.
+  
+  3. *Answer (b)* No. While the sequences of transitions matches the
+     letters of the word "world", the accepting state $s3$ implies it
+     accepts only "wo", "worwo", "worworwo" (as a regular expression
+     it is "wo(rwo)*").
+  
+  4. *Answer (b)* No, this automaton is not deterministic, because in
+     State $s3$, we cannot determine in which set we should transition
+     on "c".
+  
+  5. *Answer (d)* The automaton recognizes the regular expression
+     "abc*d". We can loop through abc, but the only accepting state is
+     after d.
+  
+  6. *Answers (a), (b) and (c)*. All these computations models are
+     /Turing-complete/. They can all emulate a Turing a machine and a
+     Turing machine can emulate them.
+  
+  7. *Answer (b)* P includes all the problems that can be solved in polynomial time
+     by a /regular/ Turing machine.
+
+  8. *Answer (b)* NP includes all the problems that can be solved in
+     polynomial time by a /non-deterministic/ Turing machine.
+  
+  9. *Answer (a)* It is equivalent to the hardest problems in NP, but
+     still in NP.
+  
+  10. *Answer (d)* We do not know yet.
