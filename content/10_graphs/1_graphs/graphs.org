@@ -1,0 +1,68 @@
+
+
+
+* Traversals
+
+** Depth-first
+
+
+#+begin_src java
+  public void applyDepthFirst(T start, VertexOperator<T> operator) {
+      final Stack<T> next = new Stack<T>();
+      final var visited = new HashSet<T>();
+
+      next.push(start);
+      while (!next.isEmpty()) {
+          var current = next.pop();
+          if (!visited.contains(current)) {
+              operator.applyTo(current);
+              visited.add(current);
+              for (T eachNeighbour: neighboursOf(current) ){
+                  next.push(eachNeighbour);
+              }
+          }
+      }
+  }
+#+end_src
+
+   
+** Breadth-first
+
+#+begin_src java
+    public void applyBreadthFirst(T start, VertexOperator<T> operator) {
+        final Queue<T> next = new LinkedList<T>();
+        final var visited = new HashSet<T>();
+
+        next.add(start);
+        while (!next.isEmpty()) {
+            var current = next.remove();
+            if (!visited.contains(current)) {
+                operator.applyTo(current);
+                visited.add(current);
+                for (T eachNeighbour: neighboursOf(current) ){
+                    next.add(eachNeighbour);
+                }
+            }
+        }
+    }
+#+end_src
+
+
+* Algorithms
+
+  1. Graph Traversals
+
+  2. Shortest Paths
+     1. Dijkstra's algorithms
+     2. Bellman-Ford algorithms
+     3. Floyd-Warhsall algorithms
+
+  3. Minimum Spanning Tree
+     
+  
+ - Transitive closure
+ - Shortest path
+ - Minimum spanning Tree
+ - Max flow
+ - Topological sort
+

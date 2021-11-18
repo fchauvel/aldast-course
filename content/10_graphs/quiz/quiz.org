@@ -1,0 +1,142 @@
+#+title: Graphs
+#+subtitle: Week 10 Quiz 
+#+author: NTNU IDATA 2302
+#+date: Oct. 2021
+
+
+#+OPTIONS: toc:nil
+
+* Questions
+
+  1. How many nodes are in the following graph?
+     #+name: fig:graph
+     #+header: :cache yes
+     #+header: :file graph.png
+     #+begin_src dot
+       digraph {
+         rankdir="LR";          
+         node [shape=circle];
+         "A" -> "B";
+         "A" -> "C";
+         "C" -> "B";
+         "B" -> "B";
+         "B" -> "D";
+         "D" -> "E";
+         "E" -> "B";
+         "E" -> "F";
+         "F" -> "D";          
+       }
+     #+end_src
+
+     #+RESULTS[f20ba419f11a5e32531d6fb8317243746a6d070a]: fig:graph
+     [[file:graph.png]]
+
+  2. What type of graph is shown on the previous picture?
+     1. An undirected graph
+     1. A directed graph
+     2. A weighted graph
+     3. A network flow
+     5. None of the above
+
+  3. Does the following matrix $M$ accurately capture the previous
+     graph? (rows and columns match nodes by alphabetical order)
+     \begin{align*}
+          M =  \begin{bmatrix}
+             % A   B   C   D   E   F
+               0 & 1 & 1 & 0 & 0 & 0 \\
+               0 & 0 & 0 & 1 & 0 & 0 \\
+               0 & 1 & 0 & 0 & 0 & 0 \\
+               0 & 0 & 0 & 0 & 1 & 0 \\
+               0 & 1 & 0 & 0 & 0 & 1 \\
+               0 & 0 & 0 & 1 & 0 & 0 \\
+               \end{bmatrix}
+     \end{align*}
+        
+  4. How many /simple paths/ are there from Node D to Node A?
+     1. None
+     2. 1 path
+     3. 2 paths
+     4. 3 paths
+     5. None of the above      
+
+  5. How many components are in this graph?
+     1. 1
+     2. 0
+     3. $2^6 = 64$
+     4. $6^2$
+     5. None of the above
+
+  6. Starting from Node A, in which order would a /pre-order
+     depth-first traversal/ reach all the nodes, provided that it
+     processes successors in alphabetical order?
+     1. A, B, D, E, F, C
+     2. A, C, B, D, E, F
+     3. A, B, C, D, E, F
+     4. None of the above
+
+  7. Starting from Node A, in which order would a /pre-order
+     breadth-first traversal/ reach all the nodes, provided that it
+     processes successors in alphabetical order?
+     1. A, B, D, E, F, C
+     2. A, C, B, D, E, F
+     3. A, B, C, D, E, F
+     4. None of the above
+
+  8. Dijsktra's algorithm finds
+     1. the shortest path between two nodes
+     2. the shortest paths between one given node and every others
+     3. the shortest paths between every possible pairs of node
+
+  9. A shortest path may exist only when the graph
+     1. contains no paths whose total weight is negative
+     2. contains no circuits
+     3. contains no negative weights
+     4. contains no circuit with negative weights
+     5. contains no circuit whose total weight is negative 
+  
+  10. A spanning tree is
+      1. a subgraph that includes all the vertices
+      2. a subgraph that includes all the edges
+      3. a subgraph that includes all the vertices but forms a tree
+      4. a subgraph that includes all the edges but forms a tree
+      5. None of the above
+
+     
+* Solutions
+
+  1. *6*. This graph contains six nodes, namely A, B, C. D, E, and F.
+
+  2. *A directed graph*. This graph is directed because edges go in a
+     specific direction. For example, it is possible to go from A to
+     C, but not from C to A.
+
+  3. *No* The matrix $M$ lacks at least the /loop/ that is, the
+     circuit from B to B.
+
+  4. *None* There is no path from D to A because edges are directed.
+     One can only navigate as indicated by the arrows.
+
+  5. *One* A component is a subgraph that is isolated from some nodes in
+     the graph. No vertex is isolated here, so this graph has a single
+     component.
+
+  6. *A, B, D, E, F, C*. Since the traversal is /pre-order/ and
+     /depth-first/, the traversal starts on node A. 'A' gets printed
+     before its children because it is a pre-order traversal. Then,
+     children are pulled in alphabetical order, so B comes before
+     C. Finally, it goes /depth first/ and explore the first path all
+     the way until it reaches a dead-end.
+
+  7. *A, B, C, D, E, F*. Here we are talking about a breadth-first
+     traversal that reaches nodes by level: First come the nodes that
+     are one edge away from the source, then the nodes two edges away,
+     and so one and so forth.
+
+  8. *Answer (b)* Dijsktra's algorithm finds the shortest paths between a
+     given source node and all the other vertices.
+
+  9. *Answer (f)* A shortest path can exist only in a graph where
+     there is no circuit whose total weight is negative.
+
+  10. *Answer (c)* A spanning tree is a subgraph that includes all the
+      vertices and forms a tree.

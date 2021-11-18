@@ -1,0 +1,162 @@
+
+
+* Weighted Graphs
+
+  #+begin_src java
+
+  #+end_src
+
+
+* Single Source Shortest Paths
+
+* Dijkstra's
+
+  #+begin_src java
+    public Map<T, T> dijkstra(T source) {
+        var weights = new HashMap<T, Float>();
+        var path = new HashMap<T, T>();
+
+        initialize(weights, path);
+
+        var unknowns = new LinkedList<T>(vertices.keySet());
+        while (!unknowns.isEmpty()) {
+            var current = minimumWeight(unknowns, weights);
+            for (var anyNeighbour: neighboursOf(current)) {
+                if (unknowns.contains(anyNeighbour)) {
+                    adjust(weights, path, current, anyNeighbour)
+                }
+            }
+            unknowns.remove(current);
+        }
+
+        return path;
+    }
+
+    private void initialize(HashMap<T, Float> weights,
+                            HashMap<T, T> path) {
+        for (var anyVertex: vertices.keySet()) {
+            weights.put(anyVertex, Float.POSITIVE_INFINITY);
+            if (anyVertex == source) {
+                weights.put(source, 0f);
+            }
+        }
+    }
+
+    private void adjust(HashMap<T, Float> weights,
+                        HashMap<T, T> path
+                        T current,
+                        T neighbour) {
+        var newWeight = weights.get(current) + weightBetween(current, neighbour);
+        if (newWeight < weights.get(neighbour)) {
+            weights.put(neighbour, newWeight);
+            path.put(neighbour, current);
+        }
+    }
+
+    private T minimumWeight(List<T> candidates, Map<T, Float> distances) {
+        if (candidates.size() == 1) {
+            return candidates.get(0);
+        }
+        var minimum = candidates.get(0);
+        for(int index=0 ; index<candidates.size() ; index++) {
+            var current = candidates.get(index);
+            if (distances.get(current) < distances.get(minimum)) {
+                minimum = current;
+            }
+        }
+        return minimum;
+    }
+  #+end_src
+
+
+* Bellman-Ford
+
+    #+begin_src java
+
+    public Map<T,T> bellmanFord(T source) throws NegativeCycleFound {
+        var weights = new HashMap<T, Float>();
+        var paths = new HashMap<T, T>();
+
+        initialize(weights, paths);
+
+        final var edges = allEdges();
+        for (int i = 1 ; i<vertices.size() ; i++) {
+            for (var anyEdge: edges) {
+                propagate(weights, paths, anyEdge);
+            }
+        }
+
+        ensureNoNegativeCycle(edges, weights);
+
+        return paths;
+    }
+
+    void propagate(Map<T, Float> weights, Map<T, T> paths, Edge<T> edge) {
+        var newWeight = weights.get(edge.source) + edge.weight;
+        if (newWeight < weights.get(edge.end)) {
+            weights.put(edge.end, newWeight);
+            paths.put(edge.end, edge.source);
+        }
+    }
+
+    void ensureNoNegativeCycle(List<Edge<T>> edges, Map<T, Float> weights) {
+        for (var anyEdge: edges) {
+            var newWeight = weights.get(anyEdge.source)
+                + anyEdge.weight;
+            if (newWeight < weights.get(anyEdge.end)) {
+                throw new NegativeCycleFound();
+            }
+        }
+    }
+  #+end_src
+
+
+* Floyd-Warshall
+
+  #+begin_src java
+    Map<Pair<T>, Float> floydWarhsall() {
+        var matrix = new HashMap<Pair<T>, Float>();
+
+        initialize(matrix);
+        for(var anyVertex: vertices()) {
+            for (var anySource: vertices()) {
+                for (var anyTarget: vertices()) {
+                    adjust(matrix, anyVertex, anySource, anyTarget);
+                }
+            }
+
+        }
+
+        return matrix;
+    }
+
+    void initialize(Map<Pair<T>, Float> matrix) {
+        for (var anySource: vertices) {
+            for (var anyTarget: vertices) {
+                matrix.put(new Pair<T>(anySource, anyTarget),
+                           Float.POSITIVE_INFINITY);
+
+            }
+        }
+        for(var eachEdge: allEdges()) {
+            matrix.put(new Pair<T,T>(eachEdge.start, eachEdge.end),
+                       eachEdge.weight);
+        }
+        for (var anyVertex: vertices) {
+            matrix.put(new Pair<T>(anyVertex, anyVertex),
+                       0);
+        }
+    }
+
+    void adjust(Map<Pair<T>, Float> matrix,
+                T givenVertex, T source, T target) {
+        var newWeight = matrix.get(new Pair<T>(source, givenVertex)) +
+            matrix.get(new Pair<T>(givenVertex, target));
+        if (newWeight < matrix.get(new Pair<T>(source, target))) {
+            matrix.put(new Pair<T>(source, target),
+                       newWeight);
+        }
+    }
+
+
+  #+end_src

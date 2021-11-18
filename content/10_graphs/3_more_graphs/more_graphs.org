@@ -1,0 +1,103 @@
+
+
+
+* Minimum Spanning Trees
+
+** Prim's Algorithm
+
+
+#+begin_src java
+
+  public Tree<T> prim() {
+    var tree = new Tree<T>();
+    var edges = allEdges();
+    while (tree.size() < size()) {
+      var minimumEdge = findMinimumEdge(tree, edges);
+      if (!tree.contains(minimumEdge.start)
+         || !tree.contains(minimumEdge.end)) {
+          tree.add(minimumEdge);
+      }
+      edges.remove(minimumEdge);
+    }
+    return tree;
+  }
+#+end_src
+   
+
+** Kruskal's Algorithm
+
+#+begin_src java
+  public Tree<T> kruskal() {
+    var trees = new ArrayList<Tree<T>>();
+    for (var eachVertex: vertices)
+        trees.add(new Tree<T>(eachVertex));
+    var edges = allEdges();
+    while (!anySpanningTree(trees)) {
+      var minimumEdge = findMinimumEdge(edges);
+      var startTree = findTree(trees, minimumEdge.start);
+      var endTree = findTree(trees, minimumEdge.end);
+      if (startTree != endTree) {
+        merge(trees, startTree, endTree);
+      }
+      edges.remove(minimumEdge);
+    }
+    return anySpanningTree(trees);
+  }
+
+#+end_src
+   
+
+* Maximum Flows
+
+
+#+begin_src java
+    public Path<T> searchAugmentingPath(T source, T sink) {
+        var path = new Path<T>();
+        var visited = new HashSet<T>();
+        var nextVertices = new LinkedList<T>();
+        nextVertices.add(source);
+        while (!nextVertices.isEmpty()) {
+            var current = nextVertices.remove(0);
+            visited.add(current);
+            for(var eachEdge: edgesFrom(current)) {
+                if (eachEdge.hasResidual()
+                    && !visited.contains(eachEdge.end)) {
+                    path.add(eachEdge);
+                    nextVertices.add(eachEdge.end);
+                    if (eachEdge.end == sink) {
+                        return path;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void augmentWith(Path<T> path) {
+        int minimumFlow = path.minimumFlow();
+        for (var anyEdge: path.edges.values()) {
+            var edge = findEdge(anyEdge.start, anyEdge.end);
+            edge.reserve(minimumFlow);
+        }
+    }
+
+
+    public Graph<T> newZeroFlow() {
+        var graph = new Graph();
+        for (var eachEdge: allEdges()) {
+            graph.connect(eachEdge.start, eachEdge.end, eachEdge.capacity);
+        }
+        return graph;
+    }
+
+
+    public Graph<T> maximumFlowBetween(T source, T sink) {
+        var flow = newZeroFlow();
+        var path = flow.searchAugmentingPath(source, sink);
+        while (path != null) {
+            flow.augmentWith(path);
+            path = flow.searchAugmentingPath(source, sink);
+        }
+        return flow;
+    }
+#+end_src
