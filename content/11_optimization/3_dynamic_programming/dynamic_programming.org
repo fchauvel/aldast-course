@@ -1,0 +1,148 @@
+
+* Finbonacci's Sequence
+
+** Recursive
+
+   #+begin_src java
+    long recursive(long n) {
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        return recursive(n-1) + recursive(n-2);
+    }
+   #+end_src
+
+   #+begin_src
+   With recursion F(50) = 12586269025 
+   Time = 41320 ms
+   #+end_src
+
+** With Memoization
+
+   #+begin_src java
+    long withMemoization(long n, long[] cache) {
+        var n1 = cache[(int) n-1];
+        if (n1 == -1L) {
+            n1 = withMemoization(n-1, cache);
+            cache[(int) n-1] = n1;
+        }
+        var n2 = cache[(int) n-2];
+        if (n2 == -1L) {
+            n2 = withMemoization(n-2, cache);
+            cache[(int) n-2] = n2;
+        }
+        return n1 + n2;
+    }
+   #+end_src
+
+   #+begin_src
+   With memorization F(50) = 12586269025
+   Time = 16792 ns
+   #+end_src
+
+
+** With Dynamic Programming
+
+   #+begin_src java
+   long withDynamicProgramming(long n) {
+        long[] cache = new long[(int) (n+1)];
+        cache[0] = 0;
+        cache[1] = 1;
+        for(int i=2 ; i<=n; i++) {
+            cache[i] = cache[i-1] + cache[i-2];
+        }
+        return cache[(int) n];
+   }
+   #+end_src
+
+
+   #+begin_src
+   With dynamic programming F(50) = 12586269025
+   Time = 0 ns
+   #+end_src
+
+
+* Knapsack
+
+** With Recursion
+
+   #+begin_src java
+    private int recurse(int index, int capacity) {
+        count++;
+        if (index >= items.length-1) {
+            if (items[index].weight >= capacity) {
+                return items[index].value;
+            } else {
+                return 0;
+            }
+        }
+        var item = items[index];
+        return  Math.max(recurse(index+1, capacity),
+                         item.value + recurse(index+1, capacity - item.weight));
+     }
+   #+end_src
+
+** With Memorization
+
+   #+begin_src java
+     int withMemoization(int capacity) {
+         int[][] cache = new int[items.length][capacity+1];
+         for (int n=0 ; n<=items.length-1 ; n++) {
+             for (int c=0 ; c<capacity+1 ; c++) {
+                 cache[n][c] = -1;
+                 if (c == 0) cache[n][c] = 0;
+                 if (n == items.length-1)
+                     cache[n][c] = c < items[n].weight ? 0 : items[n].value;
+             }
+         }
+         return memoize(0, capacity, cache);
+     }
+
+     int memoize(int index, int capacity, int[][] cache) {
+         var item = items[index];
+         var without = cache[index+1][capacity];
+         if (without == -1) {
+             without = memoize(index+1, capacity, cache);
+             cache[index+1][capacity] = without;
+         }
+
+         var next = Math.max(capacity-item.weight, 0);
+         var with = cache[index+1][next];
+         if (with == -1) {
+             with = item.value + memoize(index+1, next, cache);
+             cache[index+1][next] = with;
+         }
+         return Math.max(with, without);
+     }
+   #+end_src
+
+
+** With Dynamic Programming
+
+   #+begin_src java
+     int dynamicProgramming(int capacity) {
+         int[][] cache = new int[items.length+1][capacity+1];
+         for (int n=0 ; n<=items.length ; n++) {
+             for (int c=0 ; c<capacity+1 ; c++) {
+                 cache[n][c] = 0;
+                 if (c == 0) cache[n][c] = 0;
+                 if (n == items.length-1)
+                     cache[n][c] = c < items[n].weight ? 0 : items[n].value;
+             }
+         }
+
+         for (int n=items.length-1 ; n>=0 ;n--) {
+             for (int c=capacity ; c>=0 ;c--) {
+                 var item = items[n];
+                 var without = cache[n+1][c];
+
+                 var next = Math.max(c-item.weight, 0);
+                 var with = (item.weight <= c)
+                     ? item.value + cache[n+1][next]
+                     : 0;
+                 cache[n][c] = Math.max(with, without);
+             }
+         }
+
+         return cache[0][capacity];
+     }
+   #+end_src

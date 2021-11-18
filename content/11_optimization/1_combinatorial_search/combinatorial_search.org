@@ -1,0 +1,106 @@
+
+
+* Brute force
+
+
+  #+begin_src java
+     int breakIn(Vault vault, int digitCount) {
+        int limit = Math.power(10, digitCount);
+        for (int anyKey=0 ; anyKey<limit ; anyKey++) {
+           if (vault.opensWith(anyKey)) {
+               return anyKey;
+           }
+        }
+        throw new RuntimeError("Could not find a key!");
+     }
+  #+end_src
+
+
+* Backtracking
+
+  #+begin_src java
+
+    public static Configuration solve(Problem problem) {
+        var emptyConfiguration = problem.zeroConfiguration();
+        return backtrack(problem, emptyConfiguration);
+    }
+
+
+    private static Configuration backtrack(Problem problem, Configuration configuration) {
+        if (problem.isComplete(configuration)) {
+            if (problem.isValid(configuration)) {
+                process(configuration);
+            }
+        } else {
+            for (var eachChange: problem.allChanges(configuration)) {
+                eachChange.applyTo(configuration);
+                backtrack(problem, configuration);
+                eachChange.revertOn(configuration);
+            }
+        }
+    }
+
+  #+end_src
+
+* Pruning
+    
+
+    #+begin_src java
+
+      static void solve(Problem problem) {
+          var emptyConfiguration = problem.zeroConfiguration();
+          backtrack(problem, emptyConfiguration);
+      }
+
+      static void backtrack(Problem problem, Configuration configuration) {
+          if (problem.isValid(configuration)) {
+              if (problem.isComplete(configuration)) {
+                  process(configuration);
+
+              } else {
+                  for (var eachChange: problem.allChanges(configuration)) {
+                      eachChange.applyTo(configuration);
+                      backtrack(problem, configuration);
+                      eachChange.revertOn(configuration);
+                  }
+              }
+          }
+      }
+
+  #+end_src
+
+
+* Branch-and-bound
+
+    #+begin_src java
+
+    static void branchAndBound(Problem problem) {
+        var alternatives = new PriorityQueue<Configuration>();
+        alternatives.add(problem.zeroConfiguration());
+        while (!alternatives.isEmpty()) {
+            var configuration = candidates.poll()
+            if (problem.isValid(configuration)
+                && problem.bound(configuration) > bestGainSoFar) {
+                if (problem.isComplete(configuration)) {
+                    found(configuration);
+                    var gain = problem.gain(configuration);
+                    if (bestGainSoFar < gain) {
+                        bestGainSoFar = gain;
+                        best = configuration.clone();
+                    }
+                } else {
+                    for (var eachChange: problem.nextExtension(configuration)) {
+                        eachChange.applyTo(configuration);
+                        alternatives.add(configuration.clone());
+                        eachChange.revert(configuration);
+                    }
+                }
+            }
+
+        }
+    }
+
+  #+end_src
+  
+
+    

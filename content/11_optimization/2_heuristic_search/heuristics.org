@@ -1,0 +1,80 @@
+
+
+* Random Walk
+
+
+  #+begin_src java
+    static Solution randomWalk(Problem problem, int limit) {
+        var current = problem.simpleSolution();
+        var bestSolution = current;
+        for (int stepCount=0 ; stepCount < limit ; stepCount++) {
+            current = problem.randomNeighbourOf(current);
+            bestSolution = problem.bestOf(bestSolution, current);
+        }
+        return bestSolution;
+    }
+  #+end_src
+
+  
+* Hill Climbing
+
+  #+begin_src java
+    static Solution hillClimbing(Problem problem, int limit) {
+        var solution = problem.simpleSolution();
+        for (int stepCount=0 ; stepCount < limit ; stepCount++) {
+            boolean noProgres = true;
+            for (var eachNeighbour: problem.neighboursOfsolutiont) {
+                solution = problem.bestOf(solution, eachNeighbour);
+                noProgress = solution != eachNeighbour;
+            }
+            if (noProgress) break;
+        }
+        return solution;
+    } 
+  #+end_src
+
+  
+* Simulated Annealing
+
+  #+begin_src java
+    static Solution simulatedAnnealing(Problem problem, Schedule schedule) {
+        var solution = problem.simpleSolution();
+        var time = 0;
+        var temperature = schedule.temperatureAt(time);
+        while (temperature != 0) {
+            var candidate = problem.randomNeighbourOf(solution);
+            var profit = problem.profit(solution, candidate);
+            if (profit > 0
+                || random() < Math.exp(profit/temperature)) {
+                solution = candidate;
+            }
+            temperature = schedule.temperature(++time);
+        }
+        return current;
+    }
+  #+end_src
+  
+  
+* Tabu Search 
+
+  Here comes the Tabu Search
+  
+  #+begin_src java -n
+    static Solution tabuSearch(Problem problem, int limit) {
+        var tabu = new LinkedList<Solution>(); 
+        var current = problem.simpleSolution();
+        var best = current;
+        tabu.add(current);
+        for (int stepCount=0 ; stepCount<limit ; stepCount++) {
+            current = problem.bestNeighbours(current, tabu);
+            best = problen.bestOf(current, best);
+            if (tabu.isFull()) {
+                tabu.remove(0);
+            }
+            tabu.add(best);
+        }
+    }
+  #+end_src
+
+
+  

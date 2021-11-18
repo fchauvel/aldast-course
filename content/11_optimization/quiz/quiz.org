@@ -1,0 +1,116 @@
+#+title: Combinatorial Search
+#+subtitle: Week 10 Quiz 
+#+author: NTNU IDATA 2302
+#+date: Oct. 2021
+
+
+#+OPTIONS: toc:nil
+
+* Questions
+
+  1. Given the set $S=\{a, b, c, d\}$, how many sequences of length 3
+     without repetitions are possible?
+     1. $2^3$
+     2. $4^3$
+     3. $3^4$
+     4. $!4$
+     5. None of the above
+
+  2. Given the set $S=\{a, b, c, d\}$, how many combinations of 3 elements are
+     possible
+     1. $3^2$
+     2. $\binom{4}{3}$
+     3. $!4$
+     4. $4 \times 3$
+     5. None of the above
+  
+  3. Back-tracking enables
+     1. avoiding invalid solutions
+     2. enumerating all solutions
+     3. avoiding incomplete solutions
+     4. minimizing the number of complete solutions.
+     5. none of the above.
+
+  4. In the branch-and-bound algorithm the heuristic function computes
+     1. the maximum (or minimum) depth of the subtrees
+     2. the maximum (or minimum) size of the subtrees
+     3. the maximum (or mininum) "fitness" of the subtrees
+     4. the maximum (or minimum) "fitness" seen so far
+     5. none of the above
+
+  5. Dynamic Programming improves
+     1. iterative algorithms
+     2. recursive algorithms
+     3. algorithms that access an external storage
+     4. none of the above.
+  
+  6. Dynamic programming helps by
+     1. removing invalid subtrees
+     2. removing duplicated computation
+     3. removing recursive calls
+     4. none of the above
+
+  7. Depth-first search consume more memory than breadth-first search.
+     1. Yes
+     2. No
+  
+  8. Dynamic programming requires traversing the search tree
+     1. top-down
+     2. bottom-up
+     3. according to the underlying recurrence relation
+     4. none of the above
+
+  9. In an optimization problem, the notion of /fitness/ captures
+     1. How fast is the search
+     2. How relevant is a solution
+     3. How new is a solution
+     4. None of the above
+
+  10. At each iteration, hill climbing (in its simplest form) chooses
+      1. a neighbour at random
+      2. a better neighbour, at random
+      3. the best neighbour, provided it yields an improvement over the
+         current solution.
+      4. the best neighbour
+      5. none of the above
+       
+* Solutions
+
+  1. *Answer (d)*. There are $4 \times 3 \times 2$ arrangements of
+     length 3 without repetitions. This is the same number as
+     arrangements of length 4, since once we have chosen 3 out of 4
+     items, only one item can be chosen as the final one (repetitions
+     are not allowed)..
+
+  2. *Answer (b)*. The number of 3-combinations in a set of 4 items
+     is given by the binomial coefficient $\choose{4}{3}$.
+
+  3. *Answer (b)* Back-tracking enables enumerating all solutions by
+     going systematically through all possible options at each
+     decision point.
+
+  4. *Answer (c)* The maximum fitness possible for the subtrees.
+
+  5. *Answer (b)*. Dynamic programming target to recursive
+     programming, although caching/memorization can also apply to
+     iterative solutions.
+
+  6. *Answer (b) and (c)*. Dynamic programming removes both
+     duplicated computations and recursive calls.
+
+  7. *Answer (b)*. Depth first search is more memory efficient than
+     breadth-first search because the later requires to maintain in
+     memory a collection of partial solution. By contrast, depth first
+     needs only one.
+
+  8. *Answer (c)* According to the direction of the underlying
+     recurrence relation.
+
+  9. *Answer (b)*. The notion of fitness describes how good a solution
+     is. Any optimization problems thus calls for finding the solution
+     with a maximum fitness.
+
+  10. *Answer (c)* In its simplest form, the hill climbing idea is to
+      choose is to move up on the "fitness slope", that is to choose
+      the best neighbour that provides an improvement.
+  
