@@ -1,0 +1,107 @@
+#+title: Trees
+#+subtitle: Week  Quiz 
+#+author: NTNU IDATA 2302
+#+date: Oct. 16, 2021
+
+#+OPTIONS: toc:nil
+
+* Questions
+
+  1. In a tree, the /descendants/ of the root include all the nodes of
+     the tree?
+     1. Yes
+     2. No
+
+  2. The /depth/ of a node $n$ denotes
+     1. The number of ancestors of $n$
+     2. The number of descendants of $n$
+     3. The number of siblings of $n$
+     4. None of the above
+
+  3. The /degree/ of a node denotes
+     1. The number of ancestors of $n$
+     2. The number of descendants of $n$
+     3. The number of siblings of $n$
+     4. None of the above
+
+  4. In a /ternary/ tree, each node can have
+     1. No child
+     2. One child
+     3. Two children
+     4. Three children
+     5. Four children
+  
+  5. What best describes the average runtime efficiency of inserting an
+     item in a binary search tree?
+     1. $O(1)$
+     2. $O(\log n)$
+     3. $O(n)$
+     4. $O(n \log n)$
+     5. $O(n^2)$
+  
+  6. In a binary search tree the successor of a node that has two
+     children is:
+     1. The maximum of the left subtree
+     2. The minimum of the left subtree
+     3. The maximum of the right subtree
+     4. The minimum of the right subtree
+     5. None of the above
+
+  7. The successor operation in a binary search tree always succeeds?
+     1. Yes.
+     2. No.
+  
+  8. Binary search trees degenerate into linked lists when
+     1. Items are inserted in ascending order
+     2. Items are inserted in descending order
+     3. Items are inserted randomly
+     4. None of the above
+
+  9. How does an AVL tree define the balance factor of a node?
+     1. $(height(left) + height(right)) / 2$
+     2. $height(left) - height(right)$
+     3. $\max(height(left), height(right))$
+     4. $\min(height(left), height(right))$
+     5. None of the above
+
+  10. Which of the following operations require a possible re-balancing
+      the AVL tree?
+      1. Insertion
+      2. Minimum
+      3. Maximum
+      4. Search
+      5. Successor
+      6. Predecessor
+      7. Deletion
+  
+* Solutions
+
+  1. *No* the descendants of the root node include all the node but the root.
+
+  2. *The number of ancestors of the node*. The depth of a node denotes
+     the number of links that separate the node from the root, which
+     is the same as the number of ancestors.
+
+  3. *The number of siblings* is named the /degree/ of a node.
+
+  4. *0, 1, 2, or 3* In a /ternary-tree/ each node can have at most
+     three children. Nodes may have less than three children though.
+
+  5. *$O(\log n)$* Insertion in a binary search tree boils down to
+     finding where to insert, which is comparable to a binary search,
+     and thus, it runs in $O(\log n)$.
+
+  6. *The minimum of the right subtree*. The successor of a node with
+     children is the left-most node in the right subtree.
+
+  7. *No*. Searching for a successor may fail if the given item is not
+     present in the tree.
+
+  8. *(a) and (b)* When items are inserted in ascending order, the
+     right subtree degenerates into a list. By contrast, insertions in
+     descending order turn the left subtree into a list.
+
+  9. *$height(left) - height(right)$*
+
+  10. *Insertion, Deletion*, More generally any operation that changes
+      the content of the tree may require re-balancing it.

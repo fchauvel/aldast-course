@@ -1,0 +1,186 @@
+#+title:  Binary Search Trees
+#+subtitle: Building Ordered Set
+#+author: NTNU IDATA 2302
+#+date: 2021
+#+language: en
+
+
+* Introduction
+
+   - Sorted vs. Ordered
+
+   - The problem of Hash tables, which looses the orders
+
+* Binary Search Trees
+
+#+begin_src java
+  public class Tree<Item extends Comparable<Item>> {
+
+      private final Item item;
+      private Tree<Item> left;
+      private Tree<Item> right;
+
+      public Tree(Item givenItem) {
+          this.item = givenItem;
+          this.left = null;
+          this.right = null;
+      }
+
+      // ... 
+  }
+#+end_src
+  
+* Search
+
+#+begin_src java
+  public Item search(Item givenItem) throws NoSuchElement {
+      int difference = this.item.compareTo(givenItem);
+      if (difference > 0) {
+          if (this.hasLeftChild()) {
+              return this.left.search(givenItem);
+          }
+          throw new NoSuchElement();
+
+      } else if (difference < 0) {
+          if (this.hasRightChild()) {
+            return this.right.search(givenItem);
+          }
+          throw new NoSuchElement();
+
+      } else {
+          return this.item;
+
+      }
+  }
+#+end_src
+  
+* Finding Minimum and Maximum
+
+#+begin_src java
+  public Item minimum() {
+      if (this.hasLeftChild()) {
+          return this.left.minimum();
+      }
+      return this.item;
+  }
+#+end_src
+
+
+#+begin_src java
+  public Item maximum() {
+      if (this.hasRightChild()) {
+          return this.right.maximum();
+      }
+      return this.item;
+  }
+#+end_src
+  
+* Finding Predecessor and Successor
+
+#+begin_src java
+  public Item successor(Item givenItem) throws NoSuchElement, NoSuccessor {
+      int difference = this.item.compareTo(givenItem);
+      if (difference < 0) {
+          if (hasRightChild()) {
+              return right.successor(givenItem);
+          }
+          throw new NoSuchElement();
+
+      } else if (difference > 0) {
+          if (hasLeftChild()) {
+              try {
+                  return left.successor(givenItem);
+              } catch (NoSuccessor error) {
+                  return this.item;
+
+              }
+          }
+          throw new NoSuchElement();
+
+      } else {
+         if (hasRightChild()) {
+              return right.minimum();
+          }
+         throw new NoSuccessor();
+       
+      }
+  }
+#+end_src
+  
+* Insertion  
+
+#+begin_src java
+  public Tree<Item> insert(Item givenItem) {
+      int difference = this.item.compareTo(givenItem);
+      if (difference > 0)  {
+          if (hasLeftChild()) {
+              this.left.insert(givenItem);
+
+          } else {
+              this.left = new Tree(givenItem);
+
+          }
+          return this;
+
+      } else if (difference < 0) {
+          if (hasRightChild()) {
+              this.right.insert(givenItem);
+
+          } else {
+              this.right = new Tree(givenItem);
+          }
+          return this;
+
+      } else {
+          throw new RuntimeException("Duplicated item " + item);
+
+      }
+  }
+#+end_src
+  
+* Deletion
+
+#+begin_src java
+    public Tree<Item> delete(Item givenItem) throws NoSuchElement {
+        int difference = this.item.compareTo(givenItem);
+        if (difference < 0) {
+            if (hasRightChild()) {
+                this.right = this.right.delete(givenItem);
+                return this;
+            }
+            throw new NoSuchElement();
+
+        } else if (difference > 0) {
+            if (hasLeftChild()) {
+                this.left = this.left.delete(givenItem);
+                return this;
+            }
+            throw new NoSuchElement();
+
+        } else {
+            if (hasLeftChild() && hasRightChild()) {
+                try {
+                    Tree<Item> successor = this.findSuccessorTree(this.item);
+                    successor.right = this.right.delete(successor.item);
+                    successor.left = this.left;
+                    return successor;
+                } catch (NoSuccessor error) {
+                    throw new RuntimeException(error);
+                }
+            }
+            if (hasLeftChild()) {
+                return this.left;
+            }
+            if (hasRightChild()) {
+                return this.right;
+            }
+            return null;
+        }
+    }
+#+end_src
+
+  
+* References
+ - [cite:cormen2009][Chapter 12]
+ - [cite:skiena2020][Section 3.4]
+ - [cite:goodrich2014][Chapter 11]
