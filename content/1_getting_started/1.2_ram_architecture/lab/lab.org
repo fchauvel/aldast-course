@@ -1,0 +1,71 @@
+#+title:  RAM Assembly Programming
+#+subtitle: Understanging the computation model
+#+author: NTNU IDATA2302
+#+date: Sep. 5, 2021
+#+language: en
+
+
+* Introduction
+
+  In this lab session, we will write some simple programs for the RAM
+  architecture. This architecture is an abstract computing model, so
+  this is a pen-and-paper exercise. But if like me, you prefer to see
+  the things running, you can rasp-machine application to run your
+  assembly programs.
+
+  We will look at several problems, 
+
+  
+* Adding Two Numbers
+
+* Maximum of Two
+
+* Summing a Sequence
+  
+#+begin_src python -n -r
+  number_count = int(input())
+  total = 0
+  counter = 0
+  while counter < number_count:
+     value = int(input())
+     total = total + value
+     counter = counter +1
+  print(total)
+#+end_src
+
+  
+#+begin_src asm
+SEGMENT: data
+        count   1 0             ; count := 0
+        counter 1 0             ; counter := 0
+        value   1 0             ; value := 0
+        total   1 0             ; total := 0
+
+SEGMENT: code
+        read count              ; count := user-input()
+loop:   load 0
+        subtract count
+        add counter
+        jump done               ; while counter < count
+        read value              ;    value := user-input()
+        load 0
+        add total
+        add value
+        store total             ;    total := total + value
+        load 1
+        add counter
+        store counter           ;    counter := counter + 1
+        load 0
+        jump loop               ; end
+done:   print total             ; print total
+        halt  -1
+#+end_src 
+
+
+* Multiplying Two numbers
+
+
+* Executing RAM assembly programs
+  :PROPERTIES:
+  :APPENDIX: yes
+

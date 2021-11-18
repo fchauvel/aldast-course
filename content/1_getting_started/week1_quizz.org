@@ -1,0 +1,80 @@
+1. Why do we study algorithms?
+   a.
+
+2. A program is the same as an algorithm
+   a. Yes
+   b. No
+
+3. Can there be several programs that solve a given problem?
+   a. Yes
+   b. No
+
+4. Can there be several algorithms that solve a given problem?
+   a. Yes
+   b. No
+
+5. An algorithm contains
+   a. unique instructions
+   b. ordered instructions
+   c. non ambiguous instructions
+
+6. What is an "executor"
+   a. A human executing instructions
+   b. A machine executing instructions
+
+7. Why do we use the RAM model?
+   a. TBC
+
+8. When an algorithm is "proven correct", we know that
+   a. It terminates
+   b. It finds a solution to the problem
+   c. It is the most efficient way to solve the problem
+
+9. Once this program has run, what is in the memory at address 15 
+   #+begin_src asm
+     load 0
+     add 15
+     sub 15
+   #+end_src
+   
+   a. 0
+   b. 1
+   b. 15
+   c. Pi
+   f. the program does not terminate
+   d. one cannot say
+
+10. The RAM model has
+    a. an infinite number of memory cell
+    b. infinitely large memory cells
+    c. infinitely many instructions
+
+11. Does a proof guarantee the app will work in practice?
+    a. Yes
+    b. No
+
+12. Does testing guarantee the app will work in practice?
+    a. Yes
+    b. No
+
+13. What is the role of the IP register?
+    a. It counts the number of instructions executed
+    b. It points to the next instructions to execute
+
+14. In the Von Neumann architecture, both the code (instructions) and
+    data are stored in the same memory?
+    a. Yes
+    b. No
+
+15. You are implementing the square-root function (over R). Which
+    inputs are relevant for testing?
+    -10
+    0
+    1
+    2
+    5
+    25
+    All of the above
+    None of the above.
+    One cannot say
+    

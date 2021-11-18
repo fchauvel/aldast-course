@@ -1,0 +1,192 @@
+#+titile: Correctness
+#+subtitle: Introduction to Program Verification
+#+author: Franck Chauvel
+#+language: en
+
+#+SETUPFILE: ../templates/style.org
+
+
+* Introduction
+
+  - Why to look at correctness?
+  - Because programs are useless if they don't solve the task they are
+    meant to solve!
+
+  - So what can we do?
+    1. Testing?
+       - Can show the program is incorrect
+       - Yes, but testing does not show the absence of bug, only their
+         presence.
+    2. Proof
+       - Yes, but it is tedious.
+
+* What is Testing?
+
+  - Black box testing vs. white-box testing?
+
+
+  - What input to test?
+
+* Correctness Proof
+
+  - Deduction rules
+
+  - Total correctness = Partial Correctness + Termination
+
+    - Partial correctness:
+      - If the program terminates, it will gives the right answer
+
+    - Total correctness:
+      - The program terminates
+
+  - Termination and the "Halting Problem"
+
+    - See [[https://en.wikipedia.org/wiki/Halting_problem][Wikipedia on the "Halting Problem"]]
+
+
+** What is a formal proof
+
+
+   
+** State space
+
+** Hoare Logic
+   
+** Assignment
+
+   #+begin_src python
+      each = each + 1
+   #+end_src
+
+   This translates into RAM assembly as follows
+
+   #+begin_src asm -n -r
+       x: LOAD 0
+     x+2: ADD each
+     x+4: ADD 1
+     x+6: STORE each
+   #+end_src
+
+   If we look at what we know from the definition of the
+
+   Here the step by step knowledge
+   1. If IP = x., then according to the definition of the RAM machine
+     ACC = 0
+     IP = x + 2
+   2. If ACC = 0 and IP = x + 2
+     ACC = 0 + memory[each]
+     IP = x + 2 + 2 = x + 4
+   3. If IP = x+4 and ACC = y
+     ACC = y + 1 = 0 + memory[each] + 1
+     IP = x+6
+   4. If IP x+6 and ACC = z 
+     memory[each] = z = memory[each] + 1
+
+** What is an informal proof
+
+   #+header: :results output
+   #+begin_src C
+     #include <stdio.h>
+
+     #define LIMIT 100
+
+     int main(int argc, char* argv[]){
+       int total = 0;
+       int each = 0;
+       while (each <= LIMIT) {
+         if (each % 2 == 0) {
+           total = total + each;
+         }
+         each = each + 1;
+       }
+       printf("%d\n", total);
+     }
+   #+end_src
+
+   #+RESULTS:
+   : 2550
+
+
+   Before the loop we know that:
+   - each = 0
+   - total = 0
+
+   After the loop we want to proove that
+   - total = sum(i, i<LIMIT && i%2=0, i)
+
+   - At the entrance of the loop we need to show
+     total = sum(i, i<each && i%2=0, i)
+
+     - After the conditional we know
+
+       each has incremented
+   
+** Conditional
+
+** Loops
+
+
+   P => I   {I & C} S {I}   I & !C => Q  
+   -------------------------------------
+           {P} while C do S {Q}
+
+   - See [[https://en.wikipedia.org/wiki/Loop_invariant][Wikipedia on "Loop Invariants"]]
+
+** Example
+
+   #+header: :results output
+   #+header: :python python3
+   #+begin_src python
+     def sum_of_even(limit):
+         total = 0
+         # total = 0
+         each = 0
+         # total = 0
+         # each = 0
+         while each <= limit:
+             # total = sum(x<each, x%2=0, i)
+             if each % 2 == 0:
+                 total = total + each
+             each = each + 1
+         return total
+
+     print(sum_of_even(100))
+   #+end_src
+
+   #+RESULTS:
+   : 2550
+
+   {limit = 100}
+   total = 0
+   { total == 0 }
+   each = 0
+   { total == 0 & each == 0}
+   while each <= limit+1:
+       {0 <= each <= limit && total = sum(i, i < each & each % 2 == 0, i)}
+       if each % 2 == 0:
+           total = total + each
+           {total = }
+       else
+          {total = total }
+       each = each + 1
+   {total = sum(i, limit, each % 2 == 0)
+   {each > limit}
+
+
+   - We want to prove that total = sum(even<limit)
+     If we set
+     - Q:  each =limit + 1 & total=sum(even<=limit)
+     - I:   total = sum(even<each)
+     - P: each = 0 & total = 0
+       - P => Inv
+         - each = 0 & total = 0 => total=sum(even<0)
+                                => sum({})
+                                => 0
+       - {I & C} S {I}
+         total = sum(even<each-1)
+
+    -
+     
+* Conclusion?
+
+   
