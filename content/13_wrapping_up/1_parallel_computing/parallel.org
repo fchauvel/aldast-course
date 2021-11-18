@@ -1,0 +1,35 @@
+
+
+* Parallel Linear Search
+
+** With too many processors
+  
+  #+begin_src java
+    int contains(int[] givenArray, int expected) {
+       int index = 0;
+       if (givenArray[processorId] == expected) {
+          index = processorId;
+       }
+       System.out.println(index);
+    }
+  #+end_src
+
+
+** With just a few processors
+
+   #+begin_src java
+     int contains(int[] givenArray, int expected) {
+         int index = 0;
+         int offset = givenArray.length / processorCount;
+         int bucket = processorId;
+         while (bucket < givenArray.length) {
+             if (givenArray[bucket] == expected) {
+                 index = bucket;
+             }
+             int bucket = processorId + offset;
+         }
+         System.out.println(index);
+     }
+   #+end_src
+
+
