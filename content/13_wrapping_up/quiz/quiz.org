@@ -1,0 +1,110 @@
+#+title:Beyond Classical Computing
+#+subtitle: Week 13 Quiz
+#+author: NTNU IDATA 2302
+#+date: Nov. 2021
+
+
+#+OPTIONS: toc:nil
+
+
+* Questions
+
+1. How many memories has a P-RAM machine?
+   1. a single memory
+   2. as many as it has processors
+   3. infinitely many
+   4. None of the above
+
+2. The /work/ of a parallel algorithm is
+   1. the sum of all the instructions executed by all the processors
+   2. the number of instructions in the program
+   3. the number of active processors
+   4. None of the above
+
+3. The /cost/ of a parallel algorithm is
+   1. the number of processors
+   2. the number of time steps the algorithm takes to complete
+   3. the total number of active processors over time
+   4. the total number of processor over time
+
+4. The speed-up of a parallel algorithm A contrasts
+   1. the execution time of A with 1 and many processors
+   2. the execution time of A with the execution time of the best
+      known serial algorithm, both running on a single processor.
+   3. the execution time of A with the execution time of the best
+      known serial algorithm, both running on multiple processors.
+   4. none of the above
+
+5. In Quantum Computing, when measuring a /qubit/, its value 
+   1. vanishes
+   2. becomes either 0 or 1 without superposition
+   3. becomes negative
+   4. is superposed on top of its previous value
+
+6. Quantum Computing always outperforms "classical computing"?
+   1. Yes
+   2. No
+
+7. As opposed to classical boolean gates, quantum gates are
+   1. symmetric
+   2. can form circuits
+   3. reversible
+   4. none of the above   
+
+8. The /merge-sort/ algorithm adheres to 
+   1. a brute-force approach
+   2. a divide-and-conquer approach
+   3. a greedy approach
+   4. a randomized approach
+   5. None of the above
+
+9. The "Jump-search" algorithm adheres to 
+   1. a brute-force approach
+   2. a divide-and-conquer approach
+   3. a greedy approach
+   4. a randomized approach
+   5. none of the above
+      
+10. What is the purpose of "screening" during the recruitment of
+    "programmer" candidates?
+    1. To select only the best of the best programmers
+    2. Find the most challenging problems
+    3. To reject people without sufficient programming abilities
+    4. None of the above
+    
+* Solutions
+
+1. *Answer (a)* P-RAM relies on a single memory, shared by an infinity
+   of processors.
+
+2. *Answer (a)* The /work/ reflects the sum of all the instructions
+   performed by all processors. If an instruction is simultaneously by
+   two processors, it is counted twice.
+
+3. *Answer (d)* The /cost/ reflects the number of processors required
+   during the whole execution of the algorithm (including active and
+   passive ones).
+
+4. *Answer (a)* The /speed-up/ reflects the difference between running
+   the algorithm A on one processor and on many processors.
+
+5. *Answer (b)* When measuring a qubit, its value looses any
+   superposition of states and becomes either 0 or 1 (but not both
+   anymore).
+
+5. *Answer (b)* No. There are problems for which Quantum computing
+   is no faster than classical computing.
+
+6. *Answer (c)* Quantum gates are reversible, which means the can be
+   used both ways: To generates outputs from inputs but also to
+   generate inputs from outputs.
+
+7. *Answer (b)* /merge-sort/ follows a /divide-and-conquer/ approach.
+
+8. *Answer (b)* I would say that jump-search also adheres to a
+   divide-and-conquer approach, since it tries to break down the
+   search into a list of segments and then uses linear search to explore
+   the selected segment.
+
+10. *Answer (c)* Screening is there mainly to sort out those that are
+    actually able to write code from those who are not.

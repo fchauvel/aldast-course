@@ -61,7 +61,7 @@ public class Coins {
             for(var eachCoin: coins) {
                 current.add(eachCoin);
                 if (current.isValid(desiredPrice)) {
-                    System.out.println("Found" + current);
+                    System.out.println("Found " + current);
                 } else {
                     recurse(current, coins, desiredPrice);
                 }
