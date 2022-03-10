@@ -1,0 +1,141 @@
+\documentclass{aldast}
+
+
+\title{RAM Programming}
+\author{F. Chauvel}
+\documentType{Lab Session}
+\documentNumber{1.2}
+
+\begin{document}
+
+\maketitle
+
+We will look at the RAM model and we will write some tiny
+programs. For this we only need pen-and-paper. The point is not to
+memorize the RAM instructions, but to anchor the concepts and to
+understand how a machine works. This is necessary to later understand
+why some algorithms are more efficient than others. For every RAM
+program, I make the following assumptions:
+\begin{itemize}
+\item The code is stored from address 0. I put the data further down
+  into the memory.
+\item I don't know what is in the register or the memory beforehand.
+\end{itemize}
+
+\begin{exercise}[{What Does This RAM Program Do?}]
+Below is a three lines RAM program. What does this program do?
+\begin{minted}{asm}
+  LOAD 0
+  ADD 25
+  STORE 35
+\end{minted}
+\end{exercise}
+
+This program copies the content of the memory cell at address 25 into
+the cell at address 35. The first \texttt{LOAD} instruction set the
+\texttt{ACC} register to 0. The second instruction copy the value
+contained in memory at address 25 into the \texttt{ACC}
+register. Finally the last instruction copy the content of the
+\texttt{ACC} register into the memory, at address 35.
+
+\begin{exercise}[{Swapping two memory cells}]
+  Write a RAM program that swaps the content two memory cells, say 100
+  and 101. For example, if address 100 contains 25 and address 101
+  contains 50, after your program executes, address 100 must contains
+  50 and address 101 must contain 25.
+\end{exercise}
+
+Swapping two memory cells requires to use a third one, say 102 for
+example. I don't see any other way with the constraint of the RAM. We
+first copy the first cell (with address 100) into another free cell
+(say 102) and we then override the content of the first cell (100),
+with the content of the second one (101). Finally, we override the
+content of the second cell, with the value we saved in the third cell
+(102). The code below shows the sequences of RAM instructions.
+
+\begin{minted}{asm}
+  LOAD 0        ;; Copy Cell 100 into Cell 102
+  ADD 100
+  STORE 102
+  LOAD 0        ;; Copy Cell 101 into Cell 100
+  ADD 101
+  STORE 100
+  LOAD 0        ;; Copy Cell 102 into Cell 101 
+  ADD 102
+  STORE 101
+\end{minted}
+
+
+\begin{exercise}[{Maximum of Two Numbers}]
+  Write a RAM program that reads two numbers from the I/O device and
+  prints the largest one.
+\end{exercise}
+
+In the following program, we first read two values from the I/O
+device, which we store at address 100 and 101, respectively. We then
+load the first one into the \texttt{ACC} register and subtract the
+other one. The \texttt{ACC} thus contains the difference. We can then
+\texttt{JUMP} (only if this difference is positive) to Line 10 where
+we print the first value. Otherwise, we proceed and print the second
+value, and jump to Line 11 (because we set the \texttt{ACC} to zero
+previously).
+
+\begin{minted}{asm}
+  READ 100      ;; Read two numbers 
+  READ 101
+  LOAD 0        ;; Compute the difference
+  ADD 100
+  SUB 101
+  JUMP 18       ;; Jump to Line 10, if the difference is positive
+  PRINT 100     ;; Print the second value
+  LOAD 0
+  JUMP 20       ;; Jump to Line 11, always.
+  PRINT 101     ;; Print the first value
+  HALT
+\end{minted}
+
+\begin{exercise}[{Multiplication}]
+  Write a RAM program that reads two numbers from the I/O device and
+  then computes and prints their product back onto the I/O device.
+\end{exercise}
+
+I found this program slightly more involved. Since the RAM model only
+gives us an addition instructions, we need to express the
+multiplication as follows:
+
+\begin{equation}
+  a \times b = \overbrace{a + a + a + \ldots + a}^{\textrm{b times}}
+\end{equation}
+
+To multiple two values, say $a$ and $b$, we will encode a loop that
+adds $a$ b times to the \texttt{ACC} register and then print the
+result. We will therefore need two additional variables:
+\texttt{counter} (stored at address 102) which counts how many times
+we have added a so far, and \texttt{result} (stored at address 103)
+which hold the on going accumulation.
+
+\begin{minted}{asm}
+  READ 100    ;; a := I/O
+  READ 101    ;; b := I/O
+  LOAD 0
+  STORE 102   ;; counter := 0
+  LOAD 0
+  STORE 103   ;; result := 0
+  LOAD 0
+  ADD 102
+  SUB 101     ;; 
+  JUMP 38     ;; if counter - b >= 0, go print result (Line 20)
+  LOAD 0
+  ADD 103       
+  ADD 100
+  STORE 103   ;; result := result + a
+  LOAD 1
+  ADD 102
+  STORE 102   ;; counter := counter + 1
+  LOAD 0
+  JUMP 12     ;; go back to the loop condition (Line 7)
+  PRINT 103   ;; print result
+  HALT
+\end{minted}
+
+\end{document}

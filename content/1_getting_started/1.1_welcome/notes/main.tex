@@ -1,0 +1,238 @@
+\documentclass{aldast}
+
+
+\documentType{Lecture Notes}
+\documentNumber{1.1}
+\title{Getting Started}
+\author{F. Chauvel}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  Let us first take a look at the course as a whole: What topics will
+  we cover and which one will we leave aside. We also look at our
+  respective expectations: What do I expect from you and what can you
+  reasonably expect from me. I then go through the course
+  organizations, with lectures, lab sessions, weekly quizzes and
+  examinations. Finally, we look at external resources (books, online
+  courses, websites, etc.) which you may find helpful.
+\end{abstract}
+
+
+\section*{Introduction}
+Welcome. I\sidenote{My name is Franck. I am a full stack engineer at
+  Axbit AS and a lecturer at NTNU. Contact
+  \href{mailto:franck.chauvel@ntnu.no}{me} if I can help!} am very
+happy to welcome you in this course about \emph{Algorithms \& Data
+  Structures}. I prepared this course as well as I could with the
+time, resources and energy I had, and I do hope you will find it
+relevant. \emph{Feedback is always welcome.}
+
+
+\section{Algorithms and Data Structures}
+% What do we want to learn
+I guess you already came across these terms: Algorithms and data
+structures. What are these? To start simple, let us take an algorithm
+as a cooking recipe, that is, a \emph{ordered} sequence of steps. Data
+structures would then resemble the way the kitchen is organized. If all
+kitchen equipment and ingredients are readily available, the chef will
+be efficient.
+
+Algorithms and data structures encompass very general knowledge about
+how to wrote \emph{efficient} software, regardless of the languages,
+framework and machines. What we will study is ``rock solid''!
+
+\paragraph{What will we study?} This course starts from scratch: There
+is no prerequisite, except maybe some high school calculus
+(probabilities, summations and series). Table~\ref{tab:syllabus}
+details the topics covered in each of the 13 weeks. We start with the
+computer architecture (CPU \& memory) and core programming concepts
+(variables, conditional and loops) and then move to common data
+structures: Record, arrays, and lists. At the same time we will study
+simple algorithms to search and sort.
+
+We will then push on to more advanced concepts, including hashing
+(Week 7), trees (Week 8--9) and graphs (Week 10). These are all the
+data structure we will study. In the remainder we will explore two
+other topics where algorithms play a key role: Discrete optimization
+and compilation.
+
+Finally we will wrap up with looking at other computation models,
+namely parallel and quantum computing. The knowledge we have gathered
+is very general and apply there as well.
+
+\input{syllabus}
+
+\paragraph{Why to study this?} Algorithms and data structures form
+the core of Computer Science, and in turn, of Software
+Engineering. Image processing, cryptography, compilers, networks,
+artificial intelligence, and other ``branches'' of Computer Science
+all develop algorithms and data structures. Consider image processing as
+an example: How to detect the contour of a shape in a bitmap?  What data
+structure is the most suitable to represent an image in memory? Which
+algorithm is the fastest? Which consume the least memory? This course
+lay down the foundations to discuss, evaluate and compare algorithms
+and data structures.
+
+Besides, as a software engineer, your daily work is to choose among
+existing data structures and algorithms, depending on the task at
+end. You have to sort the score of the top players in your mobile
+game. Shall we go for a \emph{quick sort} or a \emph{radix sort}?
+Sometimes, even, we have to roll out our own. It is critical to know what
+already exists and where we it shines and where it falls short.
+
+\section{Objectives \& Expectations}
+
+\paragraph{Objectives} The main objective is to give you some
+exposure---and ideally some fluency---with concepts that every
+programmer must know. This goes beyond being able to choose between an
+\texttt{ArrayList}, and \texttt{LinkedList} or a \texttt{HashMap} in
+Java. The point is also for you to understand what lays behind these
+names and how you can possibly make your own. I see the three
+following objectives:
+
+\begin{enumerate}
+  \item Understand how the machine executes your algorithms;
+  \item Know the basic data structures and their operations;
+  \item Understand recursion;
+  \item Understand algorithms for searching and sorting;
+  \item Know how to estimate the time and memory effectiveness of;
+    algorithms;
+  \item Get better at solving programming problems.
+\end{enumerate}
+
+\paragraph{What do I expect from you?}
+
+\emph{These topics is hard}---I cannot stress this enough. We will
+cover many, some of which are non-trivial. Yet, I made everything
+optional, but the final examination. I am not there to burden
+you. To me, this course is an opportunity to study algorithms and data
+structures. Here is what I \emph{strongly} recommend:
+
+\begin{itemize}
+\item Attend the lecture physically. Even more, ask questions!
+  Attending empower you to ask questions and to stop me if I am
+  unclear. Please do so: I am happy to adjust or answer to the best of
+  my knowledge.
+\item Attend the lab sessions to go through the exercises. In my
+  experience, exercises (whether on paper or on computer) is the only
+  thing that really ground understanding.
+\item Go through the home examinations. I believe this is a good
+  preparation to the final one.
+\item Reach out if you need any help.
+\item Practice. practice, practice.
+\end{itemize}
+
+As you can see in Table~\ref{tab:syllabus}, this course is
+``content-heavy''. I don't think one can master the whole thing in a
+week or so before the final examination. A strongly recommend you
+spread your work over the 13 weeks.
+
+\paragraph {What can you expect from me?}
+
+I am there three times a week for all lectures and lab sessions. Feel
+free to come and ask questions. Besides these slots, I try to be
+available and responsive for any one who reach out, by email
+especially\sidenote{I am not sitting in NTNU on a daily
+  basis. Reaching out by email is the best way get help.}. I try to
+reply within 24 hours, but bear in mind that I am also a full time
+engineer. Expect answer outside office hours.
+
+\section{Practicalities}
+Overall, we have three sessions a week during 13 weeks. Each session is
+divided into 30 minutes of lectures and 1h30 of exercises or lab
+session.
+
+\paragraph {Lectures}
+I broke down the content into 30 minutes long lectures. Each lecture
+address a specific topic. I use various programming languages as
+examples, avoiding those that are too verbose on slides. Keep in mind
+that algorithms and data structures apply to any programming
+language. I provide written lecture notes for the most important
+lectures, so you can focus on understanding.
+
+\paragraph {Lab sessions}
+The lab sessions aim at putting concepts into practice. These are
+either pen-and-paper exercises or programming tasks. Programming tasks
+are in Java, but feel free to use any other language that works better
+for you. The point is to solve the programming tasks, not to struggle
+with the language. There is however no need to know Java programming
+beforehand, but prior exposure will help. I provide selected written
+solution, where I see fit.
+
+\paragraph {Weekly Quizzes}
+Every week, I will post a quiz to help you assess your understanding
+of the week's topics. They do not account in your grade but please
+reach out if any thing is unclear.
+
+\paragraph{Examinations}
+Your grade depends solely on the final examination. To get prepared as
+well as possible, I include two ``home'' examinations in Week 4 and
+8. These are optional, but should you feel the need for it, I can
+grade them. All examinations follow the same pattern: 100 points
+divided among four parts with 5 questions.
+
+\section{Additional Resources}
+
+There are many many books
+\cite{atto1974,melhorn2008,levitin2011,weiss2014,skiena2020}, videos, online
+courses and tutorials on algorithms and data structures. Let me know
+if my presentation gets unclear or does not fits your taste: We can
+look at other resources where the same content is taken from a
+different angle.
+
+\emph{I do not follow any textbook} in particular, but there are a few
+``references'' textbooks, whose authors are leading authorities in the
+field. Feel free to check them if you need a different approach:
+
+\begin{itemize}
+\item ``The Art of Computer Programming'' (aka TAOCP) by Donald
+  E. Knuth. This is \emph{the} reference. Five volumes so far:
+  Fundamentals~\cite{knuth1978}, semi-numerical~\cite{knuth1997},
+  sorting and searching~\cite{knuth1998}, combinato\-rial
+  al\-go\-ri\-thms~\cite{knuth2011}. I found the treatment very detailed
+  and oriented towards the mathematically oriented. Beyond the scope
+  of this course.
+\item ``Introduction to Algorithms'' by Thomas H. Cormen et
+  al~\cite{cormen2009} is another famous reference. It covers most of
+  the topic I selected and many more, except maybe random access
+  machines.
+\item ``Algorithms'' by Robert Sedgewick~\cite{sedgewick2014} is another
+  well-known textbook, which is used in some very successful online
+  courses. Example are given in Java.
+\item ``Data structures and algorithms in Java'' by Michael
+  T. Goodrich and Roberto Tamassia~\cite{goodrich2014} fits very well this
+  course. Most content we will cover is also treated there.
+\end{itemize}
+
+There are also online course on platforms such as
+\href{https://www.coursera.org}{Coursera} or
+\href{https://www.edx.org}{EdX} for instance. They can be a good
+alternative to my presentations. Check however that the content they
+cover matches the syllabus.
+
+You will also find many online explanation and tutorials such as
+\href{www.geeksforgeeks.com}{GeeksForGeeks} or
+\href{www.tutorialspoint.com}{TutorialsPoint}. Please keep a critical
+eye as they may contain mistakes.
+
+Finally, there are many web sites such
+\href{http://www.hackerrank.com}{HackerRank} or
+\href{https://leetcode.com}{LeetCode} where one can practice
+programming. Many problems we find there are direct application of the
+concepts we will study. These web sites are great resources to gain
+fluency.
+
+
+\section*{Conclusions}
+Let us get started! There is a lot or ground to cover. Please reach
+out if you have any questions or if you find mistakes in the slides,
+the lectures notes or the lab sessions.nn
+
+\bibliographystyle{acm}
+\bibliography{references}
+
+\end{document}
