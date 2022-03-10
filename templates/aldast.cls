@@ -7,7 +7,7 @@
 
 \RequirePackage[utf8]{inputenc}
 
-\RequirePackage[inner=2.5cm, outer=7cm, marginparwidth=5.5cm]{geometry}
+\RequirePackage[inner=2.5cm, outer=7cm, marginparsep=0.75cm, marginparwidth=5cm]{geometry}
 
 \RequirePackage{booktabs}
 
@@ -24,17 +24,27 @@
   }
   
 
-\RequirePackage[skins]{tcolorbox}
-
 \def\documentType#1{\def\@documentType{#1}}
 
 \def\documentNumber#1{\def\@documentNumber{#1}}
 
 \RequirePackage{fancyhdr}
 \pagestyle{fancy}
-\fancyhead[LE,RO]{NTNU IDATA 2302}
+\fancyhead[LE,RO]{NTNU \textbullet\ IDATA 2302}
 \fancyhead[RE,LO]{\@documentType\ \@documentNumber}
 
+\RequirePackage{minted}
+\setminted{
+  xleftmargin=3em,
+  numbersep=1em,
+  fontsize=\small,
+  baselinestretch=1,
+  linenos=true,
+  autogobble,
+}
+
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
 
 \renewcommand{\maketitle}{
   \thispagestyle{plain}
@@ -57,4 +67,37 @@
 
 
 \let\oldSidenote\sidenote
-\renewcommand{\sidenote}[1]{{\oldSidenote{\raggedright\footnotesize #1}}}
+\renewcommand{\sidenote}[1]{\oldSidenote[][0pt]{{\footnotesize #1}}}
+
+\RequirePackage{xcolor}
+\RequirePackage[skins]{tcolorbox}
+
+\newcounter{takeawayCount}
+\setcounter{takeawayCount}{0}
+\newenvironment{takeaway}
+{\refstepcounter{takeawayCount}\begin{tcolorbox}[
+    enhanced,
+    sharp corners,
+    boxrule=0pt,
+    colback=red!5!white,
+    colframe=red!75!black,
+    borderline west = {2pt}{0pt}{red!75!black}
+  ] {\color{red!75!black} {\bfseries Takeaway \thetakeawayCount\ }}}
+{\end{tcolorbox}}
+
+\definecolor{cadmiumorange}{rgb}{0.93, 0.53, 0.18}
+\definecolor{tangerine}{rgb}{0.86, 0.52, 0.0}
+
+
+\newcounter{exerciseCount}
+\setcounter{exerciseCount}{0}
+\newenvironment{exercise}[1][\unskip]
+{\refstepcounter{exerciseCount}\begin{tcolorbox}[
+    enhanced,
+    sharp corners,
+    boxrule=0pt,
+    colback=tangerine!5!white,
+    colframe=tangerine!75!black,
+    borderline west = {3pt}{0pt}{tangerine} 
+  ] \par\noindent{\color{tangerine} {\bfseries Exercise \theexerciseCount: #1}} \vspace{2mm} \\}
+{\end{tcolorbox}}
