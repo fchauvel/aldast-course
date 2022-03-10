@@ -7,13 +7,13 @@
 
 * Introduction
 
-  In this lab session, we will write some simple programs for the RAM
-  architecture. This architecture is an abstract computing model, so
-  this is a pen-and-paper exercise. But if like me, you prefer to see
-  the things running, you can rasp-machine application to run your
-  assembly programs.
 
-  We will look at several problems, 
+
+  In this lab session, we look at the RAM model and we will write some
+  tiny programs. The point is not to memorize the RAM instructions,
+  but to anchor the concepts and to understand how a machine
+  works. This is necessary to later understand why some algorithms are
+  more efficient than others.
 
   
 * Adding Two Numbers
