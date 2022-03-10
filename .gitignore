@@ -16,8 +16,12 @@ site/*
 *.pdf
 *.odt
 *.png
-*.tex
 *.docx
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
 
 # Java
 *.class
