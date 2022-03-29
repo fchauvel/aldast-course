@@ -1,0 +1,38 @@
+\documentclass[tikz]{standalone}
+\usepackage{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usetikzlibrary{positioning, shapes.multipart, arrows.meta, calc}
+\begin{document}
+\tikzstyle{pseudo} = [font=\itshape\small]
+\tikzstyle{topic} = [draw, text width=3cm, rounded corners, align=center, minimum height=3em]
+\tikzstyle{arrow} = [draw, -Latex]
+\begin{tikzpicture}
+  \node [pseudo] (start) at (0,0) {Start};
+  \node [topic, right=of start] (foundations) { {\small Week 1,2} \\ Foundations};
+  \node [topic, right=of foundations] (arrays) { {\small Week 3} \\ Arrays};
+  \node [topic, right=of arrays] (lists) { {\small Week 4} \\ Lists};
+  \node [topic, right=of lists] (recursion) { {\small Week 5} \\ Recursion};
+  \node [topic, below=of recursion] (sorting) { {\small Week 6} \\ Sorting};
+  \node [topic, left=of sorting] (hashing) { {\small Week 7} \\ Hashing};
+  \node [topic, left=of hashing] (trees) { {\small Week 8,9} \\ Trees};
+  \node [topic, left=of trees] (graphs) { {\small Week 10} \\ Graphs};
+  \node [topic, below=of graphs] (optimization) { {\small Week 11} \\ Combinatorial \\ Search};
+  \node [topic, right=of optimization] (re) { {\small Week 12} \\ Regular \\ Expressions};
+  \node [topic, right=of re] (wrapup) { {\small Week 13} \\ Wrap-up};
+  \node [pseudo, right=of wrapup] (end) {End};
+    
+  \draw[arrow] (start) -- (foundations);
+  \draw[arrow] (foundations) -- (arrays);
+  \draw[arrow] (arrays) -- (lists);
+  \draw[arrow] (lists) -- (recursion);
+  \draw[arrow] (recursion) -- (sorting);
+  \draw[arrow] (sorting) -- (hashing);
+  \draw[arrow] (hashing) -- (trees);
+  \draw[arrow] (trees) -- (graphs);
+  \draw[arrow] (graphs) -- (optimization);
+  \draw[arrow] (optimization) -- (re);
+  \draw[arrow] (re) -- (wrapup);
+  \draw[arrow] (wrapup) -- (end);
+\end{tikzpicture}
+\end{document}

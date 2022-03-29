@@ -11,9 +11,12 @@
 
 \RequirePackage{booktabs}
 
+\RequirePackage{mparhack}
 \RequirePackage{sidenotes}
 
 \RequirePackage{graphicx}
+
+\RequirePackage{algorithm2e}
 
 \RequirePackage{hyperref}
 \hypersetup{
@@ -22,7 +25,15 @@
     filecolor=magenta,      
     urlcolor=cyan
   }
-  
+
+% Tikz
+\RequirePackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, arrows.meta}  
+
+\RequirePackage[mode=buildnew]{standalone}
+
+\RequirePackage{numprint}
+\npthousandsep{\,}
 
 \def\documentType#1{\def\@documentType{#1}}
 
@@ -66,8 +77,15 @@
 {\par\bigskip}
 
 
-\let\oldSidenote\sidenote
-\renewcommand{\sidenote}[1]{\oldSidenote[][0pt]{{\footnotesize #1}}}
+\RenewDocumentCommand\sidenotetext{ o o +m }{%      
+    \IfNoValueOrEmptyTF{#1}{%
+        \@sidenotes@placemarginal{#2}{\textsuperscript{\thesidenote}{}~\footnotesize#3}%
+        \refstepcounter{sidenote}%
+    }{%
+        \@sidenotes@placemarginal{#2}{\textsuperscript{#1}~#3}%
+    }%
+}
+
 
 \RequirePackage{xcolor}
 \RequirePackage[skins]{tcolorbox}
@@ -101,3 +119,5 @@
     borderline west = {3pt}{0pt}{tangerine} 
   ] \par\noindent{\color{tangerine} {\bfseries Exercise \theexerciseCount: #1}} \vspace{2mm} \\}
 {\end{tcolorbox}}
+
+\newcommand*{\ditto}{---\texttt{"}---}
