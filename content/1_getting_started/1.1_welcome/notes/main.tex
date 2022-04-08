@@ -1,5 +1,6 @@
 \documentclass{aldast}
 
+\usepackage{skull}
 
 \documentType{Lecture Notes}
 \documentNumber{1.1}
@@ -12,24 +13,26 @@
 \maketitle
 
 \begin{abstract}
-  Let us first take a look at the course as a whole: What topics will
-  we cover and which one will we leave aside. We also look at our
-  respective expectations: What do I expect from you and what can you
-  reasonably expect from me. I then go through the course
+  Let us first clarify a few concepts: Computation, data, algorithm,
+  and data structure. This will allow us to discuss the course
+  syllabus, including the topics we will we cover and those we will
+  not. We also look at expectations: What do I expect from you and
+  what you can expect from me. I then go through the course
   organizations, with lectures, lab sessions, weekly quizzes and
   examinations. Finally, we look at external resources (books, online
-  courses, websites, etc.) which you may find helpful.
+  courses, websites, etc.) which might help.
 \end{abstract}
 
 
 \section*{Introduction}
-Welcome. I\sidenote{My name is Franck. I am a full stack engineer at
+Welcome! I\sidenote{My name is Franck. I am a full stack developer at
   Axbit AS and a lecturer at NTNU. Feel free to
-  \href{mailto:franck.chauvel@ntnu.no}{reach out}.} am very
-happy to welcome you in this course about \emph{Algorithms \& Data
+  \href{mailto:franck.chauvel@ntnu.no}{reach out}.} am very happy to
+welcome you in this course about \emph{Algorithms \& Data
   Structures}. I prepared this course as well as I could with the
 time, resources and energy I had, and I do hope you will find it
-relevant. \emph{Feedback is always welcome.}
+relevant. Many thanks to the previous years student whose feedback has
+been very valuable. Let me know what you think!
 
 Despite its official title, this course is first and foremost about
 \emph{solving ``programming'' problems}. This is the most valuable
@@ -39,39 +42,68 @@ to my daily engineering work. This is \emph{rock-solid}. But it is
 also a competence that is \emph{hard to get}.
 
 I would like to kick-off this course by presenting three core
-concepts: Problems, algorithms, and data structures. From there, I
+concepts: Computation, algorithms, and data structures. From there, I
 want to go through a few some practicalities, including learning
-outcomes, expectations and supporting material, and examinations. Just
-to be sure we are all on the same page.
+outcomes, expectations and supporting material, and examinations.
 
 
-\section{Problems, Algorithms and Data Structures}
+\section{Computation}
+Computer Science (CS) is all about computers---as the name says. The
+term ``computer'' stands however for anything that ``computes'', be it
+a person, a machine, or something else. What CS is really about is
+\emph{computation}. But what is that? A computation is a
+transformation of \emph{data}: It consumes some data and produces some
+data. That leads us directly to next question: What is \emph{data}?
+
+Data is an overloaded term. Intuitively, it stands for more or less
+anything: Texts, numbers, pictures, audio recording, etc. In CS
+however, data is anything that we can write down using \emph{a finite
+  set of symbols}. For example, the word ``computation'' is a sequence
+of letters, each drawn from the Latin alphabet. Numbers shows up as
+combinations of Arabic digits. Your smart phone computes using
+``binary'' data, encoded using binary alphabet (0 or 1) \dots These are
+various forms of data.
+
+\paragraph{Symbols vs. Concepts} Symbols are things that stands for
+something else, often a more ``abtsract'' thing. For example, in the
+Western civilization, the symbol $\skull$ stands for danger or
+death. Numbers are another example of ``concepts'' that we can write
+using a variety of symbols. We can write the concept of ``two tens''
+as a combination of Arabic digits ``20'', as the combination of Roman
+digits ``XX'', or even with ``14'' in hexadecimal. We can also use
+Latin alphabet like in ``twenty'', etc. All those represent the same
+number. CS is only concerned with symbols and not with their
+interpretation, which is peculiar to human cognition.
+
+\begin{takeaway}
+  A \emph{computation} transforms of a sequence of symbols into
+  another.
+\end{takeaway}
 
 \subsection{Computational Problems}
+We use computations to solve problems, but only some problems can be
+solved by a computation! These are so-called \emph{computational
+  problems}, and are the focus of this course.
 
-In this course, we focus on \emph{computational problems}. What are
-these?  The official answer is: ``Problems that we can solve with an
-algorithm''. Not very helpful as we have not yet defined an algorithm,
-but we are getting there.
-
-A computational problem associates an input to an output and specify
-the properties that the output must satisfy. Both input and output are
-``data'' that can be encoded as a sequence of 0 and 1. This includes
-numbers, text, sound recordings, images, etc. Take the addition of two
-natural numbers (i.e. integers) as an example. We can describe this
-problem as the following mathematical function:
+A computational problem defines what are the valid outputs for any
+given input given. Such a problem sets the requirements
+for a computation. Here is an example:
 
 \begin{align}
   add: \mathbb{N} \times \mathbb{N} &\mapsto \mathbb{N} \nonumber \\
   add\, (x, y) & \mapsto x + y
+  \label{eq:addition}
 \end{align}
 
-Note that the '$+$' sign I used above does not tell us how to actually
-carry out an addition. It simply denotes the ``addition'' concept and
-I assume here that everyone will recognize it and know what it means
-and implies (associativity, neutral element, etc.). If you already how
-to add two natural numbers, then you know a solution (to solve this
-problem), but we are looking only at the problem.
+The problem specified by Equation~\ref{eq:addition} is to find the
+number that is the sum of the two given inputs $x$ and $y$. Note that
+the '$+$' symbol I used above does not tell us how to actually carry
+out an addition. It simply denotes the concept of ``addition'' and I
+assume that everyone recognizes it and know what it means
+(associativity, neutral element, etc.). I bet you already know a
+procedure to find the sum of two natural numbers. In general, problems
+describe relations between concepts: natural numbers, addition,
+etc. They say nothing about the symbols to use.
 
 There are many types of computational problems. In \emph{decision
   problems} for example, the output is a Boolean value (yes or no),
@@ -80,7 +112,7 @@ meet search problems, where we have to find a particular value in a
 larger set, such as finding all the pairs of numbers whose sum is
 10. Another type of problem is counting, where we try to figure out
 the number of solutions to a another problem. Finally there is also
-optimization problems, where we search for the solution that maximize
+optimization problems, where we search for the solution that maximizes
 a specific criterion. All these problems can be described as
 mathematical functions\sidenote{The concept of ``function'' exists
   both in programming and in mathematics, but means different
@@ -107,32 +139,38 @@ computational problem.
   \label{fig:school-addition}
 }[-1.5cm]
 
-Returning to the addition of two natural numbers, we have learned in
-school an algorithm to do that. Figure~\ref{fig:school-addition}
-illustrates how I would add \numprint{4179} to 967 and obtain
-\numprint{5146}. Here is the steps I would follow:
+Returning to the addition of two natural numbers, I have learned in
+primary school an algorithm to do
+that. Figure~\ref{fig:school-addition} shows the setup I would use to
+add \numprint{4179} to 967. Here are the steps I would follow:
 \begin{enumerate}
-\item I would write down the two numbers into a grid to align their
-  digit by significance, the least significant digit on the rightmost
-  column. I would keep an extra row on top for possible carryover and
-  another below for the result. I would also keep an extra column on
-  the left for a possible final carryover.
-\item I would then take the two least-significant digits and add them
-  and write the result underneath. I would then break down this result
-  into tens and ones, writing down the number of ones underneath and
-  the number of tens as a carryover onto the next column on the left.
-\item I would repeat this last step until I have added all digits.
+\item Write down the two given numbers into a grid and align their
+  digits by significance: The least significant digit on the rightmost
+  column. Keep a free row on top for possible carry-overs and
+  another row below for the result. Keep an extra column on
+  the left for a possible final carry-over.
+\item Put your finger under the rightmost column.
+\item Write down a ``0'' into cell of the first row (the carry);
+\item Read the digits in the three first cells of the current column.
+\item If nothing has been read, stop here.
+\item Look-up (in an addition table) the sum and the carry yielded by
+  adding the two digits and the carry-over.
+\item Write down the sum into last row of the current column.
+\item Move your finger to the next column on the left
+\item If possible, write down the carry in first row
+\item Return to Step 4
 \end{enumerate}
 
-This is a first real-life example of algorithms. Unfortunately, I am
-not aware of a single formal definition, upon which everyone
-agrees\sidenote{I found many attempts at a definition. See
-  \cite{vardi2012,hill2016} or
+This is our first algorithm: A recipe to add natural numbers! The
+notion of algorithm is however not so well defined. I am not aware of
+a single formal definition, upon which everyone agrees\sidenote{I
+  found many attempts at a definition. See \cite{vardi2012,hill2016}
+  or
   \href{https://en.wikipedia.org/wiki/Algorithm_characterizations}{algorithm
     characterizations} on Wikipedia for more details}. In this course,
 I will reuse the definition given by D. Knuth in
-TAOCP~\cite[p. 5--6]{knuth1978}, where he specifies the four following
-properties:
+TAOCP~\cite[p. 5--6]{knuth1978} (see Section~\ref{sec:resources}),
+where he specifies the four following properties:
 \begin{itemize}
 \item An algorithm has \emph{inputs and outputs}. It consumes some data
   and produces some results. Our addition takes two natural numbers
@@ -142,41 +180,55 @@ properties:
   numbers stops when we have added all pairs of digits.
 \item An algorithm is \emph{well-defined}, and each step is
   non-ambiguous. In our addition, each step is about reading, adding,
-  comparing or writing numbers.
+  comparing or writing numbers. Children do not need to know how to
+  add, they can use an addition table that gives both the result digit
+  and the carry over as shown on Figure~\ref{fig:school-addition-table}.
+  \marginnote{
+    \includestandalone[width=.8\marginparwidth]{images/addition-table.tikz}
+    \captionof{figure}{Addition table. Each cell contains two digit,
+      the carryover and the sum.}
+    \label{fig:school-addition-table}
+  }[-1.5cm]
+  
 \item An algorithm is \emph{effective} and can be carried out by
-  either a machine or human with pen and paper. Children add numbers
-  this way on a daily basis.
+  either a machine or human with pen and paper in a finite amount of
+  time. Each step must be feasible. As for the addition, children add
+  numbers this way on a daily basis, in a few minutes.
 \end{itemize}
 
+Do not confuse algorithm and computation. As for the addition, the
+\emph{algorithm} is the list of steps to follow whereas the
+\emph{computation} is what happen when a computer (a machine or a
+child) goes through a particular addition.
 
 \subsection{Data Structures}
 
 An algorithm is a sequence of steps that manipulates data to solve a
-problem. It necessarily produces and transforms data and needs a
-place to store it---a sort of scratch pad if you will. This ``scratch
-pad'' is the \emph{data structure}: How we organize the data
-our algorithm manipulates.
+problem. It necessarily produces and transforms data and needs a place
+to store it---a sort of ``scratch pad'' if you will. This scratch pad
+is the \emph{data structure}: How we organize the data our algorithm
+manipulates.
 
 In our addition example (see Figure~\ref{fig:school-addition}) we use
 a ``grid'' that stores all the data, including the two
 given numbers (the inputs), the result (output) and the carryovers
-(intermediate results). This grid as four rows and one more column than
-the longest of given numbers has digits.
+(intermediate results). This grid has four rows and one more column than
+the longest given numbers has digits.
 
-Note that many data structure are possible for a given algorithm, and
-that a good data structure will enable efficient algorithms. We will
+Many data structure are possible for a given algorithm, and an
+appropriate data structure enables efficient algorithms. We will
 discuss various schemes such as lists, trees, graphs, etc. Each has
 its strengths and its weaknesses. As for our addition, we could have
-written it down a list of symbols:
+written it down as a list of symbols:
 \begin{equation}
 \numprint{4179} + \numprint{967} = \numprint{5146}
 \end{equation}
 
 But that would have been harder. Primary school teachers use this grid
 because it makes things easier for children: They
-proceed---mechanically---by columns. Only when we becomes more fluent
-with adding do we get rid of the grid. The very same apply to
-algorithms: Appropriate data structure is the key to their efficiency.
+proceed---mechanically---by columns. Only when we become more fluent
+do we get rid of the grid. The very same apply to algorithms:
+Appropriate data structure is the key to their efficiency.
 
 \begin{takeaway}
   An \emph{algorithm} is a \emph{finite} sequence of
@@ -187,95 +239,6 @@ algorithms: Appropriate data structure is the key to their efficiency.
 \end{takeaway}
 
 
-% \subsection{How to Describe an Algorithm?}
-
-% I found several ways one can describe an algorithm: Natural language,
-% flowcharts, pseudo-code or programs.
-
-% \paragraph{Using Natural Language} The simplest way is to use plain
-% English, but this often lead to ambiguous text, which prevents
-% machines to follow our instructions. For example, we could describe
-% the addition of two numbers as follows:
-% \begin{enumerate}
-% \item Prepare a grid that has four rows and one more columns than the
-%   largest number has digits.
-% \item Write down the first number in the second row (from the top),
-%   with its least significant digit in the rightmost column.
-% \item Write down the second number in the third row with its least
-%   significant digit in the rightmost column.
-% \item Start with the rightmost column and add the three first cells
-%   together. Separate the ones and the tens: Place the ones into the
-%   last rows of that column, and the tens in the first row of the next
-%   column on the left.
-% \item Repeat this last step until all columns have been added.
-% \item You can read the result in the last row.
-% \end{enumerate}
-
-% \paragraph{Using Flowcharts} Another human-friendly way is to use a
-% flowcharts, which visually portrays the sequence of
-% steps. Figure~\ref{fig:flowchart} shows a possible flowchart for the
-% addition of two natural numbers. The problem is that flowchart do not
-% really scale to complex algorithms.
-
-% \begin{figure}[htbp]
-%   \begin{center}
-%     \includegraphics[width=\textwidth]{images/flowchart}
-%   \end{center}
-%   \caption{A flowchart depicting the addition of two natural numbers}
-%   \label{fig:flowchart}
-% \end{figure}
-
-% \paragraph{Using Pseudocode} A less space-demanding way is to use some
-% pseudo-code\sidenote{I will not use much pseudo code in this
-%   course. It is a matter of taste, but I found it very similar to
-%   writing high-level languages such as Python or Ruby, which one can
-%   run---for free.}. This resemble programming but does not refer to an
-% actual language. It just calls for a general understanding of
-% programming concepts. Regarding the addition of two numbers, we could
-% write something like:
-
-% \begin{algorithm}
-%   \KwData{$x,y \in \mathbb{N}^2$}
-%   \KwResult{$result = x + y$}
-%   $result \gets \emptyset$\;
-%   $length \gets \max(length(x), length(y))$\;
-%   $index \gets 1$\;
-%   $sum \gets 0$\;
-%   $carry \gets 0$\;
-%   \While{$index \leq length$ or $carry = 1$}{
-%     $sum \gets digit(x, index) + digit(y, index) + carry$\;
-%     \If{$sum > 9$}{
-%       $carry \gets 1$\;n
-%       $sum \gets sum - 10$\;
-%     }
-%     $result \gets append(sum, result)$\;
-%     $index \gets index + 1$\;
-%   }
-% \end{algorithm}
-
-% \paragraph{Using a Program} If we do \emph{not} want to be ambiguous,
-% we can directly write a program using your favorite language. I
-% put below a Python program equivalent to the pseudo code
-% above\sidenote{Writing a program that adds two numbers this way is a
-%   complete nonsense. Addition is natively supported in all
-%   languages!}.
-
-% \inputminted{python}{code/sum.py}
-
-% \begin{takeaway}
-%   An algorithm is a pure abstract concept, which we cannot directly
-%   seize. It only surfaces when we describe it using a specific language
-%   or syntax.
-% \end{takeaway}
-
-% We still have a problem however. When we describe an algorithm, we
-% need to decide on \emph{basic actions} and we assume that
-% \emph{executor} (either a machine or a human) is able to perform
-% these. For example, to add two natural numbers, we have assumed the
-% existence of conditional statements, loops, arithmetic and logical
-% operations, etc. In the next section, we'll specify these actions using a
-% \emph{computation model}, which we will use throughout the remainder
-% of this course.
 
 \section{Course Overview}
 
@@ -305,7 +268,7 @@ arrays, lists, recursion and sorting.
 
 Then, we push on to more advanced concepts, including hashing (Week
 7), trees (Week 8, 9) and graphs (Week 10). These are all the data
-structures we will study but sure there are many more. In the
+structures we will study but be sure there are many more. In the
 remainder we will explore two other topics where algorithms play a key
 role: Combinatorial search and regular expressions. Finally we will
 wrap up with looking at two other computation models: Parallel
@@ -352,25 +315,24 @@ developing competencies, skills and knowledge.
 Again, the point is to develop a single competence: \emph{Solving
   computational problems}, by designing algorithms and programs that a
 machine can execute. This is difficult. This is not something we learn
-and recite: One must hone this with practice.
+and recite: One must practice.
 
 \paragraph{Skills}
-As we practice solving computational problems, we will build three
-core skills:
+As we practice, we will build three core skills:
 \begin{enumerate}
 \item Design algorithms and data structures tailored for a specific
   problem.
 \item Argue for their correctness and be confident that the solution
   we come up with actually solves the problem at hand.
-\item Evaluate the time and memory consumed by our algorithms in order
-  to compare with alternative solutions.
+\item Compare the time and memory consumed by our algorithms to
+  alternative solutions.
 \end{enumerate}
 
 \paragraph{Knowledge}
 This course contains a lot of knowledge, especially in the form of
 known problems and their accepted solutions, which combine algorithms
-and data structures. This course is not exhaustive at all! It is just
-an introduction, but it will give you the shared vocabulary and
+and data structures. But this course is not exhaustive at all! It is just
+an introduction, whose aim is only to establish the shared vocabulary and
 culture to be effective as a professional. We will cover the basics:
 Arrays, lists, searching, sorting, trees, graphs, hashing, etc.
 
@@ -381,8 +343,8 @@ Arrays, lists, searching, sorting, trees, graphs, hashing, etc.
 
 
 \section{Practicalities}
-Overall, we have three sessions a week during 13 weeks. Each session is
-divided into 30 minutes of lectures and 1h30 of exercises or lab
+Overall, we have three sessions a week during 13 weeks. Each session
+is divided into 30 minutes of lectures and 1h30 of exercises or lab
 session.
 
 \paragraph {Lectures}
@@ -396,11 +358,11 @@ lectures, so you can focus on understanding.
 \paragraph {Lab sessions}
 The lab sessions aim at putting concepts into practice. These are
 either pen-and-paper exercises or programming tasks. Programming tasks
-are in Java, but feel free to use any other language that works better
-for you. The point is to solve the programming tasks, not to struggle
-with the language. There is however no need to know Java programming
-beforehand, but a prior exposure will help. I provide selected written
-solution, where I see fit.
+are in Java, but feel free to use any other language that makes things
+easier for you. The point is to solve the programming tasks, not to
+struggle with the programming language. There is no need to
+know Java programming beforehand, but a prior exposure will help. I
+provide selected written solutions, where I see fit.
 
 \paragraph {Weekly Quizzes}
 Every week, I will post a quiz to help you assess your understanding
@@ -446,27 +408,28 @@ spread your work over the 13 weeks.
 \paragraph {What can you expect from me?}
 
 I am there three times a week for all lectures and lab sessions. Feel
-free to come and ask questions. Besides these slots, I try to be
-available and responsive, by email
-especially\sidenote{I am not sitting in NTNU on a daily
+free to come and ask questions. I try to be available and responsive,
+by email especially\sidenote{I am not sitting in NTNU on a daily
   basis. Reaching out by email is the best way to get help.}. I try to
 reply within 24 hours, but bear in mind that I am also a full time
 engineer. Expect answers outside office hours.
 
 
 \section{Additional Resources}
+\label{sec:resources}
 
 There are loads of books
 \cite{atto1974,melhorn2008,levitin2011,weiss2014,skiena2020}, videos,
-online courses and tutorials on algorithms and data structures. All of
-this is basic stuff: I am not presenting anything new or
-innovative. Let me know if the angle I have chosen is unclear or does not
-fit your taste: We can look at other resources where the same content
-is taken from a different perspective.
+online courses, tutorials or blog posts on algorithms and data
+structures. This course in an introduction: I am not presenting
+anything new or innovative. Let me know if the angle I have chosen is
+unclear or does not fit your background. We can look at other
+resources where the same content is taken from a different
+perspective.
 
-\emph{I do \textbf{not} follow any textbook} in particular, but there are a few
-``references'' textbooks, whose authors are leading authorities in the
-field. Feel free to check them if you need a different approach:
+\emph{I do \textbf{not} follow any textbook} in particular, but there
+are a few ``references'' textbooks, whose authors are leading
+authorities. Feel free to check them if you need a different treatment:
 
 \begin{itemize}
 \item ``The Art of Computer Programming'' (aka TAOCP) by Donald
@@ -474,15 +437,14 @@ field. Feel free to check them if you need a different approach:
   Fundamentals~\cite{knuth1978}, semi-numerical~\cite{knuth1997},
   sorting and searching~\cite{knuth1998}, combinato\-rial
   al\-go\-ri\-thms~\cite{knuth2011}. I found the treatment very detailed
-  and oriented towards the mathematically oriented. Beyond the scope
+  and oriented towards mathematicians. Beyond the scope
   of this course.
 \item ``Introduction to Algorithms'' by Thomas H. Cormen et
   al~\cite{cormen2009} is another famous reference. It covers most of
-  the topic I selected and many more, except maybe random access
-  machines.
+  the topic I selected and many more, except maybe correctness.
 \item ``Algorithms'' by Robert Sedgewick~\cite{sedgewick2014} is another
   well-known textbook, which is used in some very successful online
-  courses. Example are given in Java.
+  courses. Does not cover the whole syllabus.
 \item ``Data structures and algorithms in Java'' by Michael
   T. Goodrich and Roberto Tamassia~\cite{goodrich2014} fits very well this
   course. Most content we will cover is also treated there.
@@ -508,9 +470,10 @@ fluency.
 
 
 \section*{Conclusions}
-Let us get started! There is a lot or ground to cover. Please reach
-out if you have any questions or if you find mistakes in the slides,
-the lectures notes or the lab sessions.
+Hopefully, you have a better grasp at what this is about. Let us get
+started! There is a lot or ground to cover. Please reach out if you
+have any questions or if you find mistakes in the slides, the lectures
+notes or the lab sessions.
 
 \bibliographystyle{acm}
 \bibliography{references}
