@@ -1,0 +1,159 @@
+% Created 2021-10-16 Sat 22:19
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Oct. 16, 2021}
+\title{Trees\\\medskip
+\large Week  Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Trees},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Questions}
+\label{sec:orgd1d78e4}
+
+\begin{enumerate}
+\item In a tree, the \emph{descendants} of the root include all the nodes of
+the tree?
+\begin{enumerate}
+\item Yes
+\item No
+\end{enumerate}
+
+\item The \emph{depth} of a node \(n\) denotes
+\begin{enumerate}
+\item The number of ancestors of \(n\)
+\item The number of descendants of \(n\)
+\item The number of siblings of \(n\)
+\item None of the above
+\end{enumerate}
+
+\item The \emph{degree} of a node denotes
+\begin{enumerate}
+\item The number of ancestors of \(n\)
+\item The number of descendants of \(n\)
+\item The number of siblings of \(n\)
+\item None of the above
+\end{enumerate}
+
+\item In a \emph{ternary} tree, each node can have
+\begin{enumerate}
+\item No child
+\item One child
+\item Two children
+\item Three children
+\item Four children
+\end{enumerate}
+
+\item What best describes the average runtime efficiency of inserting an
+item in a binary search tree?
+\begin{enumerate}
+\item \(O(1)\)
+\item \(O(\log n)\)
+\item \(O(n)\)
+\item \(O(n \log n)\)
+\item \(O(n^2)\)
+\end{enumerate}
+
+\item In a binary search tree the successor of a node that has two
+children is:
+\begin{enumerate}
+\item The maximum of the left subtree
+\item The minimum of the left subtree
+\item The maximum of the right subtree
+\item The minimum of the right subtree
+\item None of the above
+\end{enumerate}
+
+\item The successor operation in a binary search tree always succeeds?
+\begin{enumerate}
+\item Yes.
+\item No.
+\end{enumerate}
+
+\item Binary search trees degenerate into linked lists when
+\begin{enumerate}
+\item Items are inserted in ascending order
+\item Items are inserted in descending order
+\item Items are inserted randomly
+\item None of the above
+\end{enumerate}
+
+\item How does an AVL tree define the balance factor of a node?
+\begin{enumerate}
+\item \((height(left) + height(right)) / 2\)
+\item \(height(left) - height(right)\)
+\item \(\max(height(left), height(right))\)
+\item \(\min(height(left), height(right))\)
+\item None of the above
+\end{enumerate}
+
+\item Which of the following operations require a possible re-balancing
+the AVL tree?
+\begin{enumerate}
+\item Insertion
+\item Minimum
+\item Maximum
+\item Search
+\item Successor
+\item Predecessor
+\item Deletion
+\end{enumerate}
+\end{enumerate}
+
+\section{Solutions}
+\label{sec:org57ae384}
+
+\begin{enumerate}
+\item \textbf{No} the descendants of the root node include all the node but the root.
+
+\item \textbf{The number of ancestors of the node}. The depth of a node denotes
+the number of links that separate the node from the root, which
+is the same as the number of ancestors.
+
+\item \textbf{The number of siblings} is named the \emph{degree} of a node.
+
+\item \textbf{0, 1, 2, or 3} In a \emph{ternary-tree} each node can have at most
+three children. Nodes may have less than three children though.
+
+\item \textbf{\(O(\log n)\)} Insertion in a binary search tree boils down to
+finding where to insert, which is comparable to a binary search,
+and thus, it runs in \(O(\log n)\).
+
+\item \textbf{The minimum of the right subtree}. The successor of a node with
+children is the left-most node in the right subtree.
+
+\item \textbf{No}. Searching for a successor may fail if the given item is not
+present in the tree.
+
+\item \textbf{(a) and (b)} When items are inserted in ascending order, the
+right subtree degenerates into a list. By contrast, insertions in
+descending order turn the left subtree into a list.
+
+\item \textbf{\(height(left) - height(right)\)}
+
+\item \textbf{Insertion, Deletion}, More generally any operation that changes
+the content of the tree may require re-balancing it.
+\end{enumerate}
+\end{document}

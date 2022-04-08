@@ -1,0 +1,191 @@
+% Created 2021-09-19 Sun 08:02
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA2302}
+\date{Sep. 5, 2021}
+\title{Efficiency, Algorithm Analysis, and Big-Oh Notation\\\medskip
+\large Week 2 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA2302},
+ pdftitle={Efficiency, Algorithm Analysis, and Big-Oh Notation},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:org648967b}
+
+Here is a list of questions to assess our understanding of efficiency,
+algorithm analysis and the Big-Oh notation. Keep in mind than several
+answers can be correct.
+
+\begin{enumerate}
+\item How much time is required to execute the following RAM assembly
+program?
+\begin{minted}[]{asm}
+load 0
+add 15
+sub 15
+jump 0
+\end{minted}
+
+\begin{enumerate}
+\item 4 units of time
+\item 8 units of time
+\item This program does not terminate
+\item One cannot say
+\end{enumerate}
+
+\item Given the following Python program, how many times is the condition of the
+\texttt{while} loop evaluated?
+\begin{minted}[linenos,firstnumber=1]{python}
+limit = 100
+i = 50
+while i < limit:
+  print(i)
+  i = i + 2
+\end{minted}
+
+\begin{enumerate}
+\item 1 times
+\item 25 times
+\item 50 times
+\item 100 times
+\item Something else
+\item This program does not terminate
+\item One cannot say
+\end{enumerate}
+
+\item Provided that Algorithm A runs in \(O(n \log n)\) and Algorithm B runs in
+\(O(n^2)\), is Algorithm A always faster than Algorithm B?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item Given a function \(f(x)\) such that \(f(x) = x^2 + 34x - 17\), is the
+statement \(f \in \Theta(x^3)\) correct?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item Given the same function \(f(x)\), is the statement \(f(x) \in
+   O(x!)\) correct?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item Given the same function \(f(x)\), is the statement \(f \in O(x \log x)\)
+correct?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot
+\end{enumerate}
+
+\item If I know that \(g \in O(x \log x)\), can I conclude that \(g \in
+   \Theta(x^2)\)?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item Is it possible for a given algorithm to have its worst and best
+cases in different efficiency class (e.g., \(n^2\) and \(n\))?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item If I read somewhere that the runtime of a given algorithm is \(\Theta(n)\),
+what can I conclude?
+\begin{enumerate}
+\item It will \emph{always grow linearly} with respect to the problem size
+\item It will \emph{never grow any faster} than linearly w.r.t to the problem size
+\item It will \emph{never grow any slower} than linearly w.r.t to the problem size
+\item One cannot say
+\end{enumerate}
+
+\item For any given algorithm, can the average case be \(O(n^2)\) whereas
+the worse case is \(O(\sqrt{n})\)?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+\end{enumerate}
+
+
+
+\section{Solutions}
+\label{sec:org3486fee}
+
+Here are the solutions I would choose, with brief explanations. Feel
+free to reach out if anything is unclear or wrong.
+
+\begin{enumerate}
+\item \textbf{Answer (d): One cannot say.} We don't know where in memory this
+program is stored. If \texttt{load 0} is stored at address 0, then the
+program would not terminate. The \texttt{ACC} register will always be
+zero so we will loop forever.
+
+\item \textbf{Answer (e): Something else.} The loop will be evaluated 26 times,
+basically for 50, 52, 53, etc. until the variable \texttt{i}
+contains 102. Only then will the condition be false.
+
+\item \textbf{Answer (c): One cannot say.} The big-Oh notation, dominance
+relationships hold only beyond a specific problem size, which we
+don't know in this case. However, it might very well be the case
+that a function always dominate the other.
+
+\item \textbf{Answer (b): No}. \(f \in \Theta(x^3)\) implies that \(f \in
+     \Omega(x^3)\), which is incorrect. \(f \in O(x^3)\) is however
+correct.
+
+\item \textbf{Answer (a): Yes.} Since \(f \in O(x^3)\), \(f\) also admits any
+other upper bound that grow faster than \(x^3\), including
+\(O(x^4)\), \(O(2^x)\), or \(O(x!)\).
+
+\item \textbf{Answer (b): No.} \(f \in \Theta(x^3)\) implies that \(f \in
+     O(x^3)\). This is the tightest possible bound.
+
+\item \textbf{Answer (b): No.} Big-O (the upper bound) is not sufficient to
+establish Big-\(\Theta\) (in-the-order-of), because Big-\(\Theta\)
+demands both the upper and the lower bound.
+
+\item \textbf{Answer (a): Yes}. Nothing prevents this.
+
+\item \textbf{Answer (a), (b), and (c)}. If will always grow linearly, which
+implies that it never grows any faster and any slower than
+linearly.
+
+\item \textbf{Answer (b): No}. The average case cannot be worse than the
+worst case.
+\end{enumerate}
+\end{document}

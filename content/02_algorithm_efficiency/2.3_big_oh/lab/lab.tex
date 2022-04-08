@@ -1,0 +1,348 @@
+% Created 2021-09-04 Sat 07:43
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[cache=false]{minted}
+\author{NTNU IDATA 2302}
+\date{Sep. 2, 2021}
+\title{Big-Oh Notation\\\medskip
+\large Lab Session 2.3}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Big-Oh Notation},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:org06c48dc}
+
+Now we have seen all the needed foundations. First we looked at
+programs and algorithms, and how the \emph{RAM architecture} helps us
+understand what is happening. We also precisely defined \emph{runtime} and
+\emph{memory consumption} and we learned about \emph{algorithm analysis} to
+define the best, worst, and average cases. In today's lecture, we
+studied the \emph{big-Oh notation}, which we use to obtain a very abstract
+description of the relationship between the problem size and the
+efficiency of our algorithms.
+
+Now, we are fully equipped to go all the way through a simple
+example. There will be many more example throughout the rest of the
+course.
+
+For this lab session, I suggest we look at a Java program that draws a
+triangle in ASCII. Listing \ref{orge69745b} shows one possible Java
+implementation. It uses two \emph{nested} loops. The outer loop iterates
+through the rows to be printed (from line 4), whereas the nested
+loop iterates through a single line (from Line 5). One way to
+think of it, is that we print one "\texttt{*}" on the first line, two "\texttt{*}"
+on the second lines, three "\texttt{*}" on the third line, and so on and so
+forth.
+
+\begin{listing}[htbp]
+\begin{minted}[linenos,firstnumber=1]{java}
+public class Triangle {
+
+    public static void printTriangle(int height) {
+        for(int row=0 ; row<height ; row++){
+            for(int column=0 ; column<=row ; column++){
+                System.out.print("* ");  
+            }  
+
+            System.out.println();
+        } 
+    }
+
+    public static void main(String[] args) {  
+        printTriangle(6);
+    }  
+}  
+\end{minted}
+\caption{\label{orge69745b}Drawing triangles on the console in Java}
+\end{listing}
+
+Should you compile and run this program, you would see something like:
+\begin{verbatim}
+* 
+* * 
+* * * 
+* * * * 
+* * * * * 
+* * * * * * 
+\end{verbatim}
+
+\section{Algorithm Analysis}
+\label{sec:org176cceb}
+
+\subsection{What is the \emph{Problem Size}?}
+\label{sec:orgb5cd914}
+
+The first step is to find the size of the problem. The size of our
+problem surfaces in the output of our program, as the number of "\texttt{*}"
+we print. So what governs this number of stars? It is the
+height of the triangle: The higher the triangle, the more stars we
+need to print. This is the size of our problem\footnote{Theoretically, the size of the problem is defined as the number
+of bits needed to encoded the inputs.}.
+
+\subsection{Worst, Best, and Average cases}
+\label{sec:orgd0ddf91}
+
+Remember the definition of worst, best and average cases. They
+characterize, for a given problem size, different situations that
+our algorithm may face. Here however, there is nothing besides the
+given height that one needs to know to print the triangle. In this
+case, the best, the worst and the average case are the same.
+
+\subsection{Modeling Runtime efficiency}
+\label{sec:org59f890e}
+
+Since there is no difference between the best, worse and average,
+our job is simpler and a single efficiency model suffices. Now, we
+need to find a function that captures how the runtime responds to
+changes in the problem size.
+
+I found our program, with its two nested \texttt{for}-loops, difficult to
+work with (see Listing \ref{orge69745b}). When I tried to directly
+find the time spent on each line and the number of time each line is
+executed, I struggled to express the costs and frequencies of lines
+4 to 9. So to make our life easier, I rewrite it so
+that:
+
+\begin{enumerate}
+\item All \texttt{for} loops are expanded into \texttt{while} loops;
+\item Nested loops are expanded into separate functions, which we can
+analyze separately.
+\end{enumerate}
+
+Listing \ref{orge0b5748} shows the results of this
+rewriting. We can now proceed and by finding the cost (time) and the
+frequency of each line.
+
+\begin{listing}[htbp]
+\begin{minted}[]{java}
+public static void printTriangle(int height)
+{                              
+    int row = 0;               
+    while (row < height) {     
+        printRow(row); // New function call
+        row = row + 1;         
+    }
+}
+
+// Contains the code of the original inner for-loop
+public static void printRow(int row)
+{                                  
+    int column = 0;                
+    while (column <= row) {        
+        System.out.print("* ");    
+        column = column + 1;       
+    }                              
+    System.out.println();          
+}
+\end{minted}
+\caption{\label{orge0b5748}Expanding \texttt{for} loops and extracting the inner loop as a separate function}
+\end{listing}
+
+Let us start with the inner loop, that is, the new function
+\texttt{printRow}. We look at each line, and we figure out how much time it
+would take to run it on a RAM architecture (its cost), and how many
+time it will be executed (its frequency). The total cost of a line
+would hence be given by:
+
+\[
+     \text{total cost} = \text{cost} \times \text{frequency}
+  \]
+
+Looking at the \texttt{printRow} function line by line we get:
+
+\begin{enumerate}
+\item The first assignment would translate into at least a \texttt{store}
+instruction, and will be executed once. That gives a total cost
+of \(1 = 1 \times 1\).
+
+\item The condition \texttt{column <= row} contains a single comparison, which
+would translate to at least a \texttt{jump} instruction in RAM
+assembly. This condition will be evaluated as many times as it
+holds, and one more time when it will not hold anymore. That
+gives us a total cost of \(1 \cdot (r + 2)\) where \(r\) denotes the
+\texttt{row} parameter.
+
+\item The print statement maps to a \texttt{print} instruction in RAM assembly
+and it will be executed as many times as we enter the loop, that
+is, \(r+1\) times. So we get a total cost of \(1 \cdot (r+1)\).
+
+\item Incrementing the \texttt{column} variable by 1 takes at least two RAM
+instructions: an \texttt{add} and a \texttt{store}. It will be executed as many
+time as we enter the loop, for a total cost of \(2 \cdot (r +
+     1)\).
+
+\item Finally printing a new line translates to a single \texttt{print}
+instruction and is executed once. That gives us a total cost of
+\(1 \times 1\).
+\end{enumerate}
+
+All together, the time it takes for our \texttt{printRow} function to run
+is given by the sum of the total cost of each line. We can simplify
+this as follows:
+
+\begin{align*}
+time_R(r) &= [1 \times 1] + [1 \cdot (r + 2)] + [1 \cdot (r+1)] + [2 \cdot (r + 1)] + [1 \times 1] \\
+          &= 1 + (r + 2) + (r + 1) + (2r + 2) + 1 \\
+          &= 4r + 7 
+\end{align*}
+
+Now we can now look to the \texttt{printTriangle} function (i.e., the outer
+loop of our original program), proceeding as we did previously. We
+get:
+
+\begin{enumerate}
+\item The first assignment translates into a single \texttt{store} instruction
+on the RAM architecture, and is executed once. So we get a total
+cost of \(1 \times 1\).
+
+\item The condition \texttt{row < height} translates in at least a \texttt{jump}
+instruction and is executed as many times as it holds and one more
+time when it will not hold. Since the \texttt{row} variable starts at
+zero and ends \emph{before} \texttt{row} equals \texttt{height}, it will run \(h + 1\)
+where \(h\) denote the \texttt{height} parameter. So we get a total cost
+of \(1 \cdot (h+1)\).
+
+\item What about this function call we have introduced? We know it will
+runs as many times as we enter the loop, but how much does it
+cost?  The cost is given by function \(time_R(r)\), which we sorted
+out earlier. The challenge is that the \texttt{row} variable changes
+value each time the loop body runs. So the total cost is given
+by:
+
+\begin{align*}
+    cost(call) & = time_R(0) + time_R(1) + \ldots + time_R(h-1) \\
+        & = \sum_{r=0}^{h-1} time_R(r) \\
+        & = \sum_{r=0}^{h-1} 4r + 7 \\
+        & = \sum_{r=0}^{h-1} 4r + \sum_{r=0}^{h-1} 7 \\
+        & = 4 \cdot \sum_{r=0}^{h-1} r + \sum_{r=0}^{h-1} 7 \\
+        & = 4 \cdot \sum_{r=0}^{h-1} r + 7h \\
+        & = 4 \cdot \frac{(h-1)h}{2} + 7h \\
+        & = 2 \cdot [h^2 - h] + 7h \\
+        & = 2h^2 - 2h + 7h \\
+        & = 2h^2 + 5h \\
+\end{align*}
+
+\item Incrementing \texttt{row} translates into two RAM instructions (\texttt{store}
+and \texttt{add}), and it runs every time we enter the loop. We get a total
+cost of \(2 \times h\)
+\end{enumerate}
+
+We can add all these costs together to get the total runtime of our
+\texttt{printTriangle} function, as follows:
+
+\begin{align*}
+time_T(h) &= [1 \cdot 1] + [1 \cdot (h + 1)] + [2h^2 + 5h] + [2 \cdot h] \\
+          &= 1 + (h+1) + (2h^2 + 5h) + 2h \\
+          &= 2h^2 + 8h + 2
+\end{align*}
+
+\section{Classification}
+\label{sec:orgcd20c37}
+
+The last step consists in classifying the efficiency of our
+algorithm using the Big-Oh notation. To do that we can try to find its
+upper and lower bounds.
+
+\subsection{Finding an upper bound}
+\label{sec:org89ad828}
+
+Let us start with the upper bound. Recall the definition of an upper
+bound using the Big-Oh notation:
+
+\[
+   time_T \in O(g) \iff \\
+   \exists \, (c, n) \in \mathbb{N}^2, \quad \forall n \geq n_0, \; time_T(n) \leq c \cdot g(n)
+   \]
+
+What could be this function \(g(n)\) and these constant \(c\) and
+\(n_0\)? If we start from our efficiency model \(time_T(h) = 2h^2 +
+   8h + 2\) and we drop the less important terms, we get \(g(n) =
+   n^2\). Let us try to see if we can find a constant c and \(n_0\) that
+matches our definition. Let us try \(c=3\), the first integer value
+greater than 2:
+
+\begin{align*}
+time_T(n) & \leq c \cdot n^2 \\
+2n^2 + 8n + 2 & \leq 3n^2 \\
+2 & \leq n^2 - 8n \\
+2 & \leq n (n - 8) \\
+9 & \leq n \\
+\end{align*}
+
+That gives us our value for \(n_0\). So we can conclude that our
+runtime efficiency model admits a quadratic upper bound, that is
+\(time_T(n) \in O(n^2)\).
+
+\subsection{Finding a lower bound}
+\label{sec:org8ede382}
+
+We can now look at the lower bound. Recall that the definition of a
+lower bound is:
+
+\[
+   time_T \in \Omega(g) \iff \\
+   \exists \, (c, n) \in \mathbb{N}^2, \quad \forall n \geq n_0, \; time_T(n) \geq c \cdot g(n)
+   \]
+
+We can proceed as we did for the upper bound. We can simply solve a
+similar inequality where we can assume that \(c=2\) as follows:
+
+\begin{align*}
+time_T(n) & \leq c \cdot n^2 \\
+2n^2 + 8n + 2 & \leq 2n^2 \\
+2 & \leq  8n \\
+\frac{2}{8} & \leq n \\
+0.25 & \leq n \\
+\end{align*}
+
+That gives us again the value for \(n_0\). We can conclude that our
+runtime efficiency model admits a quadratic lower bound, that
+\(time_T(n) \in \Omega(n^2)\).
+
+Finally, since our upper bound holds from \(n=9\) and our lower bound
+from \(n = 0.25\), we can conclude that our lower bound also holds
+from \(n=9\) and beyond. Our efficiency model is therefore "in the
+order of quadratic function", or in other words, \(time_T(n) \in
+   \Theta(n^2)\).
+
+\subsection{Visualization}
+\label{sec:orgb97d692}
+
+I like to look at efficiency models and bounds visually, as a
+"sanity check".  Figure \ref{fig:orgf14afb6} shows our efficiency model, its
+upper bound \(3 \cdot n^2\) and its lower bound \(2n^2\). Keep in mind
+these are not the only possible ones.
+
+The conclusion is that our \texttt{printTriangle} algorithm is always in
+the order of a quadratic runtime: Worst, best and average case are
+the same.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.9\linewidth]{./visualization.pdf}
+\caption{\label{fig:orgf14afb6}Visualization of our runtime efficiency model, together with its lower and upper bound.}
+\end{figure}
+\end{document}

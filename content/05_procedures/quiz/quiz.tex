@@ -1,0 +1,186 @@
+% Created 2021-09-23 Thu 19:35
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA2302}
+\date{Sep. 23, 2021}
+\title{Procedure Calls \& Recursion\\\medskip
+\large Week 5 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA2302},
+ pdftitle={Procedure Calls \& Recursion},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:org2dac86f}
+
+\begin{enumerate}
+\item Does it exist an algorithm that one can write using iteration (a
+loop) but not using recursion?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item What is the runtime efficiency of pointer dereferencing?
+\begin{enumerate}
+\item constant
+\item linear
+\item quadratic
+\item exponential
+\item One cannot say
+\end{enumerate}
+
+\item What is the runtime efficiency of dynamic memory allocation?
+\begin{enumerate}
+\item constant
+\item linear
+\item quadratic
+\item exponential
+\item One cannot say
+\end{enumerate}
+
+\item Where do arguments are stored when calling a procedure?
+\begin{enumerate}
+\item In the data segment
+\item In the heap
+\item In the call stack
+\item In the code segment
+\item On the external storage (i.e., hard drive)
+\end{enumerate}
+
+\item Where does dynamic memory allocation reserve memory?
+\begin{enumerate}
+\item In the data segment
+\item In the heap
+\item In the call stack
+\item In the code segment
+\item On the external storage (i.e., hard drive)
+\end{enumerate}
+
+\item What happens when the call stack consumes all the free memory given
+to a program?
+\begin{enumerate}
+\item The program is terminated by the operating system.
+\item The program continues but we cannot know what will happen.
+\item The program can never consume all the memory.
+\end{enumerate}
+
+\item Why do recursive procedures consume more space than their iterative
+counterpart?
+\begin{enumerate}
+\item Because every variable is allocated in the stack, and not in the
+heap.
+\item Because they rely on procedures calls that each requires a
+specific frame in the stack
+\item This is false, recursive procedures consume the same amount of
+memory.
+\end{enumerate}
+
+\item Does this recursive procedure terminate?
+\begin{minted}[]{java}
+int minimum(int[] array, int start) {
+   if (start >= array.length-1) {
+       return array[start];
+   } else {
+       int min = minimum(array, start);
+       return (min < array[start]) ? min : array[start];
+   }
+}
+\end{minted}
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item What does a compiler do when it performs a "tail-call" optimization?
+\begin{enumerate}
+\item It uses the heap instead of the call stack
+\item It transforms recursive calls into iteration (i.e., loops)
+\item It reuses a single frame for every recursive call
+\item It skips the recursive calls all together
+\end{enumerate}
+
+\item Is the following recursive function performing a "tail call"?
+\begin{minted}[]{java}
+int minimum(in
+      t[] array, int start) {
+   if (start >= array.length-1) {
+       return array[start];
+   } else {
+       int min = minimum(array, start+1);
+       return (min < array[start]) ? min : array[start];
+   }
+}
+\end{minted}
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+\end{enumerate}
+
+
+\section{Solutions}
+\label{sec:org5dbfc67}
+
+\begin{enumerate}
+\item \textbf{No}. Iteration and recursion have the same \emph{expression power},
+there is no program that one can write with iteration that cannot
+be written with recursion (but it is not necessarily
+straightforward).
+
+\item \textbf{Linear} Pointer manipulation may require multiple machine
+instruction, but does not depends on the pointer value. It takes
+linear time.
+
+\item \textbf{One cannot say}. In practice, we do not know what algorithm the
+underlying OS is using. But in theory (and in many textbooks) we
+assume constant time.
+
+\item \textbf{In the stack} The arguments (i.e., the values associated with
+the parameters of a procedure) are placed onto the stack by the
+caller and fetched by the callee.
+
+\item \textbf{In the heap} Dynamic memory allocation (i.e., \texttt{malloc} in C,
+\texttt{new} in Java) uses the heap to allocate memory.
+
+\item \textbf{The program is killed by the OS} provided there is an OS.
+
+\item \textbf{Because of the stack:} Each call passes arguments and result
+through the stack and so, the more recursive calls there are, the
+more memory the stack consumes.
+
+\item \textbf{No} because the value of \texttt{start} is never modified (increased)
+so it will call itself indefinitely. Contrast it with the program
+given in Question 10.
+
+\item It uses \textbf{a single frame for all recursive calls}, and therefore
+tail-recursion has a constant memory consumption.
+
+\item \textbf{No}. Because the last thing the function does before to return
+is \emph{not a recursive call}, it is a comparison.
+\end{enumerate}
+\end{document}

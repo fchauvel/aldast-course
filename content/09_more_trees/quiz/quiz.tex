@@ -1,0 +1,166 @@
+% Created 2021-10-23 Sat 16:01
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Oct. 2021}
+\title{Trees in Action\\\medskip
+\large Week 9 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Trees in Action},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:org87daccd}
+
+\begin{enumerate}
+\item Is the following tree a valid \emph{minimum heap}?
+
+\begin{center}
+\includegraphics[width=5cm]{heap1.png}
+\end{center}
+
+\item If we insert 10 in the following heap, where does it end up?
+
+\begin{center}
+\includegraphics[width=5cm]{heap2.png}
+\end{center}
+
+\item In the previous heap, what happen when we remove 4?
+\begin{enumerate}
+\item It yields two separate heaps
+\item 4 is replaced by 58
+\item 4 is replaced by 34
+\item 4 is replaced by 58, which is then swapped with 34, which is itself swapped with 37.
+\item 4 is replaced by 37, which is then swapped with 34.
+\item None of the above.
+\end{enumerate}
+
+\item In which situation can we use an array to implement/store a tree?
+\begin{enumerate}
+\item For binary trees
+\item For ternary trees
+\item For regular trees
+\item For complete trees
+\item For balanced trees
+\end{enumerate}
+
+\item As opposed to RAM, the disk access model (DMA) includes
+\begin{enumerate}
+\item a network connection
+\item more registers
+\item more instructions
+\item more RAM memory
+\item an external storage
+\item more CPUs
+\end{enumerate}
+
+\item RAM memory is faster than external storage?
+\begin{enumerate}
+\item Yes
+\item No
+\end{enumerate}
+
+\item In a B-tree of order 5, what is the minimum number of children
+that a node (other than the root and the leaves) must have to be
+valid?
+\begin{enumerate}
+\item 1 child
+\item 2 children
+\item 3 children
+\item 4 children
+\item 5 children
+\end{enumerate}
+
+\item Tries rely on \emph{sentinel} characters, but what for?
+\begin{enumerate}
+\item To detect duplicate keys
+\item To avoid collisions
+\item To detect nested keys
+\item None of the above.
+\end{enumerate}
+
+\item Given the following trie, how many words start with the prefix
+"tele"?
+
+\begin{center}
+\includegraphics[width=8cm]{trie.png}
+\end{center}
+
+\item In the previous trie, if we delete tea, how many nodes are left?
+\begin{enumerate}
+\item 5 nodes
+\item 6 nodes
+\item 7 nodes
+\item 8 nodes
+\item None of the above
+\end{enumerate}
+\end{enumerate}
+
+
+\section{Solutions}
+\label{sec:org75cc52d}
+
+\begin{enumerate}
+\item \textbf{No} because 25 is smaller than 34 and so the heap ordering is no
+respected.
+
+\item \textbf{In place of 58}. 10 would first be placed as the left child of
+58, but since it is smaller than 58, those two would thus be
+swapped. No further change will happen since 4 remains smaller
+than 10.
+
+\item \textbf{4 is replaced by 37, which is then swapped with 37}. When we
+delete in a heap, we replace the root, with the last element,
+which 37 in this case. However this move breaks the ordering of
+the heap so we must swap it with 34 to restore it.
+
+\item \textbf{For regular trees}. Regular trees are trees where every node has
+at most n children. Binary and ternary trees are regular trees
+and it works for these as well.
+
+\item \textbf{An external storage, more registers and two more
+instructions}. The disk access model adds an external storage. To
+access it, it provides two more instructions and two more
+registers.
+
+\item \textbf{Yes}. RAM memory is about a million times faster than hard
+drives.
+
+\item \textbf{3} In a B-tree of order \(k=5\), every node but the root and the
+leaves must have at least \(\left \lceil k/2 \right \rceil\), that
+is 3.
+
+\item \textbf{To detect nested keys}. Tries use sentinel characters to detect
+keys which would be the prefix of another key, such as "app" and
+"apple".
+
+\item \textbf{3} There are three words that starts with the prefix "tele",
+namely "television", "telescope" and "telephone".
+
+\item \textbf{7}. At first the trie contains 9 nodes. If we delete tea, we
+remove one node, but it yield a single-node branch is thus
+compressed and loses another node.
+\end{enumerate}
+\end{document}

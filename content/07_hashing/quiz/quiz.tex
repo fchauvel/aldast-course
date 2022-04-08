@@ -1,0 +1,159 @@
+% Created 2021-10-08 Fri 21:44
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Oct. 8, 2021}
+\title{Hashing\\\medskip
+\large Week 7 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Hashing},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:orgb295c70}
+
+\begin{enumerate}
+\item A hash function is used to
+\begin{enumerate}
+\item Compute the value to be stored
+\item Compute the address of a bucket
+\item Compute the index of a bucket
+\item None of the above
+\end{enumerate}
+
+\item How would you choose to implement a hash table?
+\begin{enumerate}
+\item Using an array
+\item Using an linked-list
+\item Using a bitset
+\end{enumerate}
+
+\item A good key should be
+\begin{enumerate}
+\item unique
+\item immutable
+\item mutable
+\item anything works
+\end{enumerate}
+
+\item A collision occurs when
+\begin{enumerate}
+\item Two pieces of information are the same
+\item Two pieces of information have the same keys
+\item Two pieces of information have keys that are "hashed" into the same bucket
+\item All of the above
+\end{enumerate}
+
+\item The main challenge when using the "open addressing" strategy is that
+\begin{enumerate}
+\item It consumes too much memory
+\item It runs in quadratic time
+\item It wastes memory
+\item Entries are likely to form isolated clusters
+\end{enumerate}
+
+\item Separate chaining is more space efficient than open addressing.
+\begin{enumerate}
+\item True
+\item False
+\item One cannot say
+\end{enumerate}
+
+\item A bitset is used to store subsets of a fixed universe.
+\begin{enumerate}
+\item True
+\item False
+\item One cannot say
+\end{enumerate}
+
+\item In Java, a bitset is necessarily implemented by an \texttt{int}.
+\begin{enumerate}
+\item True
+\item False
+\end{enumerate}
+
+\item What are the advantage of using a bitset, as opposed to using an
+array of boolean values?
+\begin{enumerate}
+\item A bitset consumes less memory
+\item The set operations run faster with a bitset
+\item All of the above.
+\end{enumerate}
+
+\item Searching in a bloom filter can yield false negatives.
+\begin{enumerate}
+\item True
+\item False.
+\item One cannot say
+\end{enumerate}
+\end{enumerate}
+
+
+\section{Solutions}
+\label{sec:orgf3da5c9}
+
+\begin{enumerate}
+\item \textbf{Compute the index of a bucket.} The hash function convert a key
+into an index, so that we know where to store (resp. to read) the
+information associated with a the given key.
+
+\item \textbf{Using an array.} It is possible to implement a hash table using a linked list,
+but accessing the i-th element takes \(\theta(n)\), so all that would
+defeat the purpose of hashing.
+
+\item \textbf{Unique and immutable.} Keys must be unique otherwise every piece
+of information that have the same key will end up in the same
+bucket. Besides, keys must be immutable because if a key was to
+change, we would not be able to find it anymore.
+
+\item \textbf{All of the above}. If two pieces of information are the same, they
+have---by definition---the same key and will be hashed in the same
+bucket.
+
+\item \textbf{Entries are likely to form clusters}. This is can be mitigated by
+using alternative probing techniques, such as quadratic probing or
+double hashing.
+
+\item \textbf{False}. Separate chaining often leads to space wasted because in
+average, a third of the bucket will remains empty.
+
+\item \textbf{True}. A bit set captures the presence (or the absence) of every
+member of the universe with a single bit.
+
+\item \textbf{False} Any fragment of memory can be used, regardless of the type we
+associate with it. The package \texttt{java.util} contains a \texttt{BitSet}
+class for example.
+
+\item \textbf{All of the above} A bitset consume less memory \emph{and} operations
+can be performed more efficiently than when using an array of
+boolean.
+
+\item \textbf{False} Searching in a bloom filter can yield \emph{false positive}, that
+is, the bloom filter can say it contains an element while that
+element was never insert. A false negative would means that the
+bloom filter returns false when searching an element that was
+inserted.
+\end{enumerate}
+\end{document}

@@ -1,0 +1,160 @@
+% Created 2021-10-02 Sat 16:38
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Sep. 29, 2021}
+\title{Sorting\\\medskip
+\large Week 6}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Sorting},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:org63a206b}
+
+
+\begin{enumerate}
+\item What is worst case runtime efficiency of the "quick sort"
+algorithm?
+\begin{enumerate}
+\item \(O(n^3)\)
+\item \(O(n^2)\)
+\item \(O(n \log n)\)
+\item \(O(n)\)
+\item \(O(\log n)\)
+\end{enumerate}
+
+\item In the \emph{quick sort}, how would you \textbf{not} choose the pivot?
+\begin{enumerate}
+\item The middle element in the array
+\item The last element
+\item The first element
+\item The maximum element
+\item The minimum element
+\end{enumerate}
+
+\item In \emph{quick sort}, what is the runtime efficiency of partitioning an
+array?
+\begin{enumerate}
+\item \(O(n^3)\)
+\item \(O(n^2)\)
+\item \(O(n \log n)\)
+\item \(O(n)\)
+\item \(O(\log n)\)
+\end{enumerate}
+
+\item What is the best case runtime efficiency of the merge sort?
+\begin{enumerate}
+\item \(O(n^3)\)
+\item \(O(n^2)\)
+\item \(O(n \log n)\)
+\item \(O(n)\)
+\item \(O(\log n)\)
+\end{enumerate}
+
+\item In the worst case, \emph{merge sort} runs theoretically faster than
+quick sort?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item What is the correct recursive call of \emph{merge sort}?
+\begin{enumerate}
+\item \texttt{split(merge(sort(array))}
+\item \texttt{merge(sort(left), sort(right))}
+\item \texttt{sort(merge(left), right(right))}
+\item None of the above
+\end{enumerate}
+
+\item Comparison-based sorting algorithms are bound by \(n \log n\). What
+kind of scenario does it relate to?
+\begin{enumerate}
+\item Worst case
+\item Average case
+\item Best case
+\end{enumerate}
+
+\item Comparison-based sorting algorithms are bound by \(n \log n\). What
+kind of bound is this?
+\begin{enumerate}
+\item An upper bound
+\item A lower bound
+\item Both a lower and an upper bound.
+\end{enumerate}
+
+\item The runtime complexity of the counting sort is \(O(k + n)\) where \(n\)
+denotes the length of the given array. What does \(k\) stands for?
+\begin{enumerate}
+\item The capacity of the given array
+\item The maximum element in the array
+\item The number of symbol in the underlying alphabet
+\item None of the above
+\end{enumerate}
+
+\item The runtime complexity of the \emph{radix sort} is \(O(d \cdot
+    (n+k))\), where \(n\) is the length of the array. What does \(d\)
+represent?
+\begin{enumerate}
+\item The size of the symbol alphabet
+\item The maximum symbol
+\item The maximum number of digits
+\item The distance between to symbol
+\item None of the above
+\end{enumerate}
+\end{enumerate}
+
+
+\section{Solutions}
+\label{sec:orgee56959}
+
+\begin{enumerate}
+\item \textbf{Answer (b).} In the worst case, \emph{quick sort} runs in \(O(n^2)\).
+
+\item \textbf{Answers (d) and (e)}. Choosing the maximum or the minimum
+precisely lead to the worst runtime for quick sort.
+
+\item \textbf{Answer (d)} The partitioning used in quick sort runs in \(O(n)\).
+
+\item \textbf{Answer (c)} In all cases, merge sort runs in \(O(n \log n)\).
+
+\item \textbf{Answer (a)} Yes, in the worst case, merge sort runs in \(O(n \log
+     n)\) whereas quick sort runs in \(O(n^2)\).
+
+\item \textbf{Answer (b)}. \texttt{merge(sort(left), sort(right))} is the correct
+recursive call. We first split, then sort both sub-arrays using
+merge sort, and then merge the results.
+
+\item \textbf{Answer (a)}. It relates to the worst case.
+
+\item \textbf{Answer (b)}. It relates to the lower bound.
+
+\item \textbf{Answer (c)}. The number of symbols in the underlying alphabet.
+
+\item \textbf{Answer (c)}. The maximum number of digits in the numbers to
+sort.
+\end{enumerate}
+\end{document}

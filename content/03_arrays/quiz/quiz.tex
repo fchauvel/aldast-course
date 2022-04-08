@@ -1,0 +1,163 @@
+% Created 2021-09-11 Sat 06:15
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Sep. 10, 2021}
+\title{Arrays\\\medskip
+\large Week 3 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Arrays},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:orgcf7c15f}
+
+\begin{enumerate}
+\item Can a record contain an arbitrary large number of fields?
+\begin{enumerate}
+\item Yes
+\item No
+\end{enumerate}
+
+\item In an array, how to calculate the address of the i-th bucket?
+\begin{enumerate}
+\item \(\text{base address} + i\)
+\item \(\text{base address} + i + \text{bucket size}\)
+\item \(\text{base address} * (i + \text{bucket size})\)
+\item \((\text{base address} * i) + \text{bucket size}\)
+\item None of the above
+\end{enumerate}
+
+\item How does the time efficiency of accessing the i-th bucket vary in an
+array?
+\begin{enumerate}
+\item It varies depending on the index of the array.
+\item It remains constant regardless of the value of \texttt{i}.
+\item It varies depending on the location of the base address.
+\item None of the above.
+\end{enumerate}
+
+\item Why does the insertion (at an arbitrary position) take a linear
+time?
+\begin{enumerate}
+\item Because we have to iterate through the array to find where to
+insert.
+\item Because we have to shift every subsequent bucket toward the
+end.
+\item Because accessing any bucket takes a linear time.
+\item None of the above.
+\end{enumerate}
+
+\item For any array, which scenario takes the least runtime?
+\begin{enumerate}
+\item To delete the first bucket
+\item To delete the last bucket
+\item Both take the same amount of time
+\end{enumerate}
+
+\item What differentiate a dynamic array from a static one?
+\begin{enumerate}
+\item Dynamic arrays increase their capacity when they are full.
+\item Dynamic arrays decrease their capacity when they become empty.
+\item Dynamic arrays have a fixed capacity but their length varies.
+\item None of the above.
+\end{enumerate}
+
+\item What distinguishes \emph{amortized analysis} from \emph{average
+case analysis}?
+\begin{enumerate}
+\item Amortized analysis accounts for multiple operations on the same
+data structure, whereas average case analysis characterizes a
+single operation.
+\item Average case analysis requires a probabilistic approach.
+\item None of the above.
+\end{enumerate}
+
+\item Which of the following search algorithms can be used with any sorted
+sequence?
+\begin{enumerate}
+\item Linear search
+\item Jump search
+\item Binary search
+\item Interpolated search
+\item Random search (we open buckets at random until we find what we are
+looking for).
+\item All of the above.
+\end{enumerate}
+
+\item Does the binary search always return a correct result?
+\begin{enumerate}
+\item Yes
+\item No
+\end{enumerate}
+
+\item What best describes the worst case runtime efficiency of the binary
+search?
+\begin{enumerate}
+\item \(O(n)\)
+\item \(O(n^2)\)
+\item \(O(n \cdot \log n)\)
+\item \(O(\log n)\)
+\item \(O(\sqrt{n})\)
+\end{enumerate}
+\end{enumerate}
+
+\section{Solutions}
+\label{sec:orgfe52edb}
+
+\begin{enumerate}
+\item \textbf{Answer (a)} Yes. There is no limit on how many fields a record
+can have.
+
+\item \textbf{Answer (c)} \(\text{base address} * (i + \text{bucket size})\)
+
+\item \textbf{Answer (b)}, it remains constant regardless of the value of \texttt{i}.
+
+\item \textbf{Answer (b)}. We must make room for the new bucket to be inserted
+and we do that by shifting every subsequent bucket toward the
+end.
+
+\item \textbf{Answer (b)}. Deleting the last bucket takes constant time,
+because there is no need to shift back all the subsequent buckets
+toward the beginning.
+
+\item \textbf{Answers (a) and (b)}. Dynamic arrays allocate more (or less)
+memory when they become full (or empty).
+
+\item \textbf{Answers (a) and (b)} Amortized analysis describes a sequence of
+operation but does not requires a probabilistic approach. It
+focuses on the average efficiency over multiple operations.
+
+\item \textbf{Answers (a), (b), (c), (e) and (f)}. Only the interpolated search
+does not apply on sorted arrays, because it not only requires the
+array to be sorted, but also that the values be uniformly
+distributed.
+
+\item \textbf{Answer (a)} Yes. The binary search always returns a correct result, though
+the desired value may not be in the array.
+
+\item \textbf{Answer (d)} The tightest bound is \(O(\log n)\).
+\end{enumerate}
+\end{document}

@@ -1,0 +1,486 @@
+% Created 2021-09-02 Thu 05:51
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{NTNU IDATA 2302}
+\date{Aug 30, 2021}
+\title{Algorithm Analysis\\\medskip
+\large Lab Session 2.2}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Algorithm Analysis},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+In this lab session, we look at several programs and we model how
+their efficiency varies according to their input size. We will look at
+the maximum between two numbers, a rock-paper-scissor game, and a
+programs that draws a triangle on the terminal. In each case, we will
+focus on the runtime efficiency, since memory efficiency does not
+bring much hindsight for such short programs.
+\end{abstract}
+
+
+\section{Maximum of Two Numbers}
+\label{sec:orgb501f4c}
+
+Let us first look at a simple program that finds the maximum between
+two given integers. Figure \ref{org1bd9571} shows a possible Java
+implementation.
+
+\begin{verbatim}
+ 1  public class Maximum {
+ 2  
+ 3      public static int maximum(int left, int right) {
+ 4          if (left < right) {
+ 5              return right;
+ 6          }
+ 7          return left;
+ 8      }
+ 9  
+10      public static void main(String[] args) {  
+11          System.out.println(maximum(10, 5));
+12      }
+13  
+14  }
+\end{verbatim}
+\captionof{figure}{\label{org1bd9571}Selecting the maximum betwenen two given numbers}
+
+Finding out the worst case (with respect to runtime) boils down to
+finding the input that maximize the time spent by the underlying
+machine running our program.
+
+Because I assume a random access machine and a cost model where every
+instruction takes 1 unit of time, the worst case is thus finding the
+input that maximizes the number of instructions executed. In this case
+there are only two possible "execution paths":
+
+\begin{enumerate}
+\item Either \texttt{left} is strictly less than \texttt{right}, in which case the program
+directly returns \texttt{right} (see Line 5).
+
+\item The \texttt{left} variable is greater or equal to \texttt{right}, in which case
+our function returns \texttt{left} (see Line 7).
+\end{enumerate}
+
+\subsection{Explicit Conversion to RAM assembly}
+\label{sec:orgc335fc0}
+
+To compute how many instructions the machine execute in each case, one
+could---in principle---convert it to a RAM assembly program and count
+how many time each instruction is executed. Figure \ref{org9856654}
+gives a possible assembly program.
+
+\begin{verbatim}
+ 1  segment: data
+ 2        left     1        0           ; left takes 1 cell, set to 0
+ 3        right    1        0           
+ 4        maximum  1        0
+ 5  
+ 6  segment: code
+ 7                 READ     right       ; left := user-input
+ 8                 READ     left        ; right := user-input 
+ 9                 LOAD     0
+10                 ADD      left
+11                 SUBTRACT right
+12                 JUMP     lmax        ; Go to 'lmax' if left >= right
+13                 LOAD     0
+14                 ADD      right
+15                 STORE    maximum     ; maximum := right
+16                 LOAD     0
+17                 JUMP     done        ; Go to done
+18        lmax:    LOAD     0
+19                 ADD      left
+20                 STORE    maximum     ; maximum := left
+21        done:    PRINT    maximum     ; print(maximum)
+22                 HALT     -1          ; stop the machine
+\end{verbatim}
+\captionof{figure}{\label{org9856654}A possible RAM assembly implementation of our Java maximum function}
+
+The only complexity is how we compare left and right. We have only a
+single JUMP instruction, which jumps only when the \texttt{ACC} register is
+positive or null. To jump when left is greater, we must first place in
+\texttt{ACC} the difference between \texttt{left} and \texttt{right}. Here, the two
+execution paths we have identified earlier surface as follows:
+
+\begin{enumerate}
+\item If \texttt{left} is strictly less than \texttt{right}, then the machine would
+start at Line 7, proceed until the \texttt{JUMP} instruction
+(Line 12). At this point, the \texttt{ACC} register contains a
+negative value so we \emph{do not} jump, but we continue with Line
+13, until we reach the second \texttt{jump} (Line 17). There we
+always jump to Line 21 and execute the final \texttt{print} and \texttt{halt}
+instructions. This is a total of 13 instructions executed.
+
+\item If \texttt{left} is greater or equals to \texttt{right}, the programs will start
+at Line 7 but jump Line 18 when it reaches the first
+\texttt{jump} instruction (the \texttt{ACC} register would be positive or
+null). The machine then continues from there until the end. This
+gives us a total of 11 instructions executed.
+\end{enumerate}
+
+From this we can conclude that the first case is the worst, although
+the difference is not much.
+
+\subsection{Implicit Conversion to RAM assembly}
+\label{sec:orgb15cbae}
+
+Making explicit RAM assembly programs \textbf{is not only impractical, but
+also captures specific compilation choices}. The results we got in the
+previous section are valid, \emph{provided our RAM assembly is the one
+yielded by the compiler}. Unfortunately there may be other ones and so
+different results are possibles.
+
+To circumvent that, we can estimate this number of instruction by find
+the places in our Java programs that requires a RAM
+instructions. These are:
+\begin{itemize}
+\item assignments, which translate into a \texttt{STORE} instruction. For
+example \texttt{int i = 0} in Java. We can also consider a 
+\texttt{return} statement as a form of assignment.
+\item arithemtic operations, such as \texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, etc. The minimal
+RAM model only provides \texttt{ADD} and \texttt{SUBTRACT} but one often assumes
+additional instructions for other operations.
+\item comparison operators, such as \texttt{\textasciitilde{}==}, >\textasciitilde{}, \texttt{!=}, etc. in Java. These
+translate to at least one \texttt{JUMP}. As for the aritmetic we can also
+assumes additional instructions that jumps on other
+conditions.
+\item Logical operators, such as \texttt{\&\&}, \texttt{||} or \texttt{!} in Java. They would
+also translate into at least one JUMP instructions.
+\end{itemize}
+
+With this approach, we simply count the occurrence of such
+statements. In our Java function (see Figure \ref{org1bd9571}), we found 1
+comparison and 2 assignment (return), as follows:
+
+\begin{enumerate}
+\item If \texttt{left} is strictly less than \texttt{right}, the program does 1
+comparison and 1 assignment. So a total of 2 instructions.
+
+\item If \texttt{left} is greater of equal to \texttt{right}, then the machine carries
+out 1 comparison and 1 assignment. So a total of 2 instructions.
+\end{enumerate}
+
+What we see here is that, if we abstract away the technical details of
+the compilation, the two scenario are the same in this
+example. Further, because the two scenario are equivalent, \emph{the average
+complexity is also the same}, because in all case, we compute 1
+comparison and 1 assignment.
+
+
+\section{Rock Paper Scissor}
+\label{sec:org7ffcc4a}
+
+Let's look at the "Rock Paper Scissor" program, which we started
+implementing during our lab session on unit testing.
+
+It is a Java function that takes as input two integer values
+representing the choices made by the two players. The body of this
+function is a long conditional statement that selects the winning player
+depending on the players' choice. For instance, if Player 1
+chooses \texttt{ROCK} and Player 2 \texttt{PAPER}, then it returns the value 2 to
+indicate that Player 2 won. When both players choose the same valid value,
+the function returns the value 0 to indicate a draw. If any
+player chooses anything else but \texttt{ROCK}, \texttt{PAPER} or \texttt{SCISSOR} (say
+for instance \(-8\)), the function throws an exception.
+
+\begin{verbatim}
+ 1  public static int play(int player1, int player2) {
+ 2      if (player1 == ROCK && player2 == ROCK) {
+ 3          return 0;
+ 4      } else if (player1 == ROCK && player2 == PAPER) {
+ 5          return 2;
+ 6      } else if (player1 == ROCK && player2 == SCISSOR) {
+ 7          return 1;
+ 8      } else if (player1 == PAPER && player2 == ROCK) {
+ 9          return 1;
+10      } else if (player1 == PAPER && player2 == PAPER) {
+11          return 0;
+12      } else if (player1 == PAPER && player2 == SCISSOR) {
+13          return 2;
+14      } else if (player1 == SCISSOR && player2 == ROCK) {
+15          return 1;
+16      } else if (player1 == SCISSOR && player2 == PAPER) {
+17          return 1;
+18      } else if (player1 == SCISSOR && player2 == SCISSOR) {
+19          return 0;
+20      } else {
+21          throw new RuntimeException("Invalid Input");
+22      }
+23  }
+\end{verbatim}
+
+Note the use of \texttt{return} statements within the conditional. They
+interrupt the normal flow of execution and directly terminate the
+function. No further instruction is executed. The same holds for the
+\texttt{throw} statement, no further instruction is executed.
+
+In this exercise, we will look at the \textbf{runtime efficiency}.
+
+\subsection{Worst Case Analysis}
+\label{sec:orgcdf080d}
+
+So what is the worst possible scenario with respect to the runtime
+efficiency. The worse possible scenario results from choosing inputs
+(or unknown) that maximize the "execution path", that is, it maximise
+the number of instruction executed by the machine.
+
+In this case, the inputs that maximizes the execution path are these
+inputs that trigger an exception. For example, if Player 1 chooses
+\texttt{ROCK} but Player 2 chooses an invalid number, say \(1243\). This is
+because every single condition will be evaluated before the function
+throws an exception. Note that while every condition is evaluated, all
+the return statements will be skipped since none of these conditions holds
+if any value given by the players is invalid.
+
+\textbf{How much time will this worse case scenario take?}
+
+For the sake of simplicity, I assume a RAM machine with an extended
+instruction set including comparison operators (\texttt{==}, \texttt{>}, \texttt{<=}, etc.)
+and logical operators (\texttt{\&\&}, \texttt{||}, and \texttt{!}). I also assume that each
+of these new operations \emph{takes 1 unit of time} to complete. Finally, I
+assume a \texttt{return} statement takes 1 unit of time as well.
+
+To find how long it take in the worse case scenario, we must find
+which Java instructions will be executed, and for each, how long it
+would take for a RAM machine to execute a similar job.
+
+Let us look first at one single condition like \texttt{player1 == ROCK \&\&
+player2 == ROCK} (all conditions follow this very pattern). Such an
+expression contains two comparisons and one logical test, each taking
+1 unit of time to execute. So a single condition takes \(3 \times 1 =
+3\) units of time.
+
+Now, to reach the line where our function throws an exception, we must
+evaluate each of the nine conditions. That gives \(3 \times 9 = 27\)
+units of time, to which we can add one more to account for the throw
+statement. All together, \textbf{the worst case takes 28 units of time}.
+
+\subsection{Best case Analysis}
+\label{sec:orgdee2328}
+
+By contrast with the worst case, the best case occurs for inputs that
+trigger the shortest possible execution path. This occurs when the
+first condition is true, that is, when both player choose \texttt{ROCK}. This
+is the first case our function checks, and since it works, the
+function immediately returns 0.
+
+In this case, only one condition is evaluated, followed by a return
+statement. That gives \textbf{a total of 4 units of time}: 3 units for the
+condition and 1 for the return statement.
+
+\subsection{Average case Analysis}
+\label{sec:org2133369}
+
+The limitation of the best and worst case analysis is that they do not
+say much about what we should expect in average. In many situations,
+these worse and base are rare events that are not representative of
+a random execution.
+
+The first step is to model the runtime efficiency. To to that, I would
+define a function that maps the values chosen by the user to the time
+it take our algorithm to complete.
+
+\[
+time(p_1, p_2) = \begin{cases}
+4 & \text{if } p_1 = \text{rock} \land p2 = \text{rock} \\
+7 & \text{if } p_1 = \text{rock} \land p2 = \text{paper} \\
+10 & \text{if } p_1 = \text{rock} \land p2 = \text{scissor} \\
+13 & \text{if } p_1 = \text{paper} \land p2 = \text{rock} \\
+16 & \text{if } p_1 = \text{paper} \land p2 = \text{paper} \\
+19 & \text{if } p_1 = \text{paper} \land p2 = \text{scissor} \\
+22 & \text{if } p_1 = \text{scissor} \land p2 = \text{rock} \\
+25 & \text{if } p_1 = \text{scissor} \land p2 = \text{paper} \\
+28 & \text{if } p_1 = \text{scissor} \land p2 = \text{scissor} \\
+28 & \text{otherwise} \\
+\end{cases}
+\]
+
+The challenge here is that, \emph{without any further assumption}, we do know
+often a given case shows up.
+
+To estimate an average case, we must make an assumption about the
+behavior of the players. How likely is it for Player 1 to choose
+\texttt{ROCK}, to choose \texttt{PAPER},to choose \texttt{SCISSOR}, or to provide an
+invalid value?. The very same holds for Player 2.
+
+
+To do this rigorously---at least as much as I can---I replace the two
+variable \(p_1\) and \(p_2\), by two \emph{random variables} named \(P_1\) and
+\(P_2\), which represent the values chosen by Player 1 and Player 2,
+respectively. These two random variables have the following properties
+\begin{itemize}
+\item \(P_1 \in C\) where \(C = \{\text{ROCK}, \text{PAPER}, \text{SCISSOR}, \text{ERROR}\}\)
+\item \(P_1\) and \(P_2\) are uniformly distributed, that is \(\forall c \in C, \Pr[P_1 =
+   c] = \Pr[P_2=c] = \frac{1}{4}\)
+\end{itemize}
+
+With this we can now express the average case as the expected value of
+the time function:
+
+\begin{align*}
+    \text{average runtime} &= \text{Exp}[time(P_1, P_2)] \\
+                           &= \sum_{(p_1, p_2) \in C^2} \Pr[P_1=p_1 \land P_2=p_2] \cdot time(p_1, p_2) \\
+                           &= \sum_{(p_1, p_2) \in C^2} \Pr[P_1=p_1] \cdot \Pr[P_2=p_2] \cdot time(p_1, p_2) \\
+\end{align*}
+
+The definition of an \emph{expected value} in Probability tells us that it
+equals the sum of all possible values weighted by their probability. I
+do not know how to further simplify this expression, but we can solve
+it by enumerating all the cases, as I do in Table \ref{tab:org30d0a32}, where I
+list each all input cases, the runtime and its probability. We obtain
+an average runtime execution of 21.25 unit of time.
+
+\begin{table}[htbp]
+\caption{\label{tab:org30d0a32}All the possible inputs and their probability}
+\centering
+\begin{tabular}{lllrr}
+\hline
+Player 1 &  Player 2 &  Probability &  Runtime & Product\\
+\hline
+rock & rock & 1/16 & 4 & 0.25\\
+rock & paper & 1/16 & 7 & 0.4375\\
+rock & scissor & 1/16 & 10 & 0.625\\
+paper & rock & 1/16 & 13 & 0.8125\\
+paper & paper & 1/16 & 16 & 1.\\
+paper & scissor & 1/16 & 19 & 1.1875\\
+scissor & rock & 1/16 & 22 & 1.375\\
+scissor & paper & 1/16 & 25 & 1.5625\\
+scissor & scissor & 1/16 & 28 & 1.75\\
+\hline
+invalid & rock & 1/16 & 28 & 1.75\\
+invalid & paper & 1/16 & 28 & 1.75\\
+invalid & scissor & 1/16 & 28 & 1.75\\
+invalid & invalid & 1/16 & 28 & 1.75\\
+rock & invalid & 1/16 & 28 & 1.75\\
+paper & invalid & 1/16 & 28 & 1.75\\
+scissor & invalid & 1/16 & 28 & 1.75\\
+\hline
+ & Totals & 1. &  & 21.25\\
+\end{tabular}
+\end{table}
+
+You may have noted that the way we model the user is a gross
+simplification. In practice, there is not four possible values, but a
+large number since our program accepts integer values as
+inputs. I see two alternatives:
+\begin{itemize}
+\item If we assume a more realistic computation model, for example where
+memory cells are bounded to 32 bits values, then the probability of
+an erroneous input would dominate and we would obtain a result very
+close to the worse case. Note that \(\Pr[P=\text{invalid}] =
+   1 - \frac{1}{2^{32}-3} = 0.99999999976\).
+\item We could also adhere to the RAM model. There is thus an infinity
+of erroneous cases. I not very confident I could solve this one.
+\end{itemize}
+
+Regardless, the takeaway is that the result we obtain depends on the
+assumption we make, that is how we model the behavior of the user.
+
+
+\section{Drawing Triangles}
+\label{sec:orgc889274}
+
+Let us look at a last example, a program that draws a triangle in
+ASCII. Figure \ref{org600934d} shows one possible Java
+implementation. It uses two \emph{nested} loops. The outer one iterates
+through the rows to be printed, whereas the nested loop iterates
+through a single line. One way to think of it that we print one \texttt{*} on
+the first line, two \texttt{*} on the second lines, three \texttt{*} on the third
+line, and so on and so forth.
+
+\begin{verbatim}
+ 1  public class Triangle {
+ 2  
+ 3      public static void printTriangle(int height) {
+ 4          for(int row=0 ; row<height ; row++){
+ 5              for(int column=0 ; column<=row ; column++){
+ 6                  System.out.print("* ");  
+ 7              }  
+ 8              System.out.println();
+ 9          } 
+10      }
+11  
+12      public static void main(String[] args) {  
+13          printTriangle(6);
+14      }  
+15  }  
+\end{verbatim}
+\captionof{figure}{\label{org600934d}Drawing triangles on the console in Java}
+
+Should you run this program, you would see something like:
+
+The first step is to find the size of the problem. Here the size of
+the problem is the height of the triangle. The higher the triangle
+the more stars our algorithm prints.
+
+Let us now turn to the worst, best and average cases, for a problem of
+a given size, say 6 for instance. In this case, these three cases
+are the same, because knowing the height of the triangle is enough
+to estimate the time.
+
+\begin{verbatim}
+public static void printTriangle(int height)
+{                              //  Cost Freq
+    int row = 0;               //     1    1
+    while (row < height) {     //     1    height
+        printRow(row);         //     ?    height-1
+        row = row + 1;         //     2    height-1 
+    }
+}
+
+public static void printRow(int length)
+{                                  //  Cost    Freq
+    int column = 0;                //     1    1
+    while (column <= length) {     //     1    length+2
+        System.out.print("* ");    //     1    length+1
+        column = column + 1;       //     2    length+1
+    }                              //
+    System.out.println();          //     1    1
+}
+\end{verbatim}
+\captionof{figure}{\label{org4642b54}Extracting the inner loop as a separate function}
+
+Let us start with the inner loop, which I have extracted as a
+separate function in Figure \ref{org4642b54}.
+
+\begin{align*}
+time_I(\ell) &= (1 \cdot 1) + (1 \cdot (\ell + 2) + (1 \cdot (\ell+1)) + (2 \cdot (\ell + 1)) + (1 \cdot 1) \\
+             &= 1 + \ell + 2 + \ell + 1 + 2\ell + 2 + 1 \\
+             &= 4 \ell + 7 
+\end{align*}
+
+Now we can now look into the outer loop and plug this result as the
+cost of the function call. We obtain:
+
+\begin{align*}
+time_O(h) &= (1 \cdot 1) + (1 \cdot h) + \left[ \sum_{\ell=0}^{h-1} \right 4 \ell + 7 \right] + ((h-1) \cdot 2) \\
+          &= 3h -1 + \sum_{\ell=0}^{h-1} 4 \ell + 7 \\
+          &= 3h - 1 + \sum_{\ell=0}^{h-1} 4 \ell + \sum_{\ell=0}^{h-1} 7 \\
+          &= 3h - 1 + 4 \cdot \sum_{\ell=0}^{h-1} 4 \ell + \sum_{\ell =0}^{h-1} 7 \\
+          &= 3h - 1 + 4 \cdot \sum_{\ell=0}^{h-1} \ell + 7h \\
+          &= 3h - 1 + 4 \cdot \sum_{\ell=1}^{h} \ell + 7h \\
+          &= 3h - 1 + 4 \cdot \frac{h(h+1)}{2} + 7h \\
+          &= 10h - 1 + 2 \cdot h(h+1) + 7h \\
+          &= 2h^2 + 19h - 1 \\ 
+\end{align*}
+\end{document}

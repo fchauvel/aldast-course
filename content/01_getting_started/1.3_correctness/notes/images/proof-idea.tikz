@@ -1,0 +1,35 @@
+\documentclass[tikz]{standalone}
+\usetikzlibrary{positioning, matrix}
+\begin{document}
+\begin{tikzpicture}
+
+  \matrix[
+  row 2/.style={text height=1cm, anchor=south},
+  column sep=2cm,
+  row sep=1cm
+  ]{
+    \node[rectangle] (fm1) {Formula 1}; &
+    \node[rectangle] (fm2) {Formula 2}; &
+    \node[rectangle] (fmi) {\ldots}; &
+    \node[rectangle] (fmn) {Formula $n$}; \\
+
+    \node[rectangle, align=center] (s1) {Machine\\State 1}; &
+    \node[rectangle, align=center] (s2) {Machine\\State 2}; &
+    \node[rectangle] (si) {\ldots}; &
+    \node[rectangle, align=center] (sn) {Machine\\State $n$}; \\
+  };
+  
+  \draw[->,out=45, in=135] (fm1) to node[above]{Rule X}  (fm2);
+  \draw[->,out=45, in=135] (fm2) to node[above]{Rule Y}  (fmi);
+  \draw[->,out=45, in=135] (fmi) to node[above]{Rule Z}  (fmn);
+
+  \draw[->, out=-45, in=-135] (s1) to node[below, align=center]{Semantic of\\instruction X}  (s2);
+  \draw[->, out=-45, in=-135] (s2) to node[below, align=center]{Semantic of\\instruction Y}  (si.south west);
+  \draw[->, out=-45, in=-135] (si.south east) to node[below, align=center]{Semantic of\\instruction Z}  (sn);
+
+  \draw[dashed] (-8, 0) to (6, 0);
+  \node[rectangle, anchor=west] at (-8, 0.5)  {\textit{Calculus}}; 
+  \node[rectangle, anchor=west] at (-8, -0.5)  {\textit{Algorithms}}; 
+  
+\end{tikzpicture}
+\end{document}

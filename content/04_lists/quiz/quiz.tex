@@ -1,0 +1,149 @@
+% Created 2021-09-15 Wed 22:33
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Sep. 15, 2021}
+\title{Lists, Stacks \& Queues\\\medskip
+\large Week 4 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Lists, Stacks \& Queues},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:orgc2b68a2}
+
+\begin{enumerate}
+\item What is the worst case runtime efficiency of the selection sort?
+\begin{enumerate}
+\item \(\Theta(1)\)
+\item \(\Theta(\log n)\)
+\item \(\Theta(n)\)
+\item \(\Theta(2^n)\)
+\item None of the above
+\end{enumerate}
+
+\item In average, bubble sort runs faster than insertion sort.
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item Sorting algorithms apply only on arrays.
+\begin{enumerate}
+\item True
+\item False
+\end{enumerate}
+
+\item Linked list have no fixed capacity
+\begin{enumerate}
+\item True
+\item False
+\end{enumerate}
+
+\item Why does the insertion in a linked list have a runtime in \(\Theta(n)\)?
+\begin{enumerate}
+\item Because one must shift all nodes towards the end of the list.
+\item Because one must traverse the list until one find the nodes
+where the insertion should take place.
+\item Because the memory allocation also takes \(\Theta(n)\)
+\end{enumerate}
+
+\item What is the runtime efficiency of the \texttt{size} operation on linked-lists?
+\begin{enumerate}
+\item \(O(1)\)
+\item \(O(n)\)
+\item \(O(n^2)\)
+\end{enumerate}
+
+\item Linked-lists consume more memory than arrays.
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item Stacks adhere to FIFO discipline (first-in, first-out)?
+\begin{enumerate}
+\item Yes
+\item No
+\end{enumerate}
+
+\item Compared to an interface (in Java), what does an abstract data type
+brings?
+\begin{enumerate}
+\item The implementation of operations (or methods).
+\item Constraints and dependencies across operations
+\item Nothing
+\end{enumerate}
+
+\item Queues and stacks are data structures.
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+\end{enumerate}
+
+
+\section{Solutions}
+\label{sec:orgfd992e7}
+
+\begin{enumerate}
+\item \textbf{None of the above.} In the worst case, the selection
+sort runs in \(\Theta(n^2)\).
+
+\item \textbf{No}. Bubble sort and selection sort both run in \(\Theta(n^2)\) in
+average.
+
+\item \textbf{False} Sorting algorithms apply to linked list or array
+but the very details of their implementation vary.
+
+\item \textbf{True} Linked lists allocate new memory fragments during each
+insertion and therefore are constantly resizing.
+
+\item Because one must sequentially traverse the list until the nodes
+where the insertion should take place. This takes \(O(n)\) runtime.
+
+\item \textbf{Either \(O(1)\) or \(O(n)\)} In its simplest form, a linked-list
+requires a traversal to compute how many nodes are linked together,
+which yields a runtime in \(O(n)\). One can however improve this by
+adding a \texttt{length} variable in the list itself and increment it on
+each insertion. This would yield \(O(1)\).
+
+\item \textbf{Yes} because we must store a pointer to the next record for each
+item in the list.
+
+\item \textbf{No}. Stacks implement a Last-in first-out discipline. It is queues
+that implement the FIFO discipline.
+
+\item Compared to an interface, an ADT adds constraints and dependencies
+across operations.
+
+\item \textbf{No} Queues and stacks are abstract data types, which can be
+implemented by various data structures, including linked lists or
+arrays.
+\end{enumerate}
+\end{document}

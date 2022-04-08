@@ -1,0 +1,587 @@
+% Created 2021-09-11 Sat 06:02
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\setcounter{secnumdepth}{2}
+\author{NTNU IDATA 2302}
+\date{Aug. 30, 2021}
+\title{Algorithm Efficiency\\\medskip
+\large Lab Session 2.1}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Algorithm Efficiency},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:org268a817}
+
+In Week 1, we defined what is an algorithm (as opposed to a program)
+and we looked at techniques to assess correctness. We now turn to
+efficiency, which is one of the core topic of this course. For
+the record, efficiency relates to two resources: Runtime and
+memory. Runtime captures the time the underlying RAM architecture needs to
+run an algorithm until it terminates. Memory reflects how many memory
+cells the algorithm needs beyond what it uses to store the
+algorithm's instructions.
+
+In this lab session, we will practice evaluating runtime and memory
+consumption. We will start with RAM assembly programs, and then move
+on to higher-level languages such as Java, C, Python and the likes. We
+will look at three short algorithms that illustrate different control
+structures:
+
+\begin{enumerate}
+\item \emph{Adding Three Numbers} is a short program that reads three
+numbers from the user and print their sum. This illustrates the
+basic concepts.
+\item \emph{Maximum} is a program that accepts two numbers and prints the
+largest one. It shows how to evaluate the runtime and memory of a
+conditional statement.
+\item \emph{Multiplication} is a program that prints the product of two numbers,
+but unfolds the multiplication as a series of additions using a
+loop. It shows how to evaluate the runtime and memory of loops.
+\end{enumerate}
+
+\section{Adding Three Numbers}
+\label{sec:orgd3a0041}
+
+\subsection{From RAM Assembly}
+\label{sec:orgfa42d15}
+
+Let us start with a short RAM assembly program, which reads three
+number from the user and outputs their sum. Listing
+\ref{org4a6020b} shows the corresponding RAM assembly code. 
+
+\begin{listing}[htbp]
+\begin{minted}[linenos,firstnumber=1]{asm}
+SEGMENT: data       ; The variables
+      value 1 0       ; value is 1 memory cell initialized at 0
+      total 1 0       ; total is 1 memory cell initialized at 0  
+
+SEGMENT: code       ; The instructions
+      load  0         ; ACC := 0
+      read  value     ; value := user-input
+      add   value     ; ACC := ACC + value
+      read  value     ; value := user-input
+      add   value     ; ACC := ACC + value
+      read  value     ; value := user-input
+      add   value     ; ACC := ACC + value
+      store total     ; total := ACC
+      print total     ; 
+      halt  -1        ;
+\end{minted}
+\caption{\label{org4a6020b}A RAM assembly program that adds up three numbers given by the user.}
+\end{listing}
+
+\textbf{The whole point is to evaluate---without running it---the time and
+memory it would take on a RAM}. Note that this is only \emph{one possible
+program}: Others are possible. One could for instance reuse the
+\texttt{value} variable to store the result (instead of another \texttt{total}
+variable). In practice, such choices are made by the compiler or
+interpreter and we will later work directly from higher-level
+languages.
+
+\subsubsection*{Memory}
+\label{sec:orgc365fd8}
+
+In Lecture 2.1, we defined \emph{memory consumption} as the number of
+memory cells that we need to run our algorithm. How many do we need
+here? First, let us look at the \texttt{code} segment, which contains 10
+instructions, and, since each instruction takes 2 memory cells, that
+is a total of 20 cells. In practice, we will not account for the code
+segment, so we can just omit this. What remains is the data segment,
+where we declared two variables, namely \texttt{value} and \texttt{total}. The
+\texttt{value} variable is however used to hold user inputs, and such
+variables are often excluded, so that gives us \textbf{a total of 1 memory
+cells}.
+
+\subsubsection*{Runtime}
+\label{sec:orgd62d916}
+
+Moving now to the runtime. It captures how much time our program will
+take on a RAM architecture. To estimate it, we must know two things:
+\begin{itemize}
+\item How much time each RAM instruction takes to run;
+\item and how many times it will run.
+\end{itemize}
+
+We therefore need a \emph{cost model}, which is our assumptions about the
+time each RAM instruction takes to complete. For the sake of
+simplicity, I will assume (as in most textbooks) that every
+instruction takes 1 single unit of time.
+
+Now, if we look at Listing \ref{org4a6020b}, we see that it
+does not contain any \texttt{jump} instruction: The machine start with \texttt{LOAD
+0} (Line 6) and ends with \texttt{HALT -1} (Line 15). Each of the 10
+instructions will run once, so \textbf{it takes exactly 10 units of time}.
+
+\subsection{From Java}
+\label{sec:org2e40006}
+
+Let us now look at higher-level languages. How can we evaluate the
+runtime and memory of Java programs without compiling them explicitly
+to RAM assembly?
+
+Listing \ref{org62d7339} shows a Java program, equivalent to the
+RAM assembly program that adds three numbers given by the user (see
+Listing \ref{org4a6020b}).
+
+\begin{listing}[htbp]
+\begin{minted}[linenos,firstnumber=1]{java}
+public int main(String[] args) {
+    Scanner input = new Scanner(System.in);
+    int total = 0;
+    total = total + input.nextInt();
+    total = total + input.nextInt();
+    total = total + input.nextInt();
+    System.out.println(total);
+}
+\end{minted}
+\caption{\label{org62d7339}A Java program that adds three numbers given by the user}
+\end{listing}
+
+\subsubsection*{Memory}
+\label{sec:orge505d1e}
+
+To estimate the memory consumption of a Java program, we simply count
+the number of variables it uses. In this case, there are two,
+namely \texttt{input} and \texttt{total}. The \texttt{input} variable (see Line 2) is
+not part of our algorithm: It is only some "plumbing" needed in the
+Java implementation, so we are left \textbf{with one single variable}.
+
+\subsubsection*{Runtime}
+\label{sec:org68bc6af}
+
+Now, if we look at the runtime, we need a way to estimate the time a
+Java instruction would take on a RAM architecture. Again, we need the
+same two things:
+\begin{enumerate}
+\item How much time is spent executing each Java statement, the cost per
+statement;
+\item The number of times each line is executed, its frequency count.
+\end{enumerate}
+
+As for the cost per statement, we look at every statement and estimate
+the minimum number of RAM instructions needed. Note that the statement
+\texttt{int total=0} is a variable declaration and translate into the data
+segment, so we skip it. The Java statement "\texttt{total = total +
+input.nextInt()}" translates into at least three instructions: a
+\texttt{READ}, an \texttt{ADD}, and a \texttt{STORE}. By contrast, the Java statement
+"\texttt{System.out.println(total)}" (see Line 7) translates into at
+least a \texttt{PRINT} instruction. Table \ref{tab:orga7b6e18} summarizes the
+cost of each line.
+
+Regarding the frequency count, Listing \ref{org62d7339} does not
+include any control structures (i.e., loops, conditionals, or goto
+statement), so each statement is executed only once. Table
+\ref{tab:orga7b6e18} summarizes the frequencies of each statement.
+
+\begin{table}[htbp]
+\caption{\label{tab:orga7b6e18}Summary of lines' costs and frequency of Listing \ref{org62d7339}}
+\centering
+\begin{tabular}{lrrrr}
+Java Code & Line & Cost &  Freq. & Total\\
+\hline
+\texttt{total = total + input.nextInt()} & 4 & 3 & 1 & 3\\
+\texttt{total = total + input.nextInt()} & 5 & 3 & 1 & 3\\
+\texttt{total = total + input.nextInt()} & 6 & 3 & 1 & 3\\
+\texttt{System.out.println(total)} & 7 & 1 & 1 & 1\\
+\hline
+ &  &  & \textbf{Grand Total} & 10\\
+\end{tabular}
+\end{table}
+
+Finally we can compute the total runtime of our algorithm by summing
+up all these costs as follows:
+
+\begin{align*}
+  \text{total time} &= (3 \times 1) + (3 \times 1) + (3 \times 1) + (1 \times 1) \\
+                    &= 10 \\
+\end{align*}
+
+Here we get the same evaluation as for the RAM assembly program, but
+it is only because this program does not contain any control structure.
+
+\section{Maximum}
+\label{sec:org4730fc3}
+
+Now, we will look at a conditional statement (i.e., \texttt{if-then-else}
+in Java). As before, we will start with a RAM assembly program and
+move on to the same Java program.
+
+\subsection{From RAM Assembly}
+\label{sec:org63d4215}
+
+Listing \ref{org9420b65} shows one possible RAM assembly program that
+selects the maximum between two values. Note that these values, named
+\texttt{left} and \texttt{right} are not given by the user, but instead predefined
+in the data segment (see Lines 2 and 3). We will see in the
+next lecture how to account for unknown values.
+
+To compare these \texttt{left} and \texttt{right} variables, we check whether their
+difference is negative (see Line 10)\footnote{Keep in mind that the original RAM architecture only offers one
+single \texttt{JUMP} instruction, which jumps only when the \texttt{ACC} register is
+positive or null.}. In that case, we
+jump to the \texttt{lmax} label where we assign \texttt{maximum} with \texttt{left} and
+print it. Otherwise. we assign \texttt{maximum} with right and we jump to the
+\texttt{done} label (see Line 19) where we print the \texttt{maximum}
+variable.
+
+\begin{listing}[htbp]
+\begin{minted}[linenos,firstnumber=1]{asm}
+SEGMENT: data           ; Variables
+        left    1 25      ; left := 25
+        right   1 45      ; right := 45
+        maximum 1 0       ; maximum := 0
+
+SEGMENT: code          ; Instructions
+        load 0         ;
+        add left       ;
+        subtract right ;
+        jump lmax      ; if left - right < 0
+        load 0         ;
+        add right      ;
+        store maximum  ;   maximum := right 
+        load 0         ;
+        jump done      ;
+lmax:   load 0         ; else
+        add left       ;
+        store maximum  ;   maximum := left
+done:   print maximum  ; print(maximum)
+        halt -1
+\end{minted}
+\caption{\label{org9420b65}RAM program that prints the largest of two predefined numbers}
+\end{listing}
+
+\subsubsection*{Memory}
+\label{sec:orgb3267a2}
+
+Evaluating the memory consumption boils down to counting the variables
+our program uses. There are three, \texttt{left}, \texttt{right} and \texttt{maximum}. It
+is customary to omit the user inputs, that is \texttt{left} and \texttt{right}
+here. We are left with 1 variable.
+
+\subsubsection*{Runtime}
+\label{sec:orgc3f9e47}
+
+As for the runtime of such a conditional statement, only one part is
+executed, depending on how the condition evaluates. In this case, we
+do know the value of the \texttt{left} and \texttt{right} variables (25 and 45,
+respectively), so we know which branch will be executed. At line
+10, the \texttt{ACC} register contains \(25 - 45 = -20\), and the
+machine does \emph{not} jump to \texttt{lmax}, but proceeds with the next
+instruction. Once it reaches Line 15, it jumps directly
+to the label \texttt{done} (because \texttt{ACC} was explicitly set to 0
+before). The block starting at label \texttt{lmax} is thus never executed.
+
+In total, the machine only executes 11 instructions: It starts at
+\texttt{LOAD 0} (Line 7) and continues until \texttt{JUMP done} (9
+instructions until Line 15). It then directly jumps to
+the label \texttt{done} (Line 19 and continues from there to the end
+(2 instructions).
+
+Provided a cost model, where every RAM instruction takes 1 unit of time,
+these 11 instructions take 11 units of time to run.
+
+\subsection{From Java}
+\label{sec:orgcb046f9}
+
+Again, let us look at the same algorithm but implemented in Java this
+time. Listing \ref{org0d13a30} shows the Java code, which boils down
+to a condition statement followed by a print statement.
+
+\begin{listing}[htbp]
+\begin{minted}[linenos,firstnumber=1]{java}
+public static void main(String[] args) {
+    int left = 25;
+    int right = 45
+
+    int maximum = 0;
+    if (left < right) {
+        maximum = right;
+    } else {
+        maximum = left;
+    }
+
+    System.out.println(maximum);
+}
+\end{minted}
+\caption{\label{org0d13a30}A Java implementation of the maximum algorithm (cf. Listing \ref{org9420b65})}
+\end{listing}
+
+\subsubsection*{Memory}
+\label{sec:org7c03d41}
+
+The memory is very similar to the RAM assembly program. The Java code
+from Listing \ref{org0d13a30} defines three variables, two of which
+are inputs (\texttt{left} and \texttt{right}). So we are left with one variable.
+
+\subsubsection*{Runtime}
+\label{sec:orgde55c23}
+
+Regarding the runtime, we proceed as we did in for adding three
+numbers (see Section \ref{sec:orgd3a0041}). We first estimate the cost
+of each Java statement by translating it into a set of RAM
+instructions. Then, we calculate how many times each statement runs.
+
+Listing \ref{org0d13a30} contains four different types of statements,
+namely \emph{variable declaration}, \emph{assignment}, \emph{conditional} and
+\emph{output}. Let us look at them in turn:
+
+\begin{itemize}
+\item Variable declarations translate into the data segment, so there is
+no need to account for them.
+
+\item Evaluating a condition (e.g., Line 6) translates into
+at least an arithmetic operation (e.g., \texttt{SUBTRACT}) and one \texttt{JUMP}.
+So the cost is 2
+
+\item Assignments translate into a single \texttt{STORE} instruction, so they
+cost 1.
+
+\item Outputs translate into a single \texttt{PRINT} statement, so they also cost 1
+unit of time.
+\end{itemize}
+
+Turning to the frequencies, the \texttt{else} branch will never be executed,
+because \texttt{left} is less than \texttt{right}. All other instructions will be
+executed only once. Table \ref{tab:orgd479692} summarizes these costs and
+frequencies. In total, we are left with the following:
+
+\begin{align*}
+   \text{time} &= (2 \times 1) + (1 \times 1) + (1 \times 1) \\
+               &= 4 \\
+\end{align*}
+
+Here we get a results that further away from what we calculated for
+the equivalent RAM program. The difference comes from the conditional
+statement, which in practice include more instructions than the two
+we accounted for, but this depends on the compiler in practice.
+
+\begin{table}[htbp]
+\caption{\label{tab:orgd479692}Summary of the cost and frequencies of Listing \ref{org0d13a30}}
+\centering
+\begin{tabular}{rlrrr}
+Line & Java Code & Cost & Freq.  &  Total\\
+\hline
+6 & \texttt{if (left < right) \{} & 2 & 1 & 2\\
+7 & \texttt{maximum = right;} & 1 & 1 & 1\\
+8 & \texttt{\} else \{} & 0 & 0 & 0\\
+9 & \texttt{maximum = left;} & 1 & 0 & 0\\
+10 & \texttt{\}} & 0 & 1 & 0\\
+12 & \texttt{System.out.println(maximum)} & 1 & 1 & 1\\
+\hline
+ &  &  & \textbf{Total} & 4\\
+\end{tabular}
+\end{table}
+
+
+\section{Multiplication}
+\label{sec:org09cba21}
+
+Finally, we now look at a program that contains a loop. This program
+unfolds a multiplication as a series of additions. \emph{This is useless in
+practice, and only illustrates the concept of loop}.
+
+\subsection{From RAM assembly}
+\label{sec:orgb4863df}
+
+Listing \ref{org6ba9972} shows a RAM assembly program that
+implements such a multiplication. We first initialize a \texttt{counter}
+variable to zero (see the data segment). When the program starts, it
+first computes the difference between the \texttt{counter} and the
+\texttt{multiplier} variables. If this is greater or equals to zero, the
+program jumps at Line 21 and prints the \texttt{product}. Otherwise
+the program increments the \texttt{product} with the \texttt{multiplicand},
+increment the \texttt{counter} by 1, and continues at Line 8.
+
+\begin{listing}[htbp]
+\begin{minted}[linenos,firstnumber=1]{asm}
+segment: data
+        multiplicand  1   10       ; the multiplicand = 10
+        multiplier    1    4       ; the multiplier = 4
+        counter       1    0       ; the loop index
+        product       1    0       ; the product
+
+segment: code
+loop:   load          0            ;
+        add           counter      ;
+        subtract      multiplier   ; ACC := counter - multiplier 
+        jump          done         ; if ACC >= 0, goto done
+        load          0            ;
+        add           product      ;
+        add           multiplicand ;
+        store         product      ; product += multiplicand
+        load          1            ;
+        add           counter      ;
+        store         counter      ; counter += 1
+        load          0            ;
+        jump          loop         ; goto loop
+done:   print         product      ;
+        halt          -1
+\end{minted}
+\caption{\label{org6ba9972}A RAM assembly program that multiplies two numbers predefined in memory}
+\end{listing}
+
+\subsubsection*{Memory}
+\label{sec:org5489f67}
+
+Listing \ref{org6ba9972} declares four variables (see the data
+segment), each taking one memory cell. If we omit the two inputs (i.e.,
+\texttt{multiplier} and \texttt{multiplicand}), we are left with two memory cells.
+
+\subsubsection*{Runtime}
+\label{sec:org84bfcba}
+
+To evaluate the runtime of Listing \ref{org6ba9972}, we will
+assume a cost where every RAM instruction takes one unit of time. The
+challenge with loops is to understand how many time the body runs.
+
+In Listing \ref{org6ba9972}, Lines 8 to 11
+test whether we should exit the loop. These 4 lines will be executed
+once every time the condition holds, but also once when \texttt{counter}
+exceeds \texttt{multiplier}. Since we know that \texttt{multipler} is 4, these lines
+will execute 5 times. The body of loop (i.e., the 9 instructions from
+Lines 12 to 20) will run each time the test
+condition holds, that is, 4 times. Finally, the last two instructions
+(from Line 21) will be executed once. We are thus left with
+the following:
+
+\begin{align*}
+ \text{time} &= (5 \times 4) + (4 \times 9) + 2 \\
+             &= 20 + 36 + 2 \\
+             &= 58
+\end{align*}
+
+Listing \ref{org6ba9972} takes 58 units of time to execute.
+
+\subsection{From Java}
+\label{sec:org700d220}
+
+Finally, we can now look at an equivalent Java program. In Listing
+\ref{orge874f22}, we first defined the \texttt{multiplicand} and the
+\texttt{multiplier} as two integer variables, and we then use a \texttt{while} loop
+to add the \texttt{multiplicand} many times.
+
+\begin{listing}[htbp]
+\begin{minted}[linenos,firstnumber=1]{java}
+public static void main(String[] args) {
+    final int multiplicand = 10;
+    final int multiplier = 4;
+
+    int product = 0;
+    int counter = 0;
+    while (counter < multiplier) {
+        product = product + multiplicand;
+        counter = counter + 1;
+    }
+
+    System.out.println(product);
+}
+\end{minted}
+\caption{\label{orge874f22}A Java program that multiplies two predefined variables (cf. Listing \ref{org6ba9972})}
+\end{listing}
+
+\subsubsection*{Memory}
+\label{sec:org96cd4c8}
+
+Listing \ref{orge874f22} declares four variables, namely
+\texttt{multiplicand}, \texttt{multiplier}, \texttt{product}, and \texttt{counter}. Two of them
+are inputs, so we are left with two as a memory consumption.
+
+\subsubsection*{Runtime}
+\label{sec:org3a6c6a6}
+
+As we did before, we need to first estimate the cost of each Java
+statement and then calculate how many times each statement is
+executed.
+
+If we put aside variable declarations, we are left with a loop whose
+body contains two assignments.
+
+\begin{itemize}
+\item Assignments translate into RAM assembly as one \texttt{STORE}
+instructions. Here however, both assignments include an arithmetic
+expression, which we should account for, because it translates into
+an \texttt{ADD} instruction. Such assignments thus cost 2 units of time.
+
+\item The loop and its condition take one comparison and one \texttt{jump}
+instructions, for a cost of 2. Note that the loop body includes an
+extra jump to return at the beginning of the loop.
+
+\item The print statements translates to a single \texttt{PRINT} instruction.
+\end{itemize}
+
+Regarding the frequencies, we know that the loop condition will be
+executed as many times as the condition holds, and one time when the
+condition breaks. Here that is 5 times. By contrast, the loop body
+executes only when condition holds, that is, 4 times in our case. Table
+\ref{tab:orgb0cd28a} summarizes these costs and frequencies.
+
+Eventually we can model the time required by Listing
+\ref{org6ba9972} as follows:
+
+\begin{align*}
+ \text{time} & = (5 \times 2) + [ 4 \times (2 + 2 + 1) ] + 1 \\
+             & = 10 + 20 + 1 \\
+             & = 31 \\
+\end{align*}
+
+Here, again, the estimation we get differ from the one we got for the
+RAM assembly. The difference is wider because our errors are amplified
+each time the loop runs.
+
+\begin{table}[htbp]
+\caption{\label{tab:orgb0cd28a}Summary of the cost and frequencies of Listing \ref{orge874f22}}
+\centering
+\begin{tabular}{rlrrr}
+Line & Java Code & Cost & Freq.  &  Total\\
+\hline
+6 & \texttt{while (counter < multiplier) \{} & 2 & 5 & 10\\
+7 & \texttt{product = product + multiplicand;} & 2 & 4 & 8\\
+9 & \texttt{counter = counter + 1;} & 2 & 4 & 8\\
+10 & \texttt{\}} & 1 & 4 & 4\\
+12 & \texttt{System.out.println(product)} & 1 & 1 & 1\\
+\hline
+ &  &  & \textbf{Total} & 31\\
+\end{tabular}
+\end{table}
+
+
+\section{Conclusions}
+\label{sec:org09123de}
+
+The first take-away from this lab session is that, in practice,
+estimating the cost of a Java statement boils down to counting
+arithmetic operations, comparisons, logical operations, and
+assignment. As for the memory consumption, we simply count the
+variables.
+
+The second take-away is that we only \textbf{estimate} the runtime and memory
+consumption. Since we do not know exactly how our code will be
+compiled to a RAM architecture, we cannot know the exact number of
+memory cells nor the number of instructions executed. We can however
+get an estimation, which, as we shall see in the next lectures, is
+good enough to compare algorithms.
+\end{document}
