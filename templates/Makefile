@@ -5,6 +5,9 @@ INKSCAPE=/Applications/Inkscape.app/Contents/MacOS/inkscape
 LATEX_CLASS=aldast.cls
 LATEX_MAIN=main.tex
 
+IMAGES=images
+
+TIKZ_IMAGES=$(shell find ./images -type f -name "*.tikz")
 SVG_IMAGES=$(shell find ./images -type f -name "*.svg")
 PDF_IMAGES=$(patsubst %.svg,%.pdf,$(SVG_IMAGES))
 
@@ -23,3 +26,6 @@ clean:
 	rm *.aux *.bbl *.blg *.out *.log
 	rm *.pdf
 	rm ${PDF_IMAGES}
+	rm ${IMAGES}/*.pdf
+	rm ${IMAGES}/*.aux
+	rm ${IMAGES}/*.log

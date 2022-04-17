@@ -1,21 +1,18 @@
-def sum(x: str, y: str) -> str:
-    result = ""
-    length = max(len(x), len(y))
-    index = 0
-    added = 0
-    carry = 0
-    while index < length or carry == 1:
-        added = digitAt(x, index) + digitAt(y, index) + carry
-        carry = 0
-        if added > 9:
-            carry = 1
-            added = added - 10
-        result = str(added) + result
-        index = index + 1
-    return result
+def add(x, y):
+    grid = setupGrid(x, y)
+    column = rightMostColumn(grid)
+    while not isEmpty(column):
+        carry, xd, yd = read(grid, column)
+        s, c = carry + xd + yd
+        write(grid, column, 4, s)
+        column = nextOnLeft(grid, column)
+        write(grid, column, 1, c)
+    return lastRow(grid)
 
-def digitAt(text, index):
-    if index >= len(text):
-        return 0
-    back = len(text) - 1 - index
-    return int(text[back])
+def setupGrid(x, y): pass
+def rightMostColumn(grid): pass
+def isEmpty(grid, column): pass
+def read(column, grid): pass
+def write(grid, column, rowIndex, value): pass
+def nextOnLeft(grid, column): pass
+def lastRow(grid): pass

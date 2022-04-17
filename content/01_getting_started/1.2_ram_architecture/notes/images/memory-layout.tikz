@@ -1,0 +1,34 @@
+\documentclass[tikz]{standalone}
+\usetikzlibrary{calc, positioning, arrows.meta}
+\begin{document}
+\tikzset{
+  compiled/.style = {
+    draw,
+    rectangle,
+    text width=3cm,
+    minimum height=2cm,
+    font=\itshape
+   },
+  next/.style = {
+    compiled,
+    minimum height=1.5cm,
+    dashed,
+  },
+  label/.style = {
+    font=\ttfamily,
+    minimum height=0.5cm,
+    text width=1cm,
+    align=flush right,
+    anchor=north east
+  }
+}
+\begin{tikzpicture}[node distance=0cm, minimum width=2cm]
+  \node[compiled] (data) {Data segment \\(variables)};
+  \node[label] (data-label) at (data.north west) {0};
+  \node[compiled, below=of data] (code) {Code segment \\(instructions)};
+  \node[label] (code-label) at (code.north west) {$k$};
+  \node[next, below=of code] (free) {free memory};
+  \node[label] (free-address) at (code.south west) {$k+i$};
+  \node[label, anchor=south east] (free-address) at (free.south west) {$\infty$};
+\end{tikzpicture}
+\end{document}

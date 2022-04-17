@@ -31,8 +31,9 @@ Welcome! I\sidenote{My name is Franck. I am a full stack developer at
 welcome you in this course about \emph{Algorithms \& Data
   Structures}. I prepared this course as well as I could with the
 time, resources and energy I had, and I do hope you will find it
-relevant. Many thanks to the previous years student whose feedback has
-been very valuable. Let me know what you think!
+relevant. Many thanks to the students who took this course in the
+past: Their feedback has been very valuable. Let me know what you
+think!
 
 Despite its official title, this course is first and foremost about
 \emph{solving ``programming'' problems}. This is the most valuable
@@ -144,21 +145,19 @@ primary school an algorithm to do
 that. Figure~\ref{fig:school-addition} shows the setup I would use to
 add \numprint{4179} to 967. Here are the steps I would follow:
 \begin{enumerate}
-\item Write down the two given numbers into a grid and align their
+\item Write down the two given numbers in a grid and align their
   digits by significance: The least significant digit on the rightmost
   column. Keep a free row on top for possible carry-overs and
   another row below for the result. Keep an extra column on
   the left for a possible final carry-over.
 \item Put your finger under the rightmost column.
-\item Write down a ``0'' into cell of the first row (the carry);
-\item Read the digits in the three first cells of the current column.
-\item If nothing has been read, stop here.
-\item Look-up (in an addition table) the sum and the carry yielded by
-  adding the two digits and the carry-over.
-\item Write down the sum into last row of the current column.
-\item Move your finger to the next column on the left
-\item If possible, write down the carry in first row
-\item Return to Step 4
+\item If there is no digit to read, stop here.
+\item Otherwise, read the digits in this column.
+\item Add these digits to get their sum and the associated carry-over.
+\item Write down this sum into the bottom cell of the current column.
+\item Move your finger to the next column on the left.
+\item If there is a carry-over, write it down in first cell.
+\item Return to Step 3.
 \end{enumerate}
 
 This is our first algorithm: A recipe to add natural numbers! The
@@ -238,6 +237,76 @@ Appropriate data structure is the key to their efficiency.
     structures}.
 \end{takeaway}
 
+\section{How to Describe an Algorithm?}
+
+Once we have solved a computational problem, we have to communicate
+our solution: Explain it to our colleagues or simply to ``program'' a
+machine to do it. So, what is the best way to describe an
+algorithm? If the computer is a person our bullet list of plain
+English instructions may very well do the job. If the computer is a
+machine however, there we will have a hard time to get the machine
+understand all the nuances of our natural languages. Let us review a
+few commonly used approaches: Natural languages, flowcharts,
+pseudo-code and programs.
+
+\paragraph{Using Natural Language}
+The simplest way to describe an algorithm is to use plain English,
+though this often lead to ambiguous text, which rules out the use
+machines. This is what we used in the previous section for our
+addition algorithm.
+
+\paragraph{Using Flowcharts} Another human-friendly way is to use a
+flowchart as shown on Figure~\ref{fig:flowchart}. In a flowchart, the
+steps of an algorithm are shown as boxes connected by arrows. The
+flowchart syntax distinguishes between various type of steps such as
+processes, document, decisions, references, etc using different
+shapes. Figure~\ref{fig:flowchart} only use ``processes'' (shown as
+rectangles) and decisions (shown as diamond). A flowchart makes the
+control structure (loops and decisions) very explicit, but the
+graphical syntax is quite space consuming and may not scale to complex
+algorithms.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includestandalone[width=.9\textwidth]{images/flowchart.tikz}
+  \end{center}
+  \caption{The grade-school addition algorithm portrayed as a
+    flowchart.}
+  \label{fig:flowchart}
+\end{figure}
+
+\paragraph{Using Pseudocode} A third human-friendly solution is to use
+\emph{pseudo-code}. The idea is to combine control structures common
+in most imperative programming languages (loops and conditional) with
+plain English or mathematical notation in order to express succinctly
+the main idea of an algorithm. For our addition algorithm
+we could write something like:
+\begin{algorithm}
+  \KwIn{$x$: Sequence of digits}
+  \KwIn{$y$: Sequence of digits}
+  \KwOut{$z$: Sequence of digits such as $z = x + y$}
+  Setup $x$ and $y$ into a grid \;
+  Place your finger under the right most column\;
+  \While{there are digits in the column}{
+    Read these digits\;
+    Add them up to get the sum and the carry\;
+    Write down this sum in the bottom cell\;
+    Move your finger to the next column on the left\;
+    Write down this carry in the top cell\;
+  }
+  \Return{the last row of the grid}\;
+\end{algorithm}
+
+\paragraph{Using a Program} All these representations help communicate
+algorithms with people, so they all rely on natural language, which
+may be ambiguous. We will see in the next Lecture how we can convert
+pseudo code into machine code, that code that machine can understand.
+
+\begin{takeaway}
+  There is an direct relationship between the actions we stipulate in
+  an algorithm and the capabilities of the computer we use to execute
+  it.
+\end{takeaway}
 
 
 \section{Course Overview}
