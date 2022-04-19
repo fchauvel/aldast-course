@@ -1,35 +1,26 @@
 
 * Progress
 
-  |   # | Title                  | Slides | Slide Review |  Notes | Notes review | Lab | Lab Reviewed |   |
-  |-----+------------------------+--------+--------------+--------+--------------+-----+--------------+---|
-  | 1.1 | Algorithms             |        |              |        |              |     |              |   |
-  | 1.2 | Random Access Machines |        |              |        |              |     |              |   |
-  | 1.3 | Correctness            |        |              |        |              |     |              |   |
-  |-----+------------------------+--------+--------------+--------+--------------+-----+--------------+---|
-  | 2.1 | Efficiency             |        |              |        |              |     |              |   |
-  | 2.2 | Algorithm Analysis     |        |              |        |              |     |              |   |
-  | 2.3 | Big-Oh Notation        |        |              |        |              |     |              |   |
+  |   # | Title                    | Slides | Slide Review | Notes | Notes review | Lab | Lab Reviewed |   |
+  |-----+--------------------------+--------+--------------+-------+--------------+-----+--------------+---|
+  | 1.1 | Algorithms               |        |              | Done  |              |     |              |   |
+  | 1.2 | Random Access Machines   |        |              | Done  |              |     |              |   |
+  | 1.3 | Correctness              |        |              | Done  |              |     |              |   |
+  |-----+--------------------------+--------+--------------+-------+--------------+-----+--------------+---|
+  | 2.1 | Computational Complexity |        |              | Done  |              |     |              |   |
+  | 2.2 | Algorithm Analysis       |        |              |       |              |     |              |   |
+  | 2.3 | Big-Oh Notation          |        |              |       |              |     |              |   |
 
 
 * Slides
 
 * Lecture Notes
 
-  - L1.1 Incorporate algo. syntax
-    - Copy paste from L1.2
-    - Adjust intro
-    - Adjust conclusion
-  - [ ] L1.2
-    - [X] Adjust intro
-    - [ ] Adjust conclusion
-    - [ ] Overall pass
-    - [ ] Take-aways
-      - We assume an augmented RAM machine in this course
-      - Symbolic names stands for memory addresses
-      - There are many ways to compile pseudo-code to machine code
-        
-     
-  - L1.3 Review
-  
+  - [ ] Review Lecture Notes 1.1
+  - [ ] Review Lecture Notes 1.2
+  - [ ] Review Lecture Notes 1.3
+    
+  - [X] Write Lecture Notes 2.1
+  - [ ] Write Lecture Notes 2.2 
+    
 * Lab Sessions

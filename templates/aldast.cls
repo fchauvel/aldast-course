@@ -11,7 +11,14 @@
 
 \RequirePackage{booktabs}
 
-\RequirePackage{mparhack}
+\RequirePackage{caption}
+\DeclareCaptionFormat{custom}
+{%
+    \small\textbf{#1#2}\textit{#3}
+}
+\captionsetup{format=custom}
+
+\RequirePackage{marginfix}
 \RequirePackage{sidenotes}
 
 \RequirePackage{graphicx}
