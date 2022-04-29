@@ -1,0 +1,40 @@
+\documentclass[tikz]{standalone}
+\usetikzlibrary{calc, positioning, arrows.meta, shapes, intersections}
+\begin{document}
+\tikzset{
+  arrow/.style = {
+    -Latex
+  },
+  note/.style = {
+    align=right
+  },
+}
+\begin{tikzpicture}
+  \coordinate (origin) at (0, 0);
+  \coordinate (xMax) at (6, 0);
+  \coordinate (yMax) at (0, 5.5);
+
+  \node[note, anchor=north east] at (xMax) {input size $n$};
+  \node[note, anchor=north east] at (yMax) {efficiency}; 
+
+  \node[note, anchor=west] at (5, 4.25) {$f(n)$};
+  \node[note, anchor=west, color=blue] at (5, 1) {$c \cdot g(n)$}; 
+
+  \draw[arrow, name path=xAxis] (origin) -- (xMax);
+  \draw[arrow] (origin) -- (yMax);
+
+  \draw[->,thick, name path=f] (0,0)
+  .. controls (0.5,3) and (1.5,0.5) .. (2,2)
+  .. controls (3, 4) .. (5, 4.25);
+
+  \draw[->, name path=g, color=blue] (0.5, 4)
+  .. controls (1.5, 1) .. (5,1);
+
+  \path [name intersections={of=f and g, by=clash}];
+  \node[circle] at (clash) {};
+  \draw[fill=white] (clash) circle[radius=3pt];
+  \coordinate [label=below:{$n_0$}] (n) at (clash |- origin);
+  \draw[dashed] (clash |- origin) -- (clash);
+  
+\end{tikzpicture}
+\end{document}
