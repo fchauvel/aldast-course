@@ -63,6 +63,8 @@
 
 \RequirePackage{amsmath}
 \RequirePackage{amsfonts}
+\RequirePackage{latexsym}
+
 
 \renewcommand{\maketitle}{
   \thispagestyle{plain}
