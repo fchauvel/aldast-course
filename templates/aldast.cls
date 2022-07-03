@@ -130,3 +130,38 @@
 {\end{tcolorbox}}
 
 \newcommand*{\ditto}{---\texttt{"}---}
+
+
+\RequirePackage[color,leftbars]{changebar}
+
+\setlength{\changebarsep}{-0.7cm}
+
+\newif\ifShowSolution
+
+\ShowSolutionfalse
+
+\newcommand{\showSolution}{\ShowSolutiontrue}
+
+\newcounter{questionCount}
+\setcounter{questionCount}{0}
+\newenvironment{question}[1]
+    {\refstepcounter{questionCount}{\bfseries Question~\thesection.\thequestionCount}\ #1}
+    {}
+
+\newenvironment{solution}
+{%
+  \ifShowSolution
+  \vspace{1em}\itshape \begingroup\color{gray} \textbf{Solution} \list{}{%
+    \itemindent0cm
+  }\item[]\cbstart
+  \else
+  \setbox0=\vbox\bgroup
+  \fi}
+{%
+  \ifShowSolution
+  \endlist\cbend\endgroup
+  \else
+  \egroup
+  \fi
+}
+

@@ -1,0 +1,172 @@
+% Created 2021-11-28 Sun 08:29
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{IDATA 2302}
+\date{Dec. 2021}
+\title{Supporting Material\\\medskip
+\large Examination Appendix}
+\hypersetup{
+ pdfauthor={IDATA 2302},
+ pdftitle={Supporting Material},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+These information may or may not be useful. I put them as they are
+typical things that one would check online or in textbooks.
+
+\section{Efficiency of Common Data Structures}
+\label{sec:orgfa56201}
+
+\begin{center}
+\begin{tabular}{llll}
+Data structure &  Operation & Time & Space\\
+\hline
+Array & insert (anywhere) & \(O(n)\) & \(O(1)\)\\
+ & access & \(O(1)\) & \(O(1)\)\\
+ & find & \(O(n)\) & \(O(n)\)\\
+ & delete (anywhere) & \$O(n) & \(O(1)\)\\
+\hline
+Linked List & insert & \(O(n)\) & \(O(1)\)\\
+(singly) & access & \(O(n)\) & \(O(1)\)\\
+ & delete (anywhere) & \(O(n)\) & \(O(n)\)\\
+ & find & \(O(n)\) & \(O(1)\)\\
+\hline
+Linked List & insert & \(O(1)\) & \(O(1)\)\\
+(doubly) & access & \(O(n)\) & \(O(1)\)\\
+ & delete (anywhere) & \(O(1)\) & \(O(n)\)\\
+ & find & \(O(n)\) & \(O(1)\)\\
+\hline
+Hash table & insert & \(O(1)\) & \(O(1)\)\\
+ & access & \(O(1)\) & \(O(1)\)\\
+ & delete & \(O(1)\) & \(O(1)\)\\
+ & find & \(O(n)\) & \(O(1)\)\\
+\hline
+Binary Search Tree & insert & \(O(\log n)\) & \(O(1)\)\\
+ & access & \(O(\log n)\) & \(O(1)\)\\
+ & delete & \(O(\log n)\) & \(O(1)\)\\
+ & find & \(O(\log n)\) & \(O(1)\)\\
+\hline
+AVL Tree & insert & \(O(\log n)\) & \(O(1)\)\\
+ & access & \(O(\log n)\) & \(O(1)\)\\
+ & delete & \(O(\log n)\) & \(O(1)\)\\
+ & find & \(O(\log n)\) & \(O(1)\)\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Efficiency of Common Algorithms}
+\label{sec:org502e29c}
+
+
+\begin{center}
+\begin{tabular}{llll}
+Algorithm &  Time &  Space & Note\\
+\hline
+Linear search & \(O(n)\) & \(O(1)\) & \(n\) collection length\\
+Jump search & \(O(\sqrt{n})\) & \(O(1)\) & \\
+Binary search & \(O(\log n)\) & \(O(1)\) & \\
+\hline
+Insertion sort & \(O(n^2)\) & \(O(1)\) & \\
+Selection sort & \(O(n^2)\) & \(O(1)\) & \\
+Bubble sort & \(O(n^2)\) & \(O(1)\) & \\
+Merge sort & \(O(n \log n)\) & \(O(n)\) & \\
+Quick sort & \(O(n \log n)\) & \(O(n)\) & \\
+Heap sort & \(O(n \log n)\) & \(O(1)\) & \\
+\hline
+Counting sort & \(O(n+k)\) & \(O(k)\) & \(k\) is the number\\
+Radix sort & \(O(nk)\) & \(O(n+k)\) & of digit\\
+\hline
+Breadth-first search & \(O(V+E)\) & \(O(V+E)\) & Vertices \& Edges\\
+Depth-first search & \(O(V+E)\) & \(O(V+E)\) & \\
+Dijsktra's shortest path & \(O(E \log V)\) & \(O(V+E)\) & \\
+Bellman Ford & \(O(E \cdot V)\) & \(O(E \cdot V)\) & \\
+Floyd Warhsall & \(O(V^3)\) & \(O(V^3)\) & \\
+Prim's MST & \(O(E \log V)\) & \(O(V+E)\) & \\
+Kruskal's MST & \(O(E \log V)\) & \(O(E+V)\) & \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Powers \& Logarithms}
+\label{sec:org99b4f5f}
+
+\begin{itemize}
+\item \(\log_a 1 = 0\)
+
+\item \(\log_a a = 1\)
+
+\item \(\log_a n^b = b \log_a n\)
+
+\item \(\log_a xy = \log_a x + \log_a y\)
+
+\item \(\log_a \frac{x}{y} = \log_a x - \log_a y\)
+
+\item \(\log_a x = \frac{\log_b x}{\log_b a} = \log_a b \log_b x\)
+\end{itemize}
+
+\section{Sums}
+\label{sec:org008571d}
+
+\begin{itemize}
+\item \(\sum_{i=1}^{n} f(i) = f(1) + f(2) + \ldots + f(n)\)
+\item \(\sum_{i=1}^{n} k \cdot f(n) = k \cdot \sum_{i=1}^{n} f(i)\)
+\item \(\sum_{i=1}^{n} 1 = n+1\)
+\item \(\sum_{i=1}^{n} i = \frac{n(n+1)}{2}\)
+\item \(\sum_{i=1}^{n} i^k \approx \frac{n^{k+1}}{k+1}\)
+\item \(\sum_{i=1}^{n} a^i = \frac{a^{n+1}-1}{a-1}\)
+\item \(\sum_{i=1}^{n} \frac{1}{i} \approx \ln n + \gamma\) where \(\gamma = 0.5772\) (Euler's constant)
+\item \(\sum_{i=1}^{n} \log i \approx n \log n\)
+\end{itemize}
+
+
+\section{Linear Recurrences}
+\label{sec:orgdc7500e}
+
+\begin{itemize}
+\item When \(T(n) = T(n-1) + f(n)\)
+then \(T(n) =  T(0) + \sum_{i=1}^{n} f(i)\)
+
+\item Master theorem
+\begin{align*}
+   T(n) = \begin{cases}
+      a T(\frac{n}{b}) + f(n) & n > 1 \\
+      c & n=1
+   \end{cases}
+\end{align*}
+Then, if \(f(n) \in \Theta(n^d)\), we can conclude:
+\begin{align*}
+T(n) \in \begin{cases}
+   \Theta(n^d) & \text{if } a < b^d  \\
+   \Theta(n^d \log n) & \text{if } a = b^d \\
+   \Theta(n^{\log_b a}) & \text{if } a > b^d
+\end{cases}
+\end{align*}
+\end{itemize}
+
+\section{Combinatorics}
+\label{sec:org127bd53}
+
+\begin{itemize}
+\item The number of permutations of an n-element set is \(n!\)
+\item The number of k-combinations of an n-element set is \(\binom{n}{k}\)
+\item The number of subsets of an n-element set is \(2^n\)
+\end{itemize}
+\end{document}

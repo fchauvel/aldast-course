@@ -1,0 +1,171 @@
+% Created 2021-10-30 Sat 21:14
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Oct. 2021}
+\title{Graphs\\\medskip
+\large Week 10 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Graphs},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Questions}
+\label{sec:org8e46919}
+
+\begin{enumerate}
+\item How many nodes are in the following graph?
+\begin{center}
+\includegraphics[width=.9\linewidth]{graph.png}
+\end{center}
+
+\item What type of graph is shown on the previous picture?
+\begin{enumerate}
+\item An undirected graph
+\item A directed graph
+\item A weighted graph
+\item A network flow
+\item None of the above
+\end{enumerate}
+
+\item Does the following matrix \(M\) accurately capture the previous
+graph?
+\begin{align*}
+     M =  \begin{bmatrix}
+        % A   B   C   D   E   F
+          0 & 1 & 1 & 0 & 0 & 0 \\
+          0 & 0 & 0 & 1 & 0 & 0 \\
+          0 & 1 & 0 & 0 & 0 & 0 \\
+          0 & 0 & 0 & 0 & 1 & 0 \\
+          0 & 1 & 0 & 0 & 0 & 1 \\
+          0 & 0 & 0 & 1 & 0 & 0 \\
+          \end{bmatrix}
+\end{align*}
+
+\item How many \emph{simple paths} are there from Node D to Node A?
+\begin{enumerate}
+\item None
+\item 1 path
+\item 2 paths
+\item 3 paths
+\item None of the above
+\end{enumerate}
+
+\item How many components are in this graph?
+\begin{enumerate}
+\item 1
+\item 0
+\item \(2^6 = 64\)
+\item \(6^2\)
+\item None of the above
+\end{enumerate}
+
+\item Starting from Node A, in which order would a \emph{pre-order
+depth-first traversal} reach all the nodes, provided that it
+processes successors in alphabetical order?
+\begin{enumerate}
+\item A, B, D, E, F, C
+\item A, C, B, D, E, F
+\item A, B, C, D, E, F
+\item None of the above
+\end{enumerate}
+
+\item Starting from Node A, in which order would a \emph{pre-order
+breadth-first traversal} reach all the nodes, provided that it
+processes successors in alphabetical order?
+\begin{enumerate}
+\item A, B, D, E, F, C
+\item A, C, B, D, E, F
+\item A, B, C, D, E, F
+\item None of the above
+\end{enumerate}
+
+\item Dijsktra's algorithm finds
+\begin{enumerate}
+\item the shortest path between two nodes
+\item the shortest paths between one given node and every others
+\item the shortest paths between every possible pairs of node
+\end{enumerate}
+
+\item A shortest path may exist only when the graph
+\begin{enumerate}
+\item contains no paths whose total weight is negative
+\item contains no circuits
+\item contains no negative weights
+\item contains no circuit with negative weights
+\item contains no circuit whose total weight is negative
+\end{enumerate}
+
+\item A spanning tree is
+\begin{enumerate}
+\item a subgraph that includes all the vertices
+\item a subgraph that includes all the edges
+\item a subgraph that includes all the vertices but forms a tree
+\item a subgraph that includes all the edges but forms a tree
+\item None of the above
+\end{enumerate}
+\end{enumerate}
+
+
+\section{Solutions}
+\label{sec:org906e500}
+
+\begin{enumerate}
+\item \textbf{6}. This graph contains six nodes, namely A, B, C. D, E, and F.
+
+\item \textbf{A directed graph}. This graph is directed because edges go in a
+specific direction. For example, it is possible to go from A to
+C, but not from C to A.
+
+\item \textbf{No} The matrix \(M\) lacks at least the \emph{loop} that is, the
+circuit from B to B.
+
+\item \textbf{None} There is no path from D to A because edges are directed.
+One can only navigate as indicated by the arrows.
+
+\item \textbf{One} A component is a subgraph that is isolated from some nodes in
+the graph. No vertex is isolated here, so this graph has a single
+component.
+
+\item \textbf{A, B, D, E, F, C}. Since the traversal is \emph{pre-order} and
+\emph{depth-first}, the traversal starts on node A. 'A' gets printed
+before its children because it is a pre-order traversal. Then,
+children are pulled in alphabetical order, so B comes before
+C. Finally, it goes \emph{depth first} and explore the first path all
+the way until it reaches a dead-end.
+
+\item \textbf{A, B, C, D, E, F}. Here we are talking about a breadth-first
+traversal that reaches nodes by level: First come the nodes that
+are one edge away from the source, then the nodes two edges away,
+and so one and so forth.
+
+\item \textbf{Answer (b)} Dijsktra's algorithm finds the shortest paths between a
+given source node and all the other vertices.
+
+\item \textbf{Answer (f)} A shortest path can exist only in a graph where
+there is no circuit whose total weight is negative.
+
+\item \textbf{Answer (c)} A spanning tree is a subgraph that includes all the
+vertices and forms a tree.
+\end{enumerate}
+\end{document}

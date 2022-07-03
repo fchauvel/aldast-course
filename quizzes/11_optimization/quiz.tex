@@ -1,0 +1,166 @@
+% Created 2021-11-07 Sun 20:54
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Oct. 2021}
+\title{Combinatorial Search\\\medskip
+\large Week 10 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Combinatorial Search},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Questions}
+\label{sec:orgc3530e7}
+
+\begin{enumerate}
+\item Given the set \(S=\{a, b, c, d\}\), how many sequences of length 3
+without repetitions are possible?
+\begin{enumerate}
+\item \(2^3\)
+\item \(4^3\)
+\item \(3^4\)
+\item \(!4\)
+\item None of the above
+\end{enumerate}
+
+\item Given the set \(S=\{a, b, c, d\}\), how many combinations of 3 elements are
+possible
+\begin{enumerate}
+\item \(3^2\)
+\item \(\binom{4}{3}\)
+\item \(!4\)
+\item \(4 \times 3\)
+\item None of the above
+\end{enumerate}
+
+\item Back-tracking enables
+\begin{enumerate}
+\item avoiding invalid solutions
+\item enumerating all solutions
+\item avoiding incomplete solutions
+\item minimizing the number of complete solutions.
+\item none of the above.
+\end{enumerate}
+
+\item In the branch-and-bound algorithm the heuristic function computes
+\begin{enumerate}
+\item the maximum (or minimum) depth of the subtrees
+\item the maximum (or minimum) size of the subtrees
+\item the maximum (or mininum) "fitness" of the subtrees
+\item the maximum (or minimum) "fitness" seen so far
+\item none of the above
+\end{enumerate}
+
+\item Dynamic Programming improves
+\begin{enumerate}
+\item iterative algorithms
+\item recursive algorithms
+\item algorithms that access an external storage
+\item none of the above.
+\end{enumerate}
+
+\item Dynamic programming helps by
+\begin{enumerate}
+\item removing invalid subtrees
+\item removing duplicated computation
+\item removing recursive calls
+\item none of the above
+\end{enumerate}
+
+\item Depth-first search consume more memory than breadth-first search.
+\begin{enumerate}
+\item Yes
+\item No
+\end{enumerate}
+
+\item Dynamic programming requires traversing the search tree
+\begin{enumerate}
+\item top-down
+\item bottom-up
+\item according to the underlying recurrence relation
+\item none of the above
+\end{enumerate}
+
+\item In an optimization problem, the notion of \emph{fitness} captures
+\begin{enumerate}
+\item How fast is the search
+\item How relevant is a solution
+\item How new is a solution
+\item None of the above
+\end{enumerate}
+
+\item At each iteration, hill climbing (in its simplest form) chooses
+\begin{enumerate}
+\item a neighbour at random
+\item a better neighbour, at random
+\item the best neighbour, provided it yields an improvement over the
+current solution.
+\item the best neighbour
+\item none of the above
+\end{enumerate}
+\end{enumerate}
+
+\section{Solutions}
+\label{sec:org16ce9a9}
+
+\begin{enumerate}
+\item \textbf{Answer (d)}. There are \(4 \times 3 \times 2\) arrangements of
+length 3 without repetitions. This is the same number as
+arrangements of length 4, since once we have chosen 3 out of 4
+items, only one item can be chosen as the final one (repetitions
+are not allowed)..
+
+\item \textbf{Answer (b)}. The number of 3-combinations in a set of 4 items
+is given by the binomial coefficient \(\choose{4}{3}\).
+
+\item \textbf{Answer (b)} Back-tracking enables enumerating all solutions by
+going systematically through all possible options at each
+decision point.
+
+\item \textbf{Answer (c)} The maximum fitness possible for the subtrees.
+
+\item \textbf{Answer (b)}. Dynamic programming target to recursive
+programming, although caching/memorization can also apply to
+iterative solutions.
+
+\item \textbf{Answer (b) and (c)}. Dynamic programming removes both
+duplicated computations and recursive calls.
+
+\item \textbf{Answer (b)}. Depth first search is more memory efficient than
+breadth-first search because the later requires to maintain in
+memory a collection of partial solution. By contrast, depth first
+needs only one.
+
+\item \textbf{Answer (c)} According to the direction of the underlying
+recurrence relation.
+
+\item \textbf{Answer (b)}. The notion of fitness describes how good a solution
+is. Any optimization problems thus calls for finding the solution
+with a maximum fitness.
+
+\item \textbf{Answer (c)} In its simplest form, the hill climbing idea is to
+choose is to move up on the "fitness slope", that is to choose
+the best neighbour that provides an improvement.
+\end{enumerate}
+\end{document}

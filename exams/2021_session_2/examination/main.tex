@@ -1,0 +1,214 @@
+\documentclass{article}
+
+\usepackage{calrsfs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{minted}
+\usepackage{tikz}
+\usepackage[mode=buildnew]{standalone}
+
+\title{Final Examination}
+\author{NTNU 2302 / Algorithms and Data Structures}
+\date{Session II \textbullet\ May 12, 2022}
+
+\begin{document}
+\maketitle
+
+
+This is the final examination of the algorithm an data structure
+course. It contains four parts, each having 5 questions worth 2.5
+points. You have four hours.
+
+You can describe algorithms using plain English and bullet points,
+pseudocode, or some well-known programming syntax (i.e., C,
+Python, Java, etc). Choose what you are the most comfortable with.
+
+Note that you are \emph{not} required to figure out ``optimal''
+algorithms (if any exist for these problems). Rather you have to show
+consistency through your answers, by providing a working solution and
+computing its complexity/efficiency properly.
+
+Good luck.
+
+\section{Basic Knowledge}
+
+\begin{enumerate}
+\item Can ``testing'' establish the correctness of an algorithm? Why?
+\item Consider the following Java function. Explain (in words) what
+  would happen (and why) if one invokes it with $n=-3$ as argument.
+  \begin{minted}{java}
+    int factorial (int n) {
+      if (n==0) return 1;
+      return n * factorial(n-1);
+    }
+  \end{minted}
+\item What is an ``array'' . How does it differ from a linked-list?
+\item Quick-sort runs in $O(n \log n)$. Is it correct to say that it
+  also runs in $O(n^2)$. Explain your reasoning.
+\item Consider the graph shown below on Figure~\ref{fig:graph}. In
+  what order will the nodes be reached during a depth-first
+  traversal, starting from Node A, and processing neighbor nodes
+  in alphabetical order?
+  \begin{figure}[htbp]
+  \begin{center}
+    \includestandalone[width=.6\textwidth]{images/graph.tikz}
+  \end{center}
+  \caption{Sample directed graph, with 6 nodes.}
+  \label{fig:graph}
+\end{figure}
+\end{enumerate}
+
+
+\section{Algorithm Analysis}
+
+The ``Caesar cipher'' is an old encryption algorithm used during the
+Roman empire. The idea is to \emph{shift} all letters by a fixed
+number along the alphabet, either forward or backward. To encode and
+decode, we must know the secret key, which is the length of this
+shift. Here are a few examples assuming a 26 letters alphabet from 'a'
+to 'z',
+
+
+\begin{itemize}
+\item The word ``abc'' gets encoded as ``bcd'' when the key/shift is
+  1. The character 'a' becomes 'b' when shifted by 1, the character
+  'b' becomes 'c', and, 'c' becomes 'd'.
+\item The word ``zoo'' shifted by 2 gets encoded as ``bqq''. The
+  second letter after 'z' is 'b' (we assume that the alphabet forms a
+  circle). The second letter after 'o' is 'q'.
+\item The word ``algorithm'' gets encoded as ``dojrulwkp'' if the
+  key/shift is 3. The third character after 'a' is 'd', the third
+  character after 'l' is 'o' and so on and so forth.
+\end{itemize}
+
+
+The following Java function is one possible implementation of the
+Caesar cipher. It uses the ASCII character encoding, which preserves
+the alphabet ordering. For example, in ASCII, 'a' is encoded as 97,
+'b' as 98, 'c' as 99, etc. In Java, converting a ``char'' to an
+``int'' yields an ASCII code.
+
+\begin{minted}{java}
+  static char[] caesarCipher(char[] givenWord, int shift) {
+    char[] result = new char[givenWord.length];
+    for(int index=0 ; index<givenWord.length ; index++) {
+      int asciiCode = (int) givenWord[index];
+      int encoded = asciiCode + shift;
+      if (encoded > (int) 'z') {
+        encoded -= 26;
+      }
+      result[index] = (char) encoded;
+    }
+    return result;
+  }
+\end{minted}
+
+
+\paragraph{Questions}
+\begin{enumerate}
+\item Explain how the execution unfolds given the word ``zone'' and a
+  shift of 4.
+\item What is the \emph{size of the problem}, that is, what drives the
+  runtime and memory consumption.
+\item What is the best case scenario? What is the execution
+  time efficiency/complexity. Explain your reasoning.
+\item What is the worst case scenario? What is the execution
+  time efficiency/complexity. Explain your reasoning.
+\item What is the average case scenario? What is the execution
+  time. Explain your reasoning. (Assume that every letter is equally
+  probable).
+\end{enumerate}
+
+
+\section{Algorithm Design}
+Consider linked-list as shown in Figure~\ref{fig:list}, where each
+node points to the next one. As we build such list, it is possible to
+build ``loops'' as shown on Figure~\ref{fig:list-loop}. We would
+like to design a procedure to check whether the pointers that make up
+the list forms a loop or not.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includestandalone[width=.6\textwidth]{images/list.tikz}
+  \end{center}
+  \caption{A ``regular'' linked-list.}
+  \label{fig:list}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includestandalone[width=.6\textwidth]{images/list-loop.tikz}
+  \end{center}
+  \caption{A ``invalid'' linked-list that includes a loop.}
+  \label{fig:list-loop}
+\end{figure}
+
+For the sake of simplicity, we will assume the existence of the
+following procedure that helps manipulate the nodes of these
+lists:
+\begin{itemize}
+\item \mintinline{java}{Node getNext (Node n) {...}} returns the ``next''
+  Node or null if it is not defined.
+\end{itemize}
+
+This task is about a procedure \mintinline{java}{boolean hasLoop (Node
+  first) {...}}, which returns true only if the given list contains a
+loop.
+
+\paragraph{Questions}
+
+\begin{enumerate}
+\item Propose an ``iterative'' algorithm to detect such a loop. Feel
+  free to add information to the node structure, if you feel it helps.
+\item What is the time efficiency of your algorithm? Explain your reasoning.
+\item What is the space efficiency of your algorithm? Explain your reasoning.
+\item Convert your ``iterative'' algorithm into a ``recursive'' one.
+\item Recursive algorithms leverage the ``call stack'' to store
+  parameters of each active calls. What is the space efficiency of
+  your recursive solution?  Explain your reasoning.
+\end{enumerate}
+
+
+% \section{Problem Solving}
+% We would like to implement a container data-structure, which is
+% defined by an \emph{absract data type} (ADT). This structure, denoted
+% by $\mathbf{s}$, can contain an arbitrary number of elements of type
+% $T$ $T$ can be any thing---think of a generic type in Java for
+% example. $T$ does not make a difference for the rest of this
+% exercise. Our ADT defines the following operations:
+% \begin{enumerate}
+% \item Insertion. We should be able to add an element $x$ to any given
+%   structure $\mathbf{s}$, but only once. In other words, our
+%   structure forbids duplicates. Formally, we could write:
+%   \begin{align*}
+%     \mathit{insert}: S \times T & \to S \\
+%     \mathit{insert}\, (\mathbf{s}, x) &= \mathbf{s} \cup \{ x \}
+%   \end{align*}
+% \item Deletion. We should be able to remove an element $x$ from any given 
+%   structure $\mathbf{s}$. Formally, we could specify that: 
+%   \begin{align*}
+%     \mathit{delete}: S \times T & \to S \\
+%     \mathit{delete} \, (\mathbf{s}, x) & = \mathbf{s} - \{ x \}
+%   \end{align*}
+% \item Range queries. We want to find all the elements from
+%   $\mathbf{s}$ that lays in between the two given elements $x$ and
+%   $y$: Formally, we could write:
+%   \begin{align*}
+%     \mathit{between}: S \times T \times T & \to S \\
+%     \mathit{between} \, (\mathbf{s}, x, y) & = \{ z \, | \, z \in \mathbf{s} \, \land \, x \leq z
+%     \leq y \}
+%     \end{align*}
+% \end{enumerate}
+
+% \paragraph{Questions}
+% \begin{enumerate}
+% \item What data-structure would you choose to implement this ADT?
+% \item Propose an algorithm to implement the ``insert'' procedure.
+% \item What is the time efficiency of your insertion procedure? Explain your reasoning.
+% \item Propose an algorithm to evaluate ``range queries'', that is to
+%   find all the elements in between two values.
+% \item What is the time efficiency of your ``range queries'' procedure?
+%   Explain your reasoning.
+% \end{enumerate}
+
+\end{document}

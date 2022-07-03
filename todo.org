@@ -1,16 +1,18 @@
 
 * Progress
 
-  |   # | Title                    | Slides | Slide Review | Notes | Notes review | Lab | Lab Reviewed |   |
-  |-----+--------------------------+--------+--------------+-------+--------------+-----+--------------+---|
-  | 1.1 | Algorithms               |        |              | Done  |              |     |              |   |
-  | 1.2 | Random Access Machines   |        |              | Done  |              |     |              |   |
-  | 1.3 | Correctness              |        |              | Done  |              |     |              |   |
-  |-----+--------------------------+--------+--------------+-------+--------------+-----+--------------+---|
-  | 2.1 | Computational Complexity |        |              | Done  |              |     |              |   |
-  | 2.2 | Algorithm Analysis       |        |              |       |              |     |              |   |
-  | 2.3 | Big-Oh Notation          |        |              |       |              |     |              |   |
-
+  |   # | Title                    | Topic                       | Slides | Slide Review | Notes | Notes review | Lab | Lab Reviewed |   |
+  |-----+--------------------------+-----------------------------+--------+--------------+-------+--------------+-----+--------------+---|
+  | 1.1 | Algorithms               | Computation, Alg., DS       |        |              | Done  |              |     |              |   |
+  | 1.2 | Random Access Machines   | RAM, ASM, Pseudo-code       |        |              | Done  |              |     |              |   |
+  | 1.3 | Correctness              | Loop invariant, testing     |        |              | Done  |              |     |              |   |
+  |-----+--------------------------+-----------------------------+--------+--------------+-------+--------------+-----+--------------+---|
+  | 2.1 | Computational Complexity | Time & Space                |        |              | Done  |              |     |              |   |
+  | 2.2 | Algorithm Analysis       | Best worst and average case |        |              | Done  |              |     |              |   |
+  | 2.3 | Growth Orders            | Asymptotic                  |        |              |       |              |     |              |   |
+  |-----+--------------------------+-----------------------------+--------+--------------+-------+--------------+-----+--------------+---|
+  | 3.1 | Arrays                   |                             |        |              |       |              |     |              |   |
+  | 3.2 | Dynamic Arrays           |                             |        |              |       |              |     |              |   |
 
 * Slides
 
@@ -19,8 +21,127 @@
   - [ ] Review Lecture Notes 1.1
   - [ ] Review Lecture Notes 1.2
   - [ ] Review Lecture Notes 1.3
-    
-  - [X] Write Lecture Notes 2.1
-  - [ ] Write Lecture Notes 2.2 
-    
+  - [ ] Review Lecture Notes 2.1
+  - [ ] Review Lecture Notes 2.2
+  - [ ] Review Lecture Notes 2.3
+
+* Quizzes
+
+  - [ ] Class for Quizzes
+
 * Lab Sessions
+
+Should help practice the concepts
+  
+** Ideas
+
+   | Idea       | Algorithms            | Data Structures    | Topics                 |
+   |------------+-----------------------+--------------------+------------------------|
+   | RLE        | None                  | Arrays, Complexity | Compression            |
+   |            |                       |                    |                        |
+   | Wordle     | CSP, pattern-matching |                    |                        |
+   | Cross word |                       | Tries              | Games, text processing |
+   |            |                       |                    |                        |
+
+   - Data Encoding & Compressions
+     - RLE
+     - Caesar Cypher
+     - Huffman coding
+
+   - Games
+     - Maze Generator
+     - Wordle
+     - Word Search (mots-codes)
+     - Sudoku
+   - Maze solver / Path finder
+   - Optimization
+     - Worker assignment
+     - Scheduling
+   - Snake Game
+   - Mine Sweeper
+   - Game of Life
+   - Discrete Event Simulator
+   - Computational Geometry
+     
+   - Student could choose their project (either something from another
+     topic) and run an algorithm analysis on it or on piece of it.
+
+** Experiments
+
+   - Encoding.
+   - Changing the computation model / cost model
+   - Termination:
+     - Collatz Conjecture
+   - Visualization
+     - Sorting
+     - Trees balancing
+   - Decompiling Java or C programs
+   - SAT / Program correctness?
+   - Robot 
+
+
+
+* Exams
+
+** 2021 Session 2
+
+   - [50%] Comments From Girts
+     - [X] Exercise 1
+       - [X] Will the students be able to remember what are the two
+         properties? I can’t answer the question (without looking into
+         books or lecture notes) 😊
+       - [X] For 1.2 I would answer that the function will be called with
+         decreasing n until a stack overflow. Was that something you
+         discussed in the course? For 2.1 I’m a bit unsure on how much
+         detail you would expect – something about each line of
+         execution? It may take large amounts of time (not
+         proportional to the questions worth) to describe it. If you
+         are expecting that students tell how many iterations are
+         performed and what happens in each, perhaps give some hint on
+         that? I guess that is the algorithmic part of the question?
+       - [X] 1.3. Did you discuss “records” in the course? It may be a
+         confusing term. We have not used records anywhere else in the
+         study program.
+       - There might be a confusion of what you mean by “how the
+         execution unfolds”.
+     - [ ] Exercise 2
+       - [ ] 1.3 I would say that best case is an empty givenWord, but
+         that would probably lead to an exception? 😊
+       - I would not be able to answer 1.5, but that is probably
+         fine, I have not studied/repeated this part of the course 😊
+     - [X] Exercise 3
+       - [X] Perhaps show a “normal” linked list without a loop first?
+         When I see “linked list as shown on Figure 2”, I get a “brain
+         conflict” – internal voice saying “wait a minute, that is not
+         a linked list!”
+       - [X] Do you really need the hasNext()? If hasNext = (getNext() == null) 😊 
+       - [X] Is it allowed to modify the node structure? For example,
+         can I add a field “visited” to it? It has a huge impact on
+         how I would design the algorithm. Perhaps mention in the task
+         description – is it allowed to modify Node or not. How I
+         would answer: The algorithm I would suggest – create a set of
+         nodes (a HashSet with constant-time search), and a for loop
+         which gets the next node, checks if it is in the set already,
+         then adds it to the set. If the next node is already found in
+         the set, return true. Return false when getNext() returns
+         false. IS this something you would expect? (better explained
+         from students, of course) Linear time, the loop is linear and
+         search in the hash set (which happens every iteration) is
+         constant.  Space efficiency is N, where N is node count in
+         the list. could not come up with a natural recursive
+         algorithm. The only thing I can think of is to replace the
+         while loop a recursive call, but sharing the HashSet for each
+         call. Is that what you meant?  3.5 Isn’t the space efficiency
+         the same? Or do you mean also the stack space (which is hard
+         to measure exactly)
+     - [ ] Exercise 4
+       - [ ] Maybe “this structure, denoted by S” (without I).
+       - [ ] Comparison sounds a bit weird if we contain elements of
+         any class T. How about saying that T can be either integer or
+         float? Does the task become different?
+       - [ ] What do you mean by “back-up this specification”? Do you mean – what data structure(s) would I use to implement the necessary ADT?
+       - [ ] The task does not set any requirements for time complexity. I could use a simple linked list. Is this what you intended? I.e., will a student who will use list get max points?
+       - [ ] How do you expect the students to specify the algorithms? Write code?
+       - [ ] Why do we need delete, when there are no questions about it?
+     
+

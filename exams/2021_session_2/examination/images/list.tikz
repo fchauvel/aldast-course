@@ -1,0 +1,36 @@
+\documentclass[tikz]{standalone}
+\usetikzlibrary{
+  calc,
+  positioning,
+  shapes.multipart,
+  arrows.meta % supersedes the arrows library
+}
+\begin{document}
+\begin{tikzpicture}[
+  list/.style={
+     rectangle split,
+     rectangle split parts=2,
+     draw,
+     rectangle split horizontal
+   },
+   pointer/.style={draw, circle, fill=black, inner sep=0pt, minimum size=3pt},
+   arrow/.style={-Stealth}
+]
+   \node[list] (A) {12};
+   \node[pointer] (nextA) at ($(A.one split north)!0.5!(A.south east)$) {};
+   
+   \node[list, right=of A] (B) {99};
+   \node[pointer] (nextB) at ($(B.one split north)!0.5!(B.south east)$) {};
+   
+   \node[list, right=of B] (C) {37};
+   \node[pointer] (nextC) at ($(C.one split north)!0.5!(C.south east)$) {};
+   
+   \node[list, right=of C] (D) {76};
+
+   \draw[arrow] (nextA) -- (B);
+   \draw[arrow] (nextB) -- (C);
+   \draw[arrow] (nextC) -- (D);
+   \draw (D.one split south) -- (D.north east);
+
+\end{tikzpicture}
+\end{document} 

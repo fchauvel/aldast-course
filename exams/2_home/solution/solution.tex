@@ -1,0 +1,823 @@
+% Created 2021-11-11 Thu 22:23
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Week 10}
+\title{Take-home Examination 2\\\medskip
+\large Elements of Solutions}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Take-home Examination 2},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+I present below some elements of what I think are valid
+solutions. There may be other approaches just as correct. Just let me
+know if you disagree or if anything is unclear.
+
+\section{Basic Knowledge (25 pts)}
+\label{sec:org765e563}
+
+\subsection{RAM architecture}
+\label{sec:org81846bd}
+
+\textbf{Question:} Given the following RAM program. If the user provides
+the value 5, will it print anything on the output device? Explain
+why?
+
+\begin{minted}[linenos,firstnumber=1]{asm}
+        READ     10
+        LOAD      0
+        ADD      10
+        SUBTRACT 10
+        STORE    10
+        JUMP   done
+        PRINT    10
+done:   HALT   
+\end{minted}
+
+\textbf{Solution}
+
+To know whether the \texttt{PRINT} statement is executed, we must
+simulate the execution of the program. For the sake of simplicity,
+I assume that the code segment starts from address 100, so that
+the program does not overwrite its code. A different assumption
+may lead to a different conclusion. Note that if the first
+instruction is stored at address 100 and 101, then the \texttt{done}
+label corresponds to address 114.
+
+The table below summarizes the execution and details the values
+taken by the \texttt{ACC} and \texttt{IP} registers as well as the memory cell
+with address 10.
+\begin{center}
+\begin{tabular}{lrrrl}
+\hline
+Next Instruction &  ACC & IP & Memory 10 & Note\\
+\hline
+\texttt{READ 10} &  & 100 & ? & The user inputs 5\\
+\texttt{LOAD 0} &  & 102 & 5 & \\
+\texttt{ADD 10} & 0 & 104 & 5 & \\
+\texttt{SUBTRACT 10} & 5 & 106 & 5 & \\
+\texttt{STORE 10} & 0 & 108 & 5 & \\
+\texttt{JUMP done} & 0 & 110 & 0 & done stands for address 114\\
+\texttt{HALT} & 0 & 114 & 0 & \\
+\hline
+\end{tabular}
+\end{center}
+
+We can see that in the print statement is not executed.
+
+\subsection{Big-Oh Notation}
+\label{sec:org55ee8ee}
+\textbf{\textbf{Question.}} Is the following statement correct: \(O((x+y)^2) =
+    O(x^2+y^2)\). Prove it.
+
+\textbf{Solution.} To establish this rigorously, we must establish two things:
+\begin{enumerate}
+\item \(O((x+y)^2) \implies O(x^2+ y^2)\). Every function that is
+bounded above by \(x^2+y^2\) is also bounded above by \(x^2 + y^2 +
+      2xy\).
+\item \(O(x^2+y^2) \implies O((x+y)^2)\). Every function that is bounded above by \(x^2 + y^2 + 2xy\) is also
+bounded above by \(x^2 + y^2\)
+\end{enumerate}
+
+The first steps results directly from the fact that \(x^2 + y^2 +
+   2xy\) is necessarily greater than \(x^2 + y^2\).
+
+The second step is more involved and we have to return to the
+definition of the Big-O operator, which says that \(f \in O(g)\)
+implies that there exists two constants \(c\) and \(n_0\) such that for
+all \(n \geq n_0\), \(f(n) \leq c \cdot g(n)\). We can rephrase this
+question as: Provided a function \(f\) bounded above by \((x+y)^2\),
+can I found a constant \(c\) such that \((x+y)^2 \leq c \cdot (x^2 +
+   y^2)\)?
+
+\begin{align*}
+   (x+y)^2 &\leq c \cdot (x^2 + y^2) \\
+    x^2 + y^2 + 2xy & \leq c \cdot (x^2 + y^2) \\
+    \frac{x^2 + y^2 + 2xy}{x^2 + y^2} \leq c \\
+    1 +  \frac{2xy}{x^2 + y^2} \leq c
+\end{align*}
+
+We see that this constant c always exists and so the initial
+statement holds.
+
+
+\subsection{Hashtables}
+\label{sec:org2fbf528}
+\textbf{Question} Let us consider a hashtable using \emph{separate chaining},
+    equipped with the hash function \(h(x) = x \mod 10\). What is the
+    status of the table after inserting the values 4371, 1323, 6173,
+    4199, 4344, 9679, and 1989.
+
+\textbf{Solution} The core idea of the hashtable is to use a hash function to
+ compute in which bucket a given element must be stored. If multiple
+ elements land in the same bucket, \emph{separate chaining} strategy puts a
+ linked list in each bucket.
+
+The insertion order determine the internal state of the hash table as
+shown below. For example, the first given value is 4371, which lands
+in the second bucket (because \(h(4371) = 1\)). Following the same
+idea, 1323 goes into the fourth bucket (i.e., at index 3). 6173 also
+goes into the fourth bucket, whose list already contains 1323, so we
+append it to the list there, right after 1323. Putting all the given
+values this way leads to the following configuration.
+
+\begin{center}
+\includegraphics[width=7cm]{hashtable.png}
+\end{center}
+
+
+\subsection{Binary Search Tree}
+\label{sec:orgb02ad1b}
+
+\textbf{Question} In the following binary search tree, what tree would result
+from inserting 88 and then deleting 87? Explain why.
+
+\begin{center}
+\includegraphics[width=7cm]{bst.png}
+\end{center}
+
+
+\textbf{Solution} Binary search trees (BST) organize values
+as a binary tree (every node has at most two children). Given the
+value stored at a node, smaller values will be stored in its left
+subtree and larger values in its right subtree.
+
+To insert 88 in a BST, we thus start at the root, and we navigate the
+tree to find where the given value should be added. Since, \(88<87\) so
+we go right, \(88<91\) so we continue left\$, and \(88<89\) so go
+left. Here there is no left tree, so we have found out insertion
+point: as the left subtree of 89.
+
+\begin{center}
+\includegraphics[width=7cm]{bst-solution.png}
+\end{center}
+
+When we then remove 87 (the root), it gets replaced by its direct
+successor (i.e., the node that carries the smallest value that is
+greater than 87). Here this successor is 87, and we can find it as the
+minimum of the right subtree.
+
+Eventually, the structure of the tree does not change, only the value
+carried by the root changes from 87 to 88.
+
+\subsection{Binary Heap}
+\label{sec:org112db0a}
+\textbf{Question} Is the following tree a valid \emph{maximum binary heap}?
+Explain why.
+
+\begin{center}
+\includegraphics[width=7cm]{heap.png}
+\end{center}
+
+\textbf{Solution} In a maximum binary heap, every node has to be greater than
+its direct children. We can observe than Node 23 is not greater than
+25, and that Node 41 is not greater than 46. So this tree is not a
+valid maximum binary heap.
+
+
+\section{Algorithm Analysis (25 pts)}
+\label{sec:orgdf18796}
+
+A palindrome is a word that can be read in both directions: from
+left to right or from right to left. Radar, level, madam, or kayak
+are examples of palindromes. In this section, we are interested into
+algorithms that can decide whether a given word is a palindrome or
+not, as shown by the following code snippet:
+
+\begin{minted}[]{java}
+boolean isPalindrome(char[] givenWord) {
+   // Your logic here ...
+}
+\end{minted}
+
+\subsection{Iterative Function}
+\label{sec:org96be150}
+
+\textbf{Question} Write an \emph{iterative} function that decides whether the
+   given word is a palindrome or not.
+
+\textbf{Solution} The listing below shows a possible Java function that
+detects palindromes. A palindrome is a word that presents a
+symmetry axis: The first character must be the same as the last one,
+the second character must be the same as the next to last, etc. To
+check if a given word is a palindrome, we traverse the given word
+from left to right and we check if the i-th character starting from
+the left matches the i-th character started from the right.
+
+\begin{minted}[linenos,firstnumber=1]{java}
+public boolean isPalindrome(char[] givenWord) {
+    var length = givenWord.length;
+    for (int offset=0 ; offset<length/2 ; offset++) {
+        if (givenWord[offset] != givenWord[length-1-offset]) {
+            return false;
+        }
+    }
+    return true;
+}
+\end{minted}
+
+\subsection{Iteration Efficiency}
+\label{sec:org3fb20fb}
+
+\textbf{Question} What are the worst case time and space efficiencies of
+your algorithm. Prove it.
+
+\textbf{Solution}. The first step is to identify the problem size. To
+decide whether a given word is a palindrome, one must compare the
+following pairs of indices \((0, \ell)\), \((1, \ell-1)\), \((2,
+   \ell-2)\) \ldots. The most favourable case is when the first and the
+last character do not match, since we directly return \texttt{false}. By
+contrast, establishing that a given word is actually a palindrome
+is the worst case, since every pairs of character must be checked.
+
+If we assume that each basic machine instruction (i.e., assignment,
+logical and arithmetic operations) takes one unit of time, we can
+go through the program line by line as follows.
+
+\begin{enumerate}
+\item The first line is an assignment, which is executed only once. So
+it costs 1 unit of time.
+
+\item The second line is a \texttt{for} loop and includes an initialization,
+a condition, and increment.
+\begin{itemize}
+\item The initialization is an assignment, which is executed only
+once, so it takes one unit of time.
+\item The condition contains both a comparison and an arithmetic
+operation and it takes 2 unit of time. It is executed as long
+as \texttt{offset} remains strictly lower than half of the
+length. Since \texttt{offset} increases by 1, it will be executed
+\(1 + \ell/2\) times. That is a total cost of \(2\times (1 + \ell/2) =
+        2 + \ell\) units of time.
+\item The increment entails both an assignment and an arithmetic
+operation, so it costs 2 units of time. It will be executed at
+every iteration, for a total cost of \(2 \times (\ell/2) = 2
+        \ell\)
+\end{itemize}
+
+\item The loop contains an conditional statement, whose condition
+includes one logical comparison and two arithmetic operations,
+for a cost of 3 time units. It runs at each iteration, for a
+total cost of \(3\ell/2\) unit of times.
+
+\item The inner return statement runs only when the condition holds. In
+the worst case it never runs, so it will cost 0.
+
+\item The final return statement runs only once and takes 1 time unit.
+\end{enumerate}
+
+This gives us the following total:
+\begin{align*}
+    time(\ell) &= 1 + 1 + (2 + \ell) + \frac{3\ell}{2} + 1 \\
+               &= 5 + \frac{5\ell}{2}
+\end{align*}
+
+We see that this algorithm is \(\Theta(\ell)\) since we can find
+two constants \(c_1=3\) and \(c_2=2\) such as the \(time(\ell)\) is
+respectively lesser and greater than \(c\ell\).
+
+The space complexity is more straightforward. The algorithm only
+provisions two variables the space-complexity is \(\Theta(1)\).
+
+\subsection{Recursive function}
+\label{sec:orgc925093}
+\textbf{Question} Write a \emph{recursive} algorithm that does the same.
+
+\textbf{Solution} The recursive solution below is based on the fact that a
+palindrome includes other smaller palindromes, once we have removed
+the first and last letters. For example, "madam", yields "ada",
+which in turn, yield "a". Both are smaller palindromes. The
+following Java code shows a possible implementation.
+
+\begin{minted}[linenos,firstnumber=1]{java}
+boolean isPalindrome(char[] givenWord) {
+    return recurse(givenWord, 0);
+}
+
+boolean recurse(char[] givenWord, int offset) {
+    if (offset <= givenWord.length/2)
+        return true;
+    var opposite = givenWord.length-1-offset;
+    return givenWord[offset] == givenWord[opposite]
+        && recurse(givenWord, offset+1);
+}
+\end{minted}
+
+\subsection{Recursion Efficiency}
+\label{sec:orgd32566e}
+\textbf{Question} What are the worst case time and space efficiencies of
+your algorithm. Prove it.
+
+The worst case scenario for this recursive algorithm is the same
+than for its iterative counter part. Since the programs only calls
+the \texttt{recurse} function, its time- and space-efficiencies are the
+same as the function it calls.
+
+For an recursive algorithm, we have to identify the base cases and
+the recursive cases.
+
+\begin{itemize}
+\item The base case is when the \texttt{offset} is equal or greater than the
+length of the given word. In thus case we simply return true. So
+in total, we get:
+\begin{itemize}
+\item 1 unit of time spent evaluating the condition (it includes
+only on logical comparison)
+\item 1 unit of time returning true.
+\end{itemize}
+\item The recursive case is the counterpart and takes:
+\begin{itemize}
+\item 1 unit of time spent evaluating the condition.
+\item 3 units of time spent computing and assigning \texttt{opposite}
+\item Some time checking whether the subword is also a palindrome
+\item 3 units of times comparing the front and back characters and
+computing the conjunction (\texttt{\&\&}).
+\end{itemize}
+\end{itemize}
+
+We can now write a recurrence relationship:
+\begin{align*}
+  time(\ell) = \begin{cases}
+      2 & \text{if } \ell \leq 1 \\
+      7 + time(\ell-2) &  \text{otherwise}
+  \end{cases}
+\end{align*}
+
+We can expand it to solve it as follows:
+\begin{align*}
+    time(0) &= 2 \\
+    time(1) &= 2 \\
+    time(2) &= 7 + time(0) \\
+    time(3) &= 7 + time(1) \\
+    time(4) &= 7 + time(2) \\
+            &= 7 + (7 + time(0)) \\
+            &= 2 \times 7 + 2 \\
+    time(5) &= 7 + time(3) \\
+            &= 7 + (7 + time(1)) \\
+            &= 2 \times 7 + 2 \\
+    time(6) &= 7 + time(4) \\
+            &= 7 + (7 + 7 + time(0)) \\
+    time(7) &= 7 + time(5) \\
+            &= 7 + (7 + 7 + time(1)) \\
+            &= 7 \times 3 + 2 \\
+    time(\ell) = 7 \times \left\lceil \frac{\ell}{2} \right\rceil + 2 \\
+\end{align*}
+
+This recursive version has a worse time-efficiency than the
+iterative version but still linear efficiency \(\Theta(\ell)\).
+
+We can proceed similarly with space efficiency. In the base case we
+need no extra memory. By contrast in the recursive case, we need to
+store two variables and the memory needed by the recursive call,
+that is \(2 + space(l-2)\).
+
+We are left with the following recurrence relationship:
+\begin{align*}
+  space(\ell) = \begin{cases}
+      0 & \text{if } \ell \leq 1 \\
+      2 + space(\ell-2) &  \text{otherwise}
+  \end{cases}
+\end{align*}
+
+We can expand to see a pattern emerging as follows:
+\begin{align*}
+    space(0) &= 0 \\
+    space(1) &= 0 \\
+    space(2) &= 2 + space(0) = 2 \\
+    space(3) &= 2 + space(1) = 2 \\
+    space(4) &= 2 + space(2) \\
+             &= 2 + 2 \\
+             &= 2 \times 2 \\
+    space(5) &= 2 + space(3) \\
+             &= 2 + 2 \\
+             &= 2 \times 2 \\
+    space(6) &= 2 + space(4) \\
+             &= 3 \times 2 \\
+             &= 2 + (2 + 2) \\
+    space(7) &= 3 + space(5) \\
+             &= 2 + (2 + 2) \\
+             &= 3 \times 2 \\
+    space(\ell) = 2 \times \left\lceil \frac{\ell}{2} \right\rceil \\
+\end{align*}
+
+The recursive version is thus much less memory-efficiency because:
+\(space(\ell) \in \Theta(\ell)\).
+
+
+\subsection{Improvements}
+\label{sec:org6a732a0}
+\textbf{Question} Is possible to improve the time and space efficiency of
+   the recursive function. How would you proceed?
+
+\textbf{Solution} As for the time efficiency, I do not see any improvement
+beyond switching to iterative version. To improve the space
+efficiency we could rewrite the function so that it becomes tail
+recursive.
+
+\section{Data Structure Design (25 pts)}
+\label{sec:org07df5db}
+
+A \emph{cache} is a system that holds in main memory elements that have
+already been used so that there is no need to compute them or to
+read them again from a slower device. Caches often help to speed
+up access to disks, to databases, or to the network.
+
+Let us assume for instance that we need to retrieve some users'
+profile using a remote service. To avoid sending too many requests
+over the network, we decide to use a cache to store locally the
+profiles that we have already retrieved. The following Java code
+illustrates the behavior of such a cache.
+
+\begin{minted}[linenos,firstnumber=1]{java}
+public class Cache {
+
+   private UserService remote;
+
+   public Cache(UserService givenRemote) {
+       this.remote = givenRemote;
+   }
+
+   public void findUserById(String userId) {
+       var userProfile = this.search(userId);
+       if (userProfile != null) {
+           return userProfile;
+       }
+       userProfile = this.remote.findUserById(userId);
+       if (this.isFull()) {
+           this.discardOne();
+       }
+       this.add(userProfile);
+   }
+
+   private UserProfile search(String userId) { /* ... */ }
+
+   private void discardOne() { /* ... */ }
+}
+\end{minted}
+
+A cache has however a limited capacity, and when the cache is full,
+one must choose an entry to discard. The challenge when designing
+a cache is to maximize the probability of finding what we need in
+the cache (so called a cache "hit", as opposed to a cache "miss").
+
+\subsection{What Data Structure?}
+\label{sec:orgd357903}
+
+\textbf{Question} What data structure would you use to implement such a
+cache?
+
+\textbf{Solution} Most data structure would work: Array, list, sorted
+array, binary tree. I would use a hashtable using the given user ID
+as a key. A hashtable will provide access (i.e., the \texttt{search}) in
+constant time. The figure below illustrates the configuration of
+such a hash table. As for collisions, I think the open addressing
+strategy make more sense, since the cache must have a fixed capacity
+(separate chaining would have to explicitly constrained).
+
+\begin{center}
+\includegraphics[width=7cm]{cache.png}
+\end{center}
+
+
+\subsection{Replacement Policy}
+\label{sec:org84741a4}
+\textbf{Question} Which element would you choose to discard, and why?
+  Provide an algorithm for both the \texttt{search} and \texttt{discardOne}
+  function.
+
+\textbf{Solution} Without more information about the context and the
+query, I would choose to discard one element at random. This may
+not be the optimal strategy, but it ensures executing the \texttt{discard}
+operation in constant time and space.
+
+Many strategy are possible, like choosing the first element, the
+last, the oldest, etc.
+
+\begin{minted}[]{java}
+private int capacity;
+private UserProfile[] cache;
+
+private UserProfile search(String userId) {
+    int index = this.hash(userId);
+    return this.cache[index];
+}
+
+private void discardOne() {
+   int randomPick = Math.random() * (capacity - 1);  
+   cache[randomPick] = null;
+}
+
+private int hash(String userId) {
+   // regulat array/string hashing would do
+}
+\end{minted}
+
+Choosing an element at random does not conflict with using a
+hashtable. As we have chosen open addressing, a linear probing
+technique would work. When a new profile is inserted into the
+cache, we compute its hash, we try to insert accordingly. If the
+selected bucket is already used, we try the next one. Eventually,
+we would use the bucket that we just freed. To avoid having a full
+hashtable with guaranteed collision, we may want to allocate a
+cache much bigger than the maximum number of profiles we would like
+to cache locally. This would ensure a reasonable load factor and
+minimize collisions.
+
+\subsection{Best case runtime efficiency}
+\label{sec:org85dae0f}
+\textbf{Question} What are the best case runtime efficiencies of fetching a user
+  when using your cache design?
+
+\textbf{Solution} As I mentioned above the use of the hash table guarantee
+both constant search time and a closed to constant insertion time
+(in average).
+
+Looking a retrieving a user using the cache, the best case scenario
+is when the user is found locally. In that case, searching for the
+user boils down to retrieving an item from the hashtable, and it
+takes a linear time.
+
+\subsection{Worst case runtime efficiency}
+\label{sec:orge4b88a9}
+\textbf{Question} What are the worst case runtime efficiencies of finding
+a user profile using the cache? (We can assume that the time to
+fetch a remote profile through the network is \(t_r\)).
+
+\textbf{Solution} The worst case scenario occurs when we cannot found the user profile
+locally and we must therefore call the remote service. This implies:
+\begin{enumerate}
+\item To check the cache locally, which takes constant time with a
+hashtable.
+\item To invoke the remote service, which takes a fixed time, say
+\(t_r\).
+\item To discard an element in the hash table, which takes a
+constant time if we pick one element at random.
+\item To insert the new profile into the hashtable, which also
+takes constant time in average.
+\end{enumerate}
+All together, this yields a constant time overhead added on
+top of the time spent invoking the remote service.
+
+\subsection{Least-recently Used Strategy}
+\label{sec:orgf06bcc6}
+\textbf{Question} We decide to discard the \emph{least-recently locally
+  accessed} strategy. What data structure would you use to
+  implement this strategy and guarantee constant search and discard
+  runtime?
+
+\textbf{Solution} To be able to retrieve the least recently used, we must
+memorize the access order. Consider for example the user profiles
+represented by the letters \(A\), \(B\), \(C\) and \(D\). The access
+sequence could be \((A, B, C, D)\). The front of this sequence (i.e.,
+the left-side) shows the least recently used user profile, that is
+A. What if after these four accesses, we access \(A\)? Then, A will
+not be the least recently used element anymore, so we must extract
+it from the front and move it at the back. The access sequence now
+becomes \((B, C, D, A)\). The last element we access is not always at
+the front of our access list however. So we need to search
+for it in the our list, remove it, and then move it at the end of the
+list. For example, if we now access Profile \(D\), the list becomes
+\((B, C, A, D)\).
+
+One way to avoid this linear search is to combine a doubly linked
+list with our hashtable, so that has table is an index of the nodes
+of the list. With this scheme, we can find an element in constant
+time, using hashing, and we just need to update the chaining, which
+the doubly list let us do in constant time as well. The picture
+below illustrates this idea.
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{lru.png}
+\end{center}
+
+With this scheme, the discard operation takes constant time, because
+the least recently used element is always available at the front of
+the list (cf. the LRU pointer in the main data structure).
+
+Searching remains in constant time through the use of
+hashing. Given the a user ID, we obtain the node of the list in
+constant time, and from there, the profile in constant time as
+well. Then we must update the list to reflect this access. We first
+disconnect the node from its previous and next node, and we
+re-insert it in front of the LRU, which now points to the node we
+have accessed.
+
+\section{Algorithm Design (25 pts)}
+\label{sec:org4a71011}
+
+We are looking now at the file system, that is, the directory
+structure offered by the operating system. In a nutshell, a
+directory can contain two kinds of elements: files or directories. A
+file system thus forms a n-ary tree structure where nodes are
+directories and leaves files. The purpose of this exercise is to
+define an algorithm that lists the content of a given directory,
+including the content of its sub directories. The following figure
+shows the tree structure formed by the directories of a simple Java
+project.
+
+\begin{center}
+\includegraphics[width=10cm]{directory.png}
+\end{center}
+
+In this picture, different icons denote directories and files. For
+example, the root directory \texttt{project} contains two sub-directories,
+namely \texttt{src} and \texttt{target}, and one file named \texttt{pom.xml}. Provided
+with this tree, your algorithm should print something like:
+
+\begin{verbatim}
+project
+   src
+      main
+         java
+             MyClass.java 
+         resources
+      test
+         java
+             MyClassTest.java
+         resources
+   target
+   pom.xml
+\end{verbatim}
+
+To avoid having to deal with a real and complicated file system API, we will assume
+the following simplified interface. 
+
+\begin{minted}[linenos,firstnumber=1]{java}
+interface FileSystem {
+    // Return a handler to the file
+    File get(String path);
+
+    // Check whether a file is a directory of not
+    boolean isDirectory(File file);
+
+    // Returns the content of the givenj directory or an empty list if
+    // given a file.
+    List<File> contentsOf(File file);
+
+    // return the name of the file
+    String getName(File file);
+}
+\end{minted}
+
+\subsection{Indented Pretty Printing}
+\label{sec:org5a60622}
+
+\textbf{Question} Propose an algorithm that formats the content of a
+ given directory as shown previously. The key point here is to
+ indent each entry so that nested elements appear further on the
+ right (compared to their container).
+
+\textbf{Solution}
+
+Looking at the sample Maven project, one can see that the
+directory structure forms a tree. To list all the file
+contained in a directory, we have to traverse the associated
+subtree. I chose to do this recursively, but one can do the same
+with a stack.
+
+The indentation depends actually on the depth of each node. To
+account for it, I pass the depth as a parameter and I use it to
+compute how many "white-spaces" I need to print before to print
+the name of a file or directory. Then before to recurse, I
+increment the depth, ensuring thus that children are printed
+further on the right.
+
+\begin{minted}[]{java}
+void list(FileSystem fileSystem, String givenPath) {
+     var root = fileSystem.get(givenPath);
+     recurse(fileSystem, root, 0);
+}
+
+void recurse(FileSystem fileSystem, File current, int depth) {
+    for (int i=0 ; i<depth ; i++)
+        System.out.print(" ");
+    System.out.println(fileSystem.getName(current));
+    if (fileSystem.isDirectory(current)) {
+        for (var eachFile: fileSystem.contentsOf(current)) {
+            recurse(fileSystem, eachFile, depth+1);
+        }
+    }
+}
+\end{minted}
+
+\subsection{Traversal Efficiency}
+\label{sec:orgdee7837}
+
+\textbf{Question} What are the time and space efficiencies of your
+   algorithm? Explain your reasoning.
+
+\textbf{Solution} As for the time efficiency, there is no such things as
+best or worst case complexity because to print the name of every
+files or directories, we need to visit all of them, so this
+recursive algorithm takes a linear time.
+
+The space complexity however has different scenario, because it
+depends on the maximum depth of the tree. In the best case, the n
+elements form a single directory with \(n-1\) files. In this case, the
+maximum depth is 1 and the algorithm takes constant space.
+
+In the worst case however, the directory structure forms a long
+degenerated list of \(n-1\) directories (nested one into another) and the
+algorithm takes a linear space.
+
+In the average case, the space is the maximum depth of the tree and
+can be expressed as \(\log_b n\) where \(b\) is the average branching
+factor of the tree structure.
+
+
+\subsection{Paths Printing}
+\label{sec:org1f24c0d}
+\textbf{Question} Propose a second algorithm that only lists the files
+  (and not the directories), but displays their name together with
+  the path that leads to them.
+
+Given the Java project previously shown, this algorithm should
+display the following:
+
+\begin{verbatim}
+project/src/main/java/MyClass.java
+project/src/test/java/MyClassTest.java
+project/pom.xml
+\end{verbatim}
+
+\textbf{Solution} This solution resembles the previous one, but instead of
+  passing the depth, we pass the path, which we build as we
+  progress down the tree. Each directory extends the path it
+  receives with its own name and passes that along to its
+  children. We print this path only once we reach the leaves of the
+  tree, that is, when we process files.
+
+\begin{minted}[linenos,firstnumber=1]{java}
+void listFilesOnly(FileSystem fileSystem, Path givenPath) {
+    var root = fileSystem.get(givenPath);
+    recurse(fileSystem, root, "");
+}
+
+void recurse(FileSystem fileSystem, File current, path) {
+    if (fileSystem.isDirectory(current)) {
+        for (var eachFile: fileSystem.contentsOf(current)) {
+            recurse(fileSystem,
+                    eachFile,
+                    path + "/" + fileSystem.getName(eachFile));
+        }
+    } else {
+        System.out.println(path + "/"
+                           + fileSystem.getName(current));
+    } 
+}
+\end{minted}
+
+\subsection{Path Formatting Worst Case Efficiencies}
+\label{sec:org005e9ee}
+
+\textbf{Question} What are the worst-case time and space efficiencies?
+Explain your reasoning.
+
+Just as for the previous tree traversal, there is no such thing as
+a best or worse scenario here for time efficiency. Although we do
+not print the names of directories, we still have to process them
+in order to access their children. Only the leaves of the tree are
+files and to access these leaves, we must look at every possible
+nodes (i.e., directory) in the tree. So this algorithm takes a
+linear time.
+
+Space, just as before, depends on the shape of the tree, and on the
+maximum depth in particular, because our algorithm is recursive. In
+the best case, the tree looks like a single root node with \(n-1\)
+children, all being leaves/files. In this case, we need constant
+space. The worse case occurs when the tree is a list of \(n-1\)
+directories (nested one into another). In this case, since the
+maximum depth of the tree is the whole tree, the algorithm would
+take linear space.
+
+
+\subsection{Average case runtime efficiency?}
+\label{sec:org86c8aa6}
+\textbf{Question} How would you estimate the average case runtime efficiency?
+   Explain your reasoning.
+
+As we have seen in the previous question, there is no such thing as
+best, worse or average scenario for our algorithm. We always have to
+visit the whole tree. The average case is the same as the best and
+worse scenario and takes linear time.
+\end{document}

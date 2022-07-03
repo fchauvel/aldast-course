@@ -1,0 +1,161 @@
+% Created 2021-11-20 Sat 15:46
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Nov. 2021}
+\title{Beyond Classical Computing\\\medskip
+\large Week 13 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Beyond Classical Computing},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:org78b28eb}
+
+\begin{enumerate}
+\item How many memories has a P-RAM machine?
+\begin{enumerate}
+\item a single memory
+\item as many as it has processors
+\item infinitely many
+\item None of the above
+\end{enumerate}
+
+\item The \emph{work} of a parallel algorithm is
+\begin{enumerate}
+\item the sum of all the instructions executed by all the processors
+\item the number of instructions in the program
+\item the number of active processors
+\item None of the above
+\end{enumerate}
+
+\item The \emph{cost} of a parallel algorithm is
+\begin{enumerate}
+\item the number of processors
+\item the number of time steps the algorithm takes to complete
+\item the total number of active processors over time
+\item the total number of processor over time
+\end{enumerate}
+
+\item The speed-up of a parallel algorithm A contrasts
+\begin{enumerate}
+\item the execution time of A with 1 and many processors
+\item the execution time of A with the execution time of the best
+known serial algorithm, both running on a single processor.
+\item the execution time of A with the execution time of the best
+known serial algorithm, both running on multiple processors.
+\item none of the above
+\end{enumerate}
+
+\item In Quantum Computing, when measuring a \emph{qubit}, its value 
+\begin{enumerate}
+\item vanishes
+\item becomes either 0 or 1 without superposition
+\item becomes negative
+\item is superposed on top of its previous value
+\end{enumerate}
+
+\item Quantum Computing always outperforms "classical computing"?
+\begin{enumerate}
+\item Yes
+\item No
+\end{enumerate}
+
+\item As opposed to classical boolean gates, quantum gates are
+\begin{enumerate}
+\item symmetric
+\item can form circuits
+\item reversible
+\item none of the above
+\end{enumerate}
+
+\item The \emph{merge-sort} algorithm adheres to 
+\begin{enumerate}
+\item a brute-force approach
+\item a divide-and-conquer approach
+\item a greedy approach
+\item a randomized approach
+\item None of the above
+\end{enumerate}
+
+\item The "Jump-search" algorithm adheres to 
+\begin{enumerate}
+\item a brute-force approach
+\item a divide-and-conquer approach
+\item a greedy approach
+\item a randomized approach
+\item none of the above
+\end{enumerate}
+
+\item What is the purpose of "screening" during the recruitment of
+"programmer" candidates?
+\begin{enumerate}
+\item To select only the best of the best programmers
+\item Find the most challenging problems
+\item To reject people without sufficient programming abilities
+\item None of the above
+\end{enumerate}
+\end{enumerate}
+
+\section{Solutions}
+\label{sec:orge9678ff}
+
+\begin{enumerate}
+\item \textbf{Answer (a)} P-RAM relies on a single memory, shared by an infinity
+of processors.
+
+\item \textbf{Answer (a)} The \emph{work} reflects the sum of all the instructions
+performed by all processors. If an instruction is simultaneously by
+two processors, it is counted twice.
+
+\item \textbf{Answer (d)} The \emph{cost} reflects the number of processors required
+during the whole execution of the algorithm (including active and
+passive ones).
+
+\item \textbf{Answer (a)} The \emph{speed-up} reflects the difference between running
+the algorithm A on one processor and on many processors.
+
+\item \textbf{Answer (b)} When measuring a qubit, its value looses any
+superposition of states and becomes either 0 or 1 (but not both
+anymore).
+
+\item \textbf{Answer (b)} No. There are problems for which Quantum computing
+is no faster than classical computing.
+
+\item \textbf{Answer (c)} Quantum gates are reversible, which means the can be
+used both ways: To generates outputs from inputs but also to
+generate inputs from outputs.
+
+\item \textbf{Answer (b)} \emph{merge-sort} follows a \emph{divide-and-conquer} approach.
+
+\item \textbf{Answer (b)} I would say that jump-search also adheres to a
+divide-and-conquer approach, since it tries to break down the
+search into a list of segments and then uses linear search to explore
+the selected segment.
+
+\item \textbf{Answer (c)} Screening is there mainly to sort out those that are
+actually able to write code from those who are not.
+\end{enumerate}
+\end{document}

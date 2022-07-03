@@ -1,0 +1,172 @@
+% Created 2021-11-13 Sat 11:33
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Nov. 2021}
+\title{Text Processing\\\medskip
+\large Week 12 Quiz}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Text Processing},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+
+\section{Questions}
+\label{sec:org050f686}
+
+\begin{enumerate}
+\item What is the runtime efficiency of finding a text fragment on a
+larger text, using brute force? (\(n\) is the length of the text
+and \(m\) the length of the pattern to find).
+\begin{enumerate}
+\item \(O(n^2)\)
+\item \(O(n^m)\)
+\item \(O(n\cdot m)\)
+\item \(O(n + m)\)
+\item \(O(n \log m)\)
+\end{enumerate}
+
+\item What is runtime efficiency of matching a text fragment in a
+larger text using the KMP algorithm?
+\begin{enumerate}
+\item \(O(n^2)\)
+\item \(O(n^m)\)
+\item \(O(n\cdot m)\)
+\item \(O(n + m)\)
+\item \(O(n \log m)\)
+\end{enumerate}
+
+\item Does the following automaton recognizes the word "world"?
+(accepting states are denoted with double circles).
+\begin{center}
+\includegraphics[width=7cm]{dfa.png}
+\end{center}
+
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item Is the following automaton deterministic?
+\begin{center}
+\includegraphics[width=8cm]{deterministic.png}
+\end{center}
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say
+\end{enumerate}
+
+\item What regular expression does the following automata capture?
+\begin{center}
+\includegraphics[width=7cm]{regex.png}
+\end{center}
+\begin{enumerate}
+\item (abcd)*
+\item (abc)?d
+\item (abc)+d
+\item (abc)*d
+\item abc|d
+\end{enumerate}
+
+\item What other computing models are Turing-complete?
+\begin{enumerate}
+\item Random access machines (RAM)
+\item Lambda calculus
+\item Cellular automata
+\item None of the above
+\end{enumerate}
+
+\item Which problems does the complexity class P include?
+\begin{enumerate}
+\item Those that can be solved in polynomial times
+\item Those that can be solved in polynomial time by a regular Turing machine
+\item Those that can be solved in polynomial space
+\item Those that can be solved in polynomial space by a regular Turing machine
+\item Those that can be solved in polynomial time and space by a regular Turing machine
+\end{enumerate}
+
+\item Which problems does the complexity class NP include?
+\begin{enumerate}
+\item Those that can be solved in non-polynomial times
+\item Those that can be solved in polynomial time by a non-deterministic Turing machine
+\item Those that can be solved in non-polynomial time by a regular Turing machine
+\item Those that can be solved in non-polynomial space
+\item Those that can be solved in non-polynomial time and space by a regular Turing machine
+\end{enumerate}
+
+\item What is an NP-complete problem?
+\begin{enumerate}
+\item It is as hard as any other problems in NP but no harder
+\item It is at least as hard as any other problems in NP and possibly even harder
+\item It is an NP problem whose which we know the complete set of solutions
+\item None of the above
+\end{enumerate}
+
+\item Does P = NP?
+\begin{enumerate}
+\item Yes
+\item No
+\item One cannot say (we can't decide)
+\item We do not know yet
+\end{enumerate}
+\end{enumerate}
+
+\section{Solutions}
+\label{sec:org9e182ac}
+
+\begin{enumerate}
+\item \textbf{Answer (c)}. Brute force runs in \(O(m \cdot n)\).
+
+\item \textbf{Answer (d)}. KMP runs in \(O(m + n)\).
+
+\item \textbf{Answer (b)} No. While the sequences of transitions matches the
+letters of the word "world", the accepting state \(s3\) implies it
+accepts only "wo", "worwo", "worworwo" (as a regular expression
+it is "wo(rwo)*").
+
+\item \textbf{Answer (b)} No, this automaton is not deterministic, because in
+State \(s3\), we cannot determine in which set we should transition
+on "c".
+
+\item \textbf{Answer (d)} The automaton recognizes the regular expression
+"abc*d". We can loop through abc, but the only accepting state is
+after d.
+
+\item \textbf{Answers (a), (b) and (c)}. All these computations models are
+\emph{Turing-complete}. They can all emulate a Turing a machine and a
+Turing machine can emulate them.
+
+\item \textbf{Answer (b)} P includes all the problems that can be solved in polynomial time
+by a \emph{regular} Turing machine.
+
+\item \textbf{Answer (b)} NP includes all the problems that can be solved in
+polynomial time by a \emph{non-deterministic} Turing machine.
+
+\item \textbf{Answer (a)} It is equivalent to the hardest problems in NP, but
+still in NP.
+
+\item \textbf{Answer (d)} We do not know yet.
+\end{enumerate}
+\end{document}

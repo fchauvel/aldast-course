@@ -1,0 +1,296 @@
+% Created 2021-10-23 Sat 07:44
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{NTNU IDATA 2302}
+\date{Week 10}
+\title{Take-home Examination 2}
+\hypersetup{
+ pdfauthor={NTNU IDATA 2302},
+ pdftitle={Take-home Examination 2},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+This home examination \textbf{does not account for your final grade}, but is
+an opportunity to practice. Like the final examination will, it
+contains four parts, each awarded 25 points (each question worths 5
+points). To make the most of it, I suggest you consider the following:
+\begin{itemize}
+\item During the final examination, you will only have 4 hours to solve
+the given problems. You may want to time-box this home examination
+as well.
+\item During the final examination, you \textbf{are allowed} to use \textbf{any}
+written or online material.
+\item For this to mirror the conditions of the final examination, you
+have to take it individually.
+\item I expect answers to be motivated. Questions that contain the word
+\emph{prove} call for a formal and detailed proof. Otherwise, an
+informal explanation (sound and complete of course) suffices.
+\item Please turn your solution in \textbf{by Friday, Nov. 5, 2021}, if you
+would like me to grade it.
+\end{itemize}
+
+These home examinations also help me find how much can be done in four
+hours and which topics I fail to convey clearly. Any \textbf{feedback is
+welcome}.
+
+\section{Basic Knowledge (25 pts)}
+\label{sec:orgc041c99}
+
+\begin{enumerate}
+\item Given the following RAM program. If the user provides the value 5,
+will it print anything on the output device? Explain why?
+
+\begin{minted}[linenos,firstnumber=1]{asm}
+        READ     10
+        LOAD      0
+        ADD      10
+        SUBTRACT 10
+        STORE    10
+        JUMP   done
+        PRINT    10
+done:   HALT   
+\end{minted}
+
+\item Is the following statement correct: \(O((x+y)^2) =
+    O(x^2+y^2)\). Prove it.
+
+\item Let us consider a hashtable using \emph{separate chaining}, equipped with the hash
+function \(h(x) = x \mod 10\). What is the status of the table
+after inserting the values 4371, 1323, 6173, 4199, 4344, 9679,
+and 1989.
+
+\item In the following binary search tree, what tree would result from
+inserting 88 and then deleting 87? Explain why.
+
+\begin{center}
+\includegraphics[width=5cm]{bst.png}
+\end{center}
+\end{enumerate}
+
+
+
+\begin{enumerate}
+\item Is the following tree a valid \emph{maximum binary heap}? Explain why.
+
+\begin{center}
+\includegraphics[width=5cm]{heap.png}
+\end{center}
+\end{enumerate}
+
+
+\section{Algorithm Analysis (25 pts)}
+\label{sec:orge88be4d}
+
+A palindrome is a word that can be read in both directions: from
+left to right or from right to left. Radar, level, madam, or kayak
+are examples of palindromes. In this section, we are interested into
+algorithms that can decide whether a given word is a palindrome or
+not, as shown by the following code snippet:
+
+\begin{minted}[]{java}
+boolean isPalindrome(char[] givenWord) {
+   // Your logic here ...
+}
+\end{minted}
+
+\begin{enumerate}
+\item Write an \emph{iterative} function that decides whether the given word is
+a palindrome or not.
+
+\item What are the worst case time and space efficiencies of your algorithm. Prove it.
+
+\item Write a \emph{recursive} algorithm that does the same.
+
+\item What are the worst case time and space efficiencies of your algorithm. Prove it.
+
+\item Is possible to improve the time and space efficiency of the recursive
+function. How would you proceed?
+\end{enumerate}
+
+
+\section{Data Structure Design (25 pts)}
+\label{sec:org5de7f26}
+
+A \emph{cache} is a system that holds in main memory elements that have
+already been used so that there is no need to compute them or to
+read them again from a slower device. Caches often help to speed
+up access to disks, to databases, or to the network.
+
+Let us assume for instance that we need to retrieve some users'
+profile using a remote service. To avoid sending too many requests
+over the network, we decide to use a cache to store locally the
+profiles that we have already retrieved. The following Java code
+illustrates the behavior of such a cache.
+
+\begin{minted}[linenos,firstnumber=1]{java}
+public class Cache {
+
+   private UserService remote;
+
+   public Cache(UserService givenRemote) {
+       this.remote = givenRemote;
+   }
+
+   public void findUserById(String userId) {
+       var userProfile = this.search(userId);
+       if (userProfile != null) {
+           return userProfile;
+       }
+       var userProfile = this.remote.findUserById(userId);
+       if (this.isFull()) {
+           this.discardOne();
+       }
+       this.add(userProfile);
+   }
+
+   private UserProfile search(String userId) { /* ... */ }
+
+   private void discardOne() { /* ... */ }
+}
+\end{minted}
+
+A cache has however a limited capacity, and when the cache is full,
+one must choose an entry to discard. The challenge when designing
+a cache is to maximize the probability of finding what we need in
+the cache (so called a cache "hit", as opposed to a cache "miss").
+
+\begin{enumerate}
+\item What data structure would you use to implement such a cache?
+
+\item Which element would you choose to discard, and why? Provide an
+algorithm for both the \texttt{search} and \texttt{discardOne} function.
+
+\item What are the best case runtime efficiencies of a user when
+using your cache design?
+
+\item What are the worst case runtime efficiencies of finding a user
+profile using the cache? (We can assume that the time to fetch a
+remote profile through the network is \(t_r\)).
+
+\item We decide to discard the \emph{least-recently locally accessed}
+strategy. What data structure would you use to implement this
+strategy and guarantee constant search and discard runtime?
+\end{enumerate}
+
+
+\section{Algorithm Design (25 pts)}
+\label{sec:orge81f5b2}
+
+We are looking at now the file system, that is, the directory
+structure offered by the operating system. In a nutshell, a
+directory can contain two kinds of elements: files or directories. A
+file system thus forms a n-ary tree structure where nodes are
+directories and leaves files. The purpose of this exercise is to
+define an algorithm that lists the content of a given directory,
+including the content of its sub directories. The following figure
+shows the tree structure formed by the directories of a simple Java
+project.
+
+\begin{center}
+\includegraphics[width=10cm]{directory.png}
+\end{center}
+
+
+
+In this picture, different icons denote directories and files. For
+example, the root directory \texttt{project} contains two sub-directories,
+namely \texttt{src} and \texttt{target}, and one file named \texttt{pom.xml}. Provided
+with this tree, your algorithm should print something like:
+
+\begin{verbatim}
+project
+   src
+      main
+         java
+             MyClass.java 
+         resources
+      test
+         java
+             MyClassTest.java
+         resources
+   target
+   pom.xml
+\end{verbatim}
+
+To avoid having to deal with a real and complicated file system API, we will assume
+the following simplified interface. 
+
+\begin{minted}[linenos,firstnumber=1]{java}
+interface FileSystem {
+    // Return a handler to the file
+    File get(String path);
+
+    // Check whether a file is a directory of not
+    boolean isDirectory(File file);
+
+    // Returns the content of the givenj directory or an empty list if
+    // given a file.
+    List<File> contentsOf(File file);
+
+    // return the name of the file
+    String getName(File file);
+}
+\end{minted}
+
+\begin{enumerate}
+\item Propose an algorithm that formats the content of a given directory as
+shown previously. The key point here is to indent each entry so
+that nested elements appear further on the right (compared to
+their container).
+
+\begin{minted}[]{java}
+void list(FileSystem fileSystem, String givenPath) {
+    // Your logic goes here
+}
+\end{minted}
+
+\item What are the time and space efficiencies of your
+algorithm? Explain your reasoning.
+
+\item Propose a second algorithm that only lists the files (and not the
+directories), but displays their name together with the path
+that leads to them.
+
+\begin{minted}[linenos,firstnumber=1]{java}
+void listFilesOnly(FileSystem fileSystem, Path givenPath) {
+     // Your logic gooes here
+}
+\end{minted}
+
+Given the Java project previously shown, this algorithm should
+display the following:
+
+\begin{verbatim}
+project/src/main/java/MyClass.java
+project/src/test/java/MyClassTest.java
+project/pom.xml
+\end{verbatim}
+
+\item What are the worst-case time and space efficiencies? Explain your
+reasoning.
+
+\item How would you estimate the average case runtime efficiency?
+Explain your reasoning.
+\end{enumerate}
+
+\noindent\rule{\textwidth}{0.5pt}
+\textbf{End of the examination}
+\end{document}

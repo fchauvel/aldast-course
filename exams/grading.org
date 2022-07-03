@@ -1,0 +1,79 @@
+
+SCORE: 39 / 100.
+
+I put below the detail score and explanation for each question. I
+refer you to the suggested solution for a baseline.
+
+
+Part I: Basic Knowledge ( 14 / 25 pts)
+
+ - Q 1.1: 4 pts
+   Roughly appropriate. Miss the key fact that binary search repeatedly halves
+   the array. These sequence of division by two leads to the log n
+   complexity.
+
+ - Q 1.2: 0 pt
+   Wrong answer. No justification.
+
+ - Q 1.3: 5 pts
+   Correct answer.
+
+ - Q 1.4: 5 pts
+   Correct answer.
+
+ - Q 1.5: 0 pt
+   No answer given.
+
+   
+Part II: Algorithm Efficiency ( 12 / 25 pts)
+
+ - Q 2.1: 1 pt
+   Incorrect answer. No justification.
+
+ - Q 2.2: 5 pts
+   Correct answer. 
+
+ - Q 2.3: 5 pts
+   Correct answer.
+
+ - Q 2.4: 1 pt.
+   Incorrect explanation. Missing proof.
+
+ - Q 2.5: 0 pt.
+   Irrelevant answer.
+
+   
+Part III: Algorithm Design ( 7 / 25 pts)
+
+ - Q 3.1: 5 pts
+   Correct answer/approach.
+
+ - Q 3.2: 0 pt
+   No answer given.
+
+ - Q 3.3: 2 pts.
+   Roughly correct answer. Invalid justifications.
+
+ - Q 3.4: 0 pt
+   No answer given.
+
+ - Q 3.5: 0 pts
+   No answer given.
+
+
+Part IV: Data Structure Design (6 / 25)
+
+ - Q 4.1: 5 pts
+   Correct answer.
+
+ - Q 4.2: 0 pt
+   Incorrect answer, that show incorrect understanding.
+
+ - Q 4.3: 1 pt
+   Valid idea. Wrong justification.
+
+ - Q 4.4: 0 pt
+   No answer given.
+
+ - Q 4.5: 0 pt.
+   No answer given.

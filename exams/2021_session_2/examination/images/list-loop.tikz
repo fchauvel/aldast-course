@@ -1,0 +1,49 @@
+\documentclass[tikz]{standalone}
+\usetikzlibrary{
+  calc,
+  positioning,
+  shapes.multipart,
+  arrows.meta % supersedes the arrows library
+}
+\begin{document}
+\begin{tikzpicture}[
+  list/.style={
+     rectangle split,
+     rectangle split parts=2,
+     draw,
+     rectangle split horizontal
+   },
+   pointer/.style={draw, circle, fill=black, inner sep=0pt, minimum size=3pt},
+   arrow/.style={-Stealth}
+]
+   \node[list] (A) {12};
+   \node[pointer] (nextA) at ($(A.one split north)!0.5!(A.south east)$) {};
+   
+   \node[list, right=of A] (B) {99};
+   \node[pointer] (nextB) at ($(B.one split north)!0.5!(B.south east)$) {};
+   
+   \node[list, right=of B] (C) {37};
+   \node[pointer] (nextC) at ($(C.one split north)!0.5!(C.south east)$) {};
+   
+   \node[list, right=of C] (D) {76};
+   \node[pointer] (nextD) at ($(D.one split north)!0.5!(D.south east)$) {};
+
+   \node[list, above=of D] (E) { \nodepart{two} 54};
+   \node[pointer] (nextE) at ($(E.one split north)!0.5!(E.south west)$) {};
+
+   \node[list, above=of C] (F) { \nodepart{two} 23};
+   \node[pointer] (nextF) at ($(F.one split north)!0.5!(F.south west)$) {};
+
+   \node[list, above=of B] (G) { \nodepart{two} 15};
+   \node[pointer] (nextG) at ($(G.one split north)!0.5!(G.south west)$) {};
+   
+   \draw[arrow] (nextA) -- (B);
+   \draw[arrow] (nextB) -- (C);
+   \draw[arrow] (nextC) -- (D);
+   \draw[arrow] (nextD) -- (nextD |- E.south);
+   \draw[arrow] (nextE) -- (F);
+   \draw[arrow] (nextF) -- (G);
+   \draw[arrow] (nextG) -- (nextG |- B.north);
+
+\end{tikzpicture}
+\end{document} 
