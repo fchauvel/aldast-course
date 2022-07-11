@@ -1,0 +1,47 @@
+\documentclass[tikz]{standalone}
+\usepackage{amsmath}
+\usetikzlibrary{calc, positioning, arrows.meta, shapes}
+\begin{document}
+\tikzset{
+  pseudo/.style = {
+    font=\small\it
+  },
+  process/.style = {
+    draw,
+    rectangle,
+    text width = 2.5cm
+  },
+  decision/.style = {
+    draw,
+    diamond,
+    aspect=1.5
+  },
+  arrow/.style = {
+    -Latex
+  },
+  label/.style= {
+    font=\small
+  }
+}
+\begin{tikzpicture}
+  \node[pseudo] (start) {Start};
+  \node[process, right=of start] (setup) {$count \gets 0$ \\ $i \gets 1$};
+  \node[decision, right=of setup] (exit) {$i \leq n$};
+  \node[decision, right=of exit] (test) {$s_i \equiv 0 \mod 2$};
+  \node[process, above=of test] (incIndex) {$i \gets i + 1$};
+  \node[process, text width=3cm, color=red, right=of test] (incCount) {$count \gets count + 1$};
+  \node[process, below=of exit] (return) {$\mathrm{return}\; count$};
+  \node[pseudo, below=of return] (done) {Done};
+  
+  \draw[arrow] (start) -- (setup);
+  \draw[arrow] (setup) -- (exit);
+  \draw[arrow] (exit) -- node[label, above]{yes} (test);
+  \draw[arrow] (test) -- node[label, left]{no} (incIndex);
+  \draw[arrow, color=red] (test) -- node[label, above]{yes} (incCount);
+  \draw[arrow, color=red] (incCount) |- (incIndex);
+  \draw[arrow] (incIndex) -| (exit);
+  \draw[arrow] (exit) -- node[label, left]{no} (return);
+  \draw[arrow] (return) -- (done);
+  
+\end{tikzpicture}
+\end{document}

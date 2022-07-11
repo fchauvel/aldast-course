@@ -1,0 +1,52 @@
+\documentclass[tikz, border=1mm]{standalone}
+\usetikzlibrary{
+   positioning,
+   fit,
+   matrix
+}
+\tikzset{
+   memory/.style={
+      matrix of nodes,
+      nodes in empty cells, 
+      align=center,
+      text width=1cm,
+      nodes={
+         text depth=1em,
+         text height=1.5em,
+         minimum width=1em
+      },
+      row 2/.style={
+          nodes={
+             draw,
+             minimum height=1em,
+             font=\small\ttfamily
+         }
+       },
+       row 2 column 1/.style={ nodes={ dashed } },
+       row 2 column 2/.style={ nodes={ dashed } },
+       row 2 column 9/.style={ nodes={ dashed } },
+       row 2 column 10/.style={ nodes={ dashed } },
+       row 2 column 5/.style={ nodes={ fill=gray!25 } },
+       row 2 column 6/.style={ nodes={ fill=gray!25 } },
+   }
+}
+\begin{document}
+\begin{tikzpicture}
+\matrix (m) [memory] {
+  0 &  & b & $b+1$ & $b+2$ & $b+3$ & $b+4$ & $b+5$ &  & $\infty$ \\
+    &  & X & X     & Y     & Y     & Z     & Z     &  &          \\
+};
+
+\coordinate [below=1em of m-2-5.south west] (es) {};
+\coordinate [below=1em of m-2-6.south east] (ee) {};
+\draw [latex-latex] (es) -- node[midway,below] {size of type $T$} (ee);
+
+\coordinate [below=3em of m-2-3.south west] (cs) {};
+\coordinate [below=3em of m-2-8.south east] (ce) {};
+\draw [latex-latex] (cs) -- node[midway,below] {allocated capacity} (ce);
+
+\node[above=1em of m-1-5] (label) {base address};
+\draw [-latex] (label.west) -| (m-1-3.north) {};
+
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,17 @@
+\documentclass[tikz, border=1mm]{standalone}
+\usetikzlibrary{positioning,fit,decorations.text}
+
+\begin{document}
+\begin{tikzpicture}
+  \node[draw, circle, dashed] (repr) {Representation};
+  \node[draw, circle, minimum size=4cm] (api) at (0, 0) {};
+  \path[-latex,
+        blue,
+        postaction={decorate},
+        decoration={
+          text along path,
+          text={Application Programming Interface (API)},
+          text align=center}
+     ] (-1.05,-1.05) arc [start angle=225, end angle=-45, radius=1.5cm];
+\end{tikzpicture}
+\end{document}

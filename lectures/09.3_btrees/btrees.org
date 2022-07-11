@@ -1,0 +1,52 @@
+
+
+
+
+* Best and worst case I/O Efficiency
+
+
+#+header: :R-dev-args bg="transparent"
+#+header: :file ./io_efficiency.png
+#+header: :exports results
+#+header: :results graphics file
+#+begin_src R
+
+   best_case <- function(n, k) { ceiling(log(n+1, k))-1 }
+   worst_case <- function(n, k) { floor(log((n+1)/2, ceiling(k/2)))}
+
+
+   sizes <- seq(10, 1000)
+
+
+   plot(sizes, sapply(sizes, function(s) { worst_case(s, 3)}),
+      type="l",
+      lty=1,
+      col="darkred",
+      ylim=c(0, 10),
+      xlab="Item count",
+      ylab="B-tree depth");
+
+  lines(sizes, sapply(sizes, function(s) {best_case(s, 3)}),
+        col="darkgreen",
+        lty=2);
+
+  lines(sizes, sapply(sizes, function(s) {worst_case(s, 10)}),
+        col="darkorange",
+        lty=1);
+
+
+  lines(sizes, sapply(sizes, function(s) {best_case(s, 10)}),
+        col="darkblue",
+        lty=2);
+
+  legend("topleft", inset=0.05,
+         legend=c("k=3 (worst case)", "k=3 (best case)", "k=10 (worst case)", "k=10 (best case)"),
+         box.lty=0,
+         col=c("darkred", "darkgreen", "darkorange", "darkblue"),
+         lty=c(1, 2, 1, 2),
+         cex=0.8)
+
+#+end_src
+
+#+RESULTS:
+[[file:./io_efficiency.png]]

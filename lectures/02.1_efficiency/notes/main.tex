@@ -1,0 +1,363 @@
+\documentclass{aldast}
+
+\usepackage{subfig}
+
+\documentType{Lecture Notes}
+\documentNumber{2.1}
+\title{Computational Complexity}
+\author{F. Chauvel}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  We look \emph{computational complexity}: The performance of a single
+  computations (i.e., programs with fixed inputs). We will learn how
+  to estimate the time and memory required by these computations using
+  RAM model and how to generalize this to higher-level code.
+\end{abstract}
+
+
+\section*{Introduction}
+
+Algorithms tell us how to manipulate symbols to solve computational
+problems. We also saw how the machine executes a program and how we
+can therefore argue for correctness.
+
+Generally there are however many ways to solve a given computation
+problem. If we have several ``correct'' algorithms, them we need to
+compare them. There are many things we can look at, including their
+length, there readability, or their performance. In this course, we
+will only look at their performance, which includes time and
+space. Time is the clock time enlapsed between the moment the RAM
+starts and the moment it stops, whereas space is the number of memory
+cells the machine uses.
+
+I organized the remainder as follows. The first part introduces two
+programs that both compute the sum of the 100 first integers using two
+alternative algorithms. We will go through a quick benchmark to see
+which program runs the fastest and consumes the least memory. We then
+take a closer look, by converting these programs to RAM assembly, which
+gives us very different results. Finally, we look at understanding
+higher-level code without resorting to RAM assembly. In the next
+lecture, we will generalize to fully-fledge algorithms with
+arbitrary inputs and code.
+
+
+\section{Running Example}
+
+Consider the following computational problem: Finding the sum $s$ of
+the natural numbers up to 100. More formally, that is finding $s$
+such that:
+\begin{equation}
+  s = 1 + 2 + 3 + \ldots + 99 + 100
+\end{equation}
+
+Consider the two programs shown on
+Figure~\ref{fig:sum}. Figure~\ref{prog:c:sum} is a C program that
+computes this sum using a loop: It iterates from 0 to 100 and adds up
+numbers as it goes. By contrast, Figure~\ref{prog:py:sum} is a Python
+script that relies on a closed-form formula:
+\begin{equation}
+  1 + 2 + 3 \ldots + n = \sum_{i=1}^{n} i =\frac{n \cdot (n+1)}{2}.
+  \label{eq:sum}
+\end{equation}
+
+Not only are these two programs expressed using different programming
+languages, but they also use different algorithms: A loop vs. a
+formula. So which one will perform best? To compare these two
+programs, and their respective algorithms we will look at the
+resources these computations require. There are two main resources:
+Time and space.
+
+\begin{figure}[htbp]
+  \subfloat[C program using iteration]{
+    \begin{minipage}[b]{0.5\textwidth}
+      \inputminted[xleftmargin=0pt,linenos=false]{c}{code/sum.c}
+    \end{minipage}
+    \label{prog:c:sum}
+  }
+  \hfill
+  \subfloat[Python script using a formula]{
+    \begin{minipage}[b][3cm][c]{0.35\textwidth}
+      \inputminted[xleftmargin=0pt,linenos=false]{python}{code/sum.py}
+    \end{minipage}
+    \label{prog:py:sum}
+  }
+  \caption{Two programs that sum up natural numbers up to 100.}
+  \label{fig:sum}
+\end{figure}
+
+
+\section{Benchmarking Performance}
+How can get an idea of the time and memory these programs require? The
+simplest way to answer that is to execute them and to measure. On most
+POSIX operating systems, one can do that using the \texttt{time}
+command, which accepts a command and displays various runtime
+information including the run-time and memory consumption, as we can
+see on Figure~\ref{sh:benchmark}.
+
+\begin{figure}[htbp]
+  \begin{minted}[linenos=false,xleftmargin=5pt]{shell-session}
+% gcc sum.c
+% /usr/bin/time -l ./a.out
+Sum: 2550
+        0.00 real         0.00 user         0.00 sys
+             1245184  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                  85  page reclaims
+                  [...]
+% /usr/bin/time -l python3 sum.py
+Sum:  2550
+        0.06 real         0.02 user         0.02 sys
+             8290304  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                4045  page reclaims
+                 198  page faults
+                 [...]
+ \end{minted}
+ \caption{Benchmarking the execution and time and memory consumption
+   of the programs shown on Figure~\ref{fig:sum}. I removed irrelevant
+   details for brevity.}
+ \label{sh:benchmark}
+\end{figure}
+
+This is of course a simplistic way to measure, but it gives some
+indications nonetheless. We see that our C program takes less than 10
+milliseconds (0.00 real) to run whereas our Python programs takes
+60~ms\sidenote{On my machine only: Apple M1 processor, 8 cores and
+  16~GB of RAM, running MacOS 11.3}. As for the memory (indicated by
+the maximum resident set size, in bytes), our C program requires
+1.1~MiB, whereas our Python programs uses 7.9~MiB. This a huge
+difference, but is that really about our algorithms?
+
+These measurements describe the whole underlying setup, including
+hardware, operating system (OS) and runtime environment. C and Python are
+very different in this respect: A C program is compiled into machine
+code whereas a Python program is dynamically interpreted, which is
+much slower, and requires much more memory.
+
+\begin{takeaway}
+  Benchmarking describes the \emph{programs} (in their environment)
+  but not the underlying \emph{algorithms}.
+\end{takeaway}
+
+\emph{Performance engineering} is the Art of fine-tuning the machine,
+the OS and the runtime environment for maximum performance. In this
+course, we only focus ``ballpark estimates'', independent of the
+machine and software stack. What we aim at is a relative landmark to
+compare alternative algorithms.
+
+\section{Computational Complexity}
+
+If benchmarking does not work, what else can we do? We can use our RAM
+model, which we have designed in Lecture~1.2. The idea is to
+scrutinize the computation(s) that these programs would generate on
+RAM. In Computer Science, this is named \emph{computational
+  complexity}\sidenote{In my view, the word ``complexity'' is a very
+  poor choice. I would rather use ``efficiency'' or ``performance'',
+  since complexity also refers to how hard it is for someone to read
+  and understand an algorithm~\cite{mccabe1976}.}, and can refer to
+either time or space, as we shall see.
+
+\begin{takeaway}
+  How we measure the time and space needed for a computation
+  ultimately depends on the underlying computation model.
+\end{takeaway}
+
+\subsection{RAM Programs}
+
+How would our two programs from Figure~\ref{fig:sum} look like if they
+were written for RAM? Figure~\ref{fig:asm} shows two possible
+translations in RAM assembly, which I derived using the translation
+schemes presented in Lecture 1.2. Figure~\ref{prog:asm:loop}
+implements a loop, whereas Figure~\ref{prog:asm:formula} implements
+formula shown by Equation~\ref{eq:sum}. I assume here an augmented RAM
+where all arithmetic operations are readily available as machine
+instructions.
+
+\begin{figure}
+  \subfloat[RAM ASM for the C program]{
+    \begin{minipage}[b]{0.475\textwidth}
+      \inputminted[xleftmargin=0pt,linenos=false]{asm}{code/loop.asm}
+    \end{minipage}
+    \label{prog:asm:loop}
+  }
+  \hfill
+  \subfloat[RAM ASM for the Python program]{
+    \begin{minipage}[b]{0.475\textwidth}
+      \inputminted[xleftmargin=0pt,linenos=false]{asm}{code/formula.asm}
+    \end{minipage}
+    \label{prog:asm:formula}
+  }
+  \caption{RAM assembly equivalent for the programs using a loop and a formula (see Figure~\ref{fig:sum})}
+  \label{fig:asm}
+\end{figure}
+
+\subsection{Space}
+
+How can we estimate the memory used by these RAM programs? We will
+count the number of memory cells used in the \emph{data segment}. Here
+there are three in each programs. Space-wise, both programs are
+equivalent. This departs from our benchmarking, which indicated that
+our formula consumed much more memory.
+
+\begin{takeaway}
+  The memory used in a computation boils down to the number of memory
+  cells used to store actual data (i.e., not the program
+  instructions). By convention, we will only account for intermediate
+  results, and discard inputs and outputs.
+\end{takeaway}
+
+
+\subsection{Time}
+Estimating execution time is slightly more involved because our
+computation model says nothing about time: We will have to extend it
+with the time every instruction takes. This will be our \emph{cost
+  model}, which Table~\ref{tab:costs} summarizes.
+
+In this course, we will always assume a ``unit'' cost model, where
+every RAM instruction takes one unit of time\sidenote{Since each
+  instruction costs 1 unit of time, the unit does not really matter
+  and we are actually counting ``executed'' instructions.}. Estimating time boils
+down to estimating the number of instructions that the machine
+executes. Other models exist however. A real computer uses several
+instructions to manipulate very large numbers, because their size
+exceeds a single word. To reflect that, one can use the bit-cost model
+where the cost of an instruction depends on the size of its operand,
+using a formula such as:
+\begin{equation}
+  cost(\mathtt{ADD}\; a)= \log_{10} M(a)
+\end{equation}
+
+\begin{table}[htbp]
+  \begin{center}
+    \begin{tabular}{r>{\ttfamily}lr}
+      \toprule
+      OP & Mnemonic & Runtime \\
+      \midrule
+      1  & LOAD $n$   & 1           \\
+      2  & ADD $a$    & 1           \\
+      3  & SUB $a$    & 1           \\
+      4  & STORE $a$  & 1           \\
+      5  & JUMP $a$   & 1           \\
+      6  & READ $a$   & 1           \\
+      7  & PRINT $a$  & 1           \\
+      ?  & HALT -     & 1           \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \caption{Unit cost model associated with the RAM instructions. Others models are possible}
+  \label{tab:costs}
+\end{table}
+
+How does this apply to our example? Consider first our Python program
+shown on Figure~\ref{prog:asm:formula}). The execution starts at the
+``main'' label and ends with the \texttt{HALT} instruction. The
+machine executes once an only once every of its seven instructions
+(there is no \texttt{JUMP}). So this algorithm takes 7 units of time.
+
+\begin{takeaway}
+  The time spent in a computation boils down to the time spent
+  executing all the instructions.
+\end{takeaway}
+
+By contrast, our C program (see Figure~\ref{prog:asm:loop}) includes
+\texttt{JUMP} instructions so we have to pay attention to how many
+time each instruction runs. We have to look at each assembly
+instruction and mark down its cost (always 1) and how many times it
+runs (the count). These two combined give us a total cost for each
+assembly line and the overall execution time of our program is simply
+the ``grand total'' for all assembly lines. Table~\ref{tab:breakdown}
+shows how we can break this down for our C program.
+
+Our C program is a loop (see Figure~\ref{prog:c:sum}) so the assembly
+code contains three parts: A test from (lines 1--4), a loop body
+(lines 5--13) and the rest (lines 14--15). As always, we assume the
+unit cost model, so every instruction takes one unit of time. The
+``test'' section runs 102 times, because it runs once for every
+integer from 0 to 100 (included) and once more where the variable
+\texttt{any} holds 101 and we then exit the loop. Each instruction in the
+loop body runs 101 times. Finally the two last instructions run only
+once. That gives us a grand total of 1319.
+
+\begin{table}[htbp]
+  \begin{center}
+    \begin{tabular}{>{\scriptsize}r>{\ttfamily}lrrr}
+      \toprule
+      Line & ASM code         & Count & Cost   & Total \\
+      \midrule
+      1    & main: LOAD 0     & 102   & 1      & 102   \\
+      2    & ~~~~~~~ADD any   & 102   & 1      & 102   \\
+      3    & ~~~~~~~SUB end   & 102   & 1      & 102   \\
+      4    & ~~~~~~~JUMP done & 102   & 1      & 102   \\[5pt]
+      5    & ~~~~~~~LOAD 0    & 101   & 1      & 101   \\
+      6    & ~~~~~~~ADD sum   & 101   & 1      & 101   \\
+      7    & ~~~~~~~ADD any   & 101   & 1      & 101   \\
+      8    & ~~~~~~~STORE sum & 101   & 1      & 101   \\
+      9    & ~~~~~~~LOAD 1    & 101   & 1      & 101   \\ 
+      10   & ~~~~~~~ADD any   & 101   & 1      & 101   \\ 
+      11   & ~~~~~~~STORE any & 101   & 1      & 101   \\ 
+      12   & ~~~~~~~LOAD 0    & 101   & 1      & 101   \\ 
+      13   & ~~~~~~~JUMP main & 101   & 1      & 101   \\[5pt] 
+      14   & done: PRINT sum  & 1     & 1      & 1     \\ 
+      15   & ~~~~~~~HALT      & 1     & 1      & 1     \\ 
+      \midrule
+           &                  &       & Total: & 1319  \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \caption{Calculating the runtime of our loop-based program (see Figure~\ref{prog:asm:loop})}
+  \label{tab:breakdown}
+\end{table}
+
+Time-wise, this reveals that our loop-based algorithm is much slower
+than our formula: The loop takes \numprint{1319} instructions against
+only 7 for the formula! This is also very different from our
+benchmarking, where our C program run much faster! Again, what we saw
+with the benchmark is that machine code runs much faster than
+interpreted code.
+
+\subsection{Higher-level Code}
+
+Now, we know how to estimate the time and space of algorithms. In
+practice however, we will not have time to write down RAM assembly. We
+do not really want to. Besides, in the general case we do not know
+exactly how high-level code would be compiled. There are many ways one
+can compile a given piece of pseudo-code. Instead, we count arithmetic
+and logic operations when we look at the run time, and we count
+variables when we look at space. As we shall see in the next lecture,
+we cannot always come up with a precise number of instructions anyway.
+
+Returning to our sum of integers, if we only count arithmetic and
+logic operations, we get a total of 3 for the formula algorithm and
+404 for the loop. The difference (x10) is still there, and this is
+what matters.
+
+\begin{takeaway}
+  In practice, we do not know precisely the RAM instructions that
+  would be generated by a compiler so we will only account for
+  arithmetic and logic operations.
+\end{takeaway}
+
+
+\section*{Conclusion}
+
+Now we know what are the runtime and space required to run a given
+computation. Time is simply the time it takes before the machine halts
+whereas the space is the number of memory cells it uses to store
+intermediate results. We are not there yet though. We have only looked
+at single computation, but an algorithm (and a program) captures a
+group of computations. This will be the topic of the next lecture on
+algorithm analysis.
+
+\bibliographystyle{acm}
+\bibliography{references}
+
+\end{document}

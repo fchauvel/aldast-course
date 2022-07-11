@@ -1,0 +1,49 @@
+\documentclass[tikz]{standalone}
+\usepackage{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usetikzlibrary{positioning, shapes, arrows.meta, calc}
+\begin{document}
+
+\tikzstyle{arrow} = [->,-Latex,font=\small]
+\tikzstyle{process} = [rectangle, draw, minimum height=2em, text width=2cm]
+\tikzstyle{pseudo} = [rectangle, font=\small\itshape, black!75]
+\tikzstyle{decision} = [diamond, draw, aspect=2, font=\small\itshape]
+\tikzstyle{fact} = [text width=2cm, align=flush left, blue!75!black]
+\tikzstyle{link} = [dashed,font=\scriptsize, blue!75!black]
+
+\begin{tikzpicture}
+  \node[pseudo] (start) {Start};
+  \node[process, below=of start] (init) {$p \gets0$ \\$c \gets 0$};
+  \node[decision, below=of init] (test) {$c \neq y$};
+  \coordinate[left=of test] (leftOfTest) {};
+  \node[process, below =of test] (body) {$p \gets p + x$ \\$c \gets c + 1$};
+  \coordinate (leftOfBody) at (leftOfTest |- body) {};
+  \node[process, right = of test] (return) {\textbf{return} $p$};
+  \node[pseudo, right=of return] (end) {End};
+  \draw[arrow] (start) -- (init);
+  \draw[arrow] (init) -- (test);
+  \draw[arrow] (test) -- node[left] {yes} (body);
+  \draw[arrow] (body.west) -- (leftOfTest |- body) -- (leftOfTest) -- (test) ;
+  \draw[arrow] (test) -- node[below] {no} (return);
+  \draw[arrow] (return) -- (end);
+
+  \node[fact, left = of $(start)!.5!(init)$, align=flush right] (afterStart) {$x \in \mathbb{N} \land y \in \mathbb{N}$};
+  \draw[link] ($(start)!.5!(init)$) -- (afterStart);
+  
+  \node[fact, left = 2cm of $(init)!.5!(test)$, align=flush right] (afterInit) {$p = 0$\\$c = 0$\\\textcolor{red}{$p=c\times x$}};
+  \draw[link] ($(init)!.5!(test)$) -- (afterInit);
+
+  \node[fact, right = of init, align=flush left] (afterExit) {$c \geq y$\\\textcolor{red}{$p=c\times x$}};
+  \draw[link] ($(test)!.5!(return)$) |- (afterExit);
+
+  \coordinate (midpoint) at ($(test)!.5!(body)$) {};
+  \node[fact, anchor=west, align=flush left] (beforeBody) at (midpoint -| return.west) {$c' < y$\\\textcolor{red}{$p'=c'\times x$}};
+        \draw[link] (midpoint) -- (beforeBody);
+
+  \node[fact, left = of $(leftOfBody)!.5!(leftOfTest)$,
+        align=flush right] (afterBody) {$c = c' + 1$\\$p = p' +1 $\\\textcolor{red}{$p=c\times x$}};
+  \draw[link] ($(leftOfBody)!.5!(leftOfTest)$) -- (afterBody);
+\end{tikzpicture}
+
+\end{document}

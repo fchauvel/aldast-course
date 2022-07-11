@@ -1,0 +1,48 @@
+\documentclass[tikz]{standalone}
+\usepackage{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usetikzlibrary{positioning, shapes, arrows.meta, calc}
+\begin{document}
+
+\tikzstyle{arrow} = [->,-Latex,font=\small]
+\tikzstyle{process} = [rectangle, draw, minimum height=2em]
+\tikzstyle{pseudo} = [rectangle, font=\small\itshape, black!75]
+\tikzstyle{decision} = [diamond, draw, aspect=2, font=\small\itshape]
+\tikzstyle{fact} = [text width=4.5cm, align=flush left, blue!75!black]
+\tikzstyle{link} = [dashed,font=\scriptsize, blue!75!black]
+
+\begin{tikzpicture}
+  \node[pseudo] (start) {Start};
+  \node[process, below=of start] (init) {$m \gets0$};
+  \node[decision, below=of init] (test) {$x<y$}; 
+  \node[process, below left =of test] (then) {$m \gets x$};
+  \node[process, below right =of test] (else) {$m \gets y$};
+  \coordinate (merge) at ($(then)!0.5!(else)$) {};
+  \node[process, below = of merge] (return) {\textbf{return} $m$};
+  \node[pseudo, below=of return] (end) {End};
+  \draw[arrow] (start) -- (init);
+  \draw[arrow] (init) -- (test);
+  \draw[arrow] (test.west) -| node[above] {yes} (then);
+  \draw[arrow] (test.east) -| node[above] {no} (else);
+  \draw[arrow] (then) -- (merge);
+  \draw[arrow] (else) -- (merge);
+  \draw[arrow] (merge) -- (return);
+  \draw[arrow] (return) -- (end);
+
+  \node[fact, right = of $(start)!.5!(init)$] (afterStart) {$x \in \mathbb{Z} \land y \in \mathbb{Z}$};
+  \draw[link] ($(start)!.5!(init)$) -- (afterStart);
+
+  \node[fact, right = of $(init)!.5!(test)$] (afterInit) {$m = 0$};
+  \draw[link] ($(init)!.5!(test)$) -- (afterInit);
+
+  \node[fact,left=of $(test -| then)!0.5!(then)$, align=flush right, text width=1.5cm] (beforeThen) {$x < y$};
+  \draw[link] (beforeThen) -- ($(test -| then)!0.5!(then)$);
+  
+  \node[fact,right=of $(test -| else)!0.5!(else)$, text width=2cm] (beforeElse) {$x \geq y$};
+  \draw[link] (beforeElse) -- ($(test -| else)!0.5!(else)$);
+
+  \node[fact,right=of return] (afterMerge) {$x \geq y \implies m \leq x \, \land \, m = y$ \\ $x < y \implies m = x \, \land \, m < y$};
+  \draw[link] (afterMerge) -- ($(return)!0.5!(merge)$);
+\end{tikzpicture}
+\end{document}

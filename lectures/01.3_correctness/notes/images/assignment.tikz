@@ -1,0 +1,90 @@
+\documentclass[tikz]{standalone}
+\usepackage{amsmath}
+\usetikzlibrary{positioning, matrix}
+\begin{document}
+\setlength{\medmuskip}{0mu}
+\tikzset{
+  state/.style={
+    matrix of nodes,
+    nodes in empty cells,
+    row sep=-\pgflinewidth,
+    nodes={text depth=.14cm, text height=.3cm, minimum width=3em},
+    column 1/.style={nodes={anchor=base west, align=right, minimum width=5em, font=\sffamily}},
+    row 1/.style={row sep=2mm},
+    row 1 column 3/.style={nodes={align=right}},
+    row 1 column 4/.style={nodes={draw}},
+    row 1 column 6/.style={nodes={align=right}},
+    row 1 column 7/.style={nodes={draw}},
+    row 2/.style={nodes={font=\small}},
+    row 3/.style={nodes={draw, font=\ttfamily}},
+    row 3 column 1/.style={nodes={draw=none, font=\sffamily}},
+    draw
+  },
+  note/.style={
+    text width=25mm,
+    font=\footnotesize\em,
+    anchor=base east
+  },
+  arrow/.style={-latex,thick}
+}
+\begin{tikzpicture}
+  \matrix[state] (s1) {
+    CPU:   &   & ACC &        &      & IP     & $k$  &                                                \\
+           & 0 & 1   & \ldots & $c$  & \ldots & $k$  & $k+1$ & $k+2$ & $k+3$ & $k+4$ & $k+5$ & \ldots \\ 
+   Memory: &   &     &        & $v'$ &        & LOAD & $1$   & ADD   & $c$   & STORE & $c$   &        \\
+ };
+ 
+ \node[note, above= 0.25cm of s1-1-1] {Machine State 1};
+
+ \matrix[
+  state,
+  below=2cm of s1
+  ] (s2) {
+    CPU:   &   & ACC &|[fill=gray!25]| $1$    &      & IP     &|[fill=gray!25]| $k+2$ &                                                \\
+           & 0 & 1   & \ldots & $c$  & \ldots & $k$   & $k+1$ & $k+2$ & $k+3$ & $k+4$ & $k+5$ & \ldots \\ 
+   Memory: &   &     &        & $v'$ &        & LOAD  & 1     & ADD   & $c$   & STORE & $c$   &        \\
+ };
+
+  \node[note, above= 0.25cm of s2-1-1] {Machine State 2};
+
+  \matrix[
+   state,
+   below=2cm of s2
+   ] (s3) {
+     CPU:  &   & ACC &|[fill=gray!25]| $1 + v'$ &      & IP     &|[fill=gray!25]| $k+4$ &                                                \\
+           & 0 & 1   & \ldots   & $c$  & \ldots & $k$   & $k+1$ & $k+2$ & $k+3$ & $k+4$ & $k+5$ & \ldots \\ 
+   Memory: &   &     &          & $v'$ &        & LOAD  & 1     & ADD   & $c$   & STORE & $c$   &        \\
+ };
+ 
+ \node[note, above= 0.25cm of s3-1-1] {Machine State 3};
+   \matrix[
+   state,
+  below=2cm of s3
+  ] (s4) {
+    CPU:   &   & ACC & $1+ v'$ &          & IP     &|[fill=gray!25]| $k+6$ &                                                \\
+           & 0 & 1   & \ldots  & $c$      & \ldots & $k$   & $k+1$ & $k+2$ & $k+3$ & $k+4$ & $k+5$ & \ldots \\ 
+   Memory: &   &     &         &|[fill=gray!25]| $1 + v'$ &        & LOAD  & 1     & ADD   & $c$   & STORE & $c$   &        \\
+ };
+
+ \node[note, above= 0.25cm of s4-1-1] {Machine State 4};
+ 
+ \draw[arrow] (s1) to node[rectangle, right, align=left,text width=6cm]{$\mathtt{LOAD}\, x \equiv \left\lbrace
+     \begin{aligned}
+        \mathit{ACC} & = x\\
+        \mathit{IP} & = \mathit{IP}' + 2\\
+      \end{aligned} \right.$} (s2);
+
+  \draw[arrow] (s2) to node[rectangle, right, align=left,text width=6cm]{$\mathtt{ADD}\, c \equiv \left\lbrace
+      \begin{aligned}
+        \mathit{ACC} & = \mathit{ACC}' + m'[c]\\
+        \mathit{IP} & = \mathit{IP}' + 2\\
+      \end{aligned} \right.$} (s3);
+  
+  \draw[arrow] (s3) to node[rectangle, right, align=left,text width=8cm]{$\mathtt{STORE}\, c \equiv \left\lbrace
+      \begin{aligned}
+        m & =m'[ACC / c]\\
+        \mathit{IP} & = \mathit{IP}' + 2\\
+      \end{aligned} \right.$} (s4);
+
+\end{tikzpicture}
+\end{document}

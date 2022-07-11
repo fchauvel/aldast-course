@@ -1,0 +1,39 @@
+\documentclass[tikz]{standalone}
+\usetikzlibrary{calc, positioning, arrows.meta}
+\begin{document}
+\tikzset{
+  placeholder/.style = {
+    draw,
+    rectangle,
+    text width=3cm,
+    minimum height=1.5cm,
+    font=\itshape
+   },
+  asm/.style = {
+    draw,
+    rectangle,
+    text width=3cm,
+    fill=black!5,
+    font=\ttfamily
+  },
+  next/.style = {
+    placeholder,
+    minimum height=1cm,
+    dashed,
+  },
+  label/.style = {
+    font=\ttfamily,
+    minimum height=0.5cm,
+    minimum width=1cm,
+    align=flush right,
+    anchor=north east
+  }
+}
+\begin{tikzpicture}[node distance=0cm, minimum width=2cm]
+  \node[placeholder] (e1) {code for $e_1$} ;
+  \node[asm, below=of e1] (store1) {STORE $a_1$};
+  \node[placeholder, below=of store1] (e2) {code for $e_2$};
+  \node[asm, below=of e2] (store2) {STORE $a_2$};    
+  \node[asm, below=of store2] (add) {LOAD 0 \\ADD $a_1$ \\ADD $a_2$};
+\end{tikzpicture}
+\end{document}

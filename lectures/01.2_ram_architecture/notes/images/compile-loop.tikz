@@ -1,0 +1,45 @@
+\documentclass[tikz]{standalone}
+\usetikzlibrary{calc, positioning, arrows.meta}
+\begin{document}
+\tikzset{
+  placeholder/.style = {
+    draw,
+    rectangle,
+    text width=3cm,
+    minimum height=2cm,
+    font=\itshape
+   },
+  asm/.style = {
+    draw,
+    rectangle,
+    text width=3cm,
+    fill=black!5,
+    font=\ttfamily
+  },
+  next/.style = {
+    placeholder,
+    minimum height=1cm,
+    dashed,
+  },
+  label/.style = {
+    font=\ttfamily,
+    minimum height=0.5cm,
+    minimum width=1cm,
+    align=flush right,
+    anchor=north east
+  }
+}
+\begin{tikzpicture}[node distance=0cm, minimum width=2cm]
+  \node[placeholder] (test) {ASM code for $\neg \, e$} ;
+  \node[label] (test-label) at (test.north west) {test:};
+  \node[asm, below=of test] (exit) {JUMP done};
+  \coordinate[right=0.5cm of exit] (c1) {};
+  \node[placeholder, below=of exit] (body) {ASM code for $c$};
+  \node[asm, below=of body] (loop) {LOAD 0 \\JUMP test};
+  \node[next, below=of loop] (done) {\ldots};
+  \node[label] (done-label) at (done.north west) {done:};
+  \coordinate[left=1.5cm of loop] (c2) {};
+  \draw[->,-Latex] (exit) -- (c1) |- (done-label -| done.east) {};
+  \draw[->,-Latex] (loop) -- (c2) |- (test-label.west) {};
+\end{tikzpicture}
+\end{document}

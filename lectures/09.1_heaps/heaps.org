@@ -1,0 +1,119 @@
+#+title: Binary Heaps
+#+author: IDATA 2302
+#+date: Sep. 2021
+
+
+* Creation
+
+  #+begin_src java
+    public class Heap<Item extends Comparable<Item>> {
+
+        private final ArrayList<Item> items;
+
+        public Heap() {
+            this.items = new ArrayList<Item>();
+        }
+    
+    }
+  #+end_src
+
+  #+begin_src java
+    private int parentIndex(int childIndex) {
+        return (childIndex - 1) / 2;
+    }
+
+    private int leftChildIndex(int parentIndex) {
+        return 2 * parentIndex + 1;
+    }
+
+    private int rightChildIndex(int parentIndex) {
+        return 2 * parentIndex + 2;
+    }
+  #+end_src
+
+* Insertion
+
+  #+begin_src java
+    public Heap<Item> insert(Item givenItem) {
+        items.add(givenItem);
+        bubbleUp(lastIndex());
+        return this;
+    }
+
+    private int lastIndex() {
+        return size() - 1;
+    }
+
+    private void bubbleUp(int nodeIndex) {
+        while (!isRoot(nodeIndex)) {
+            int parentIndex = parentIndex(nodeIndex);
+            int difference = itemAt(parentIndex).compareTo(itemAt(nodeIndex));
+            if (difference > 0) {
+                swap(parentIndex, nodeIndex);
+            }
+            nodeIndex = parentIndex;
+        }
+    }
+  #+end_src
+
+  
+* Deletion
+
+  #+begin_src java
+    public Item next() {
+        swap(lastIndex(), 0);
+        Item nextItem = items.remove(lastIndex());
+        bubbleDown(0);
+        return nextItem;
+    }
+
+    private void bubbleDown(int parentIndex) {
+        while (hasAnyChildren(parentIndex)) {
+            int leastChildIndex = leastChildIndex(parentIndex);
+            int difference = itemAt(parentIndex).compareTo(itemAt(leastChildIndex));
+            if (difference <= 0) {
+                break;
+            }
+            swap(parentIndex, leastChildIndex);
+            parentIndex = leastChildIndex;
+        }
+    }
+
+    private boolean hasAnyChildren(int parentIndex) {
+        return hasRightChild(parentIndex) || hasLeftChild(parentIndex);
+    }
+
+    private int leastChildIndex(int parentIndex) {
+        if (hasRightChild(parentIndex)) {
+            int leftIndex = leftChildIndex(parentIndex);
+            int rightIndex = rightChildIndex(parentIndex);
+            int difference = itemAt(leftIndex).compareTo(itemAt(rightIndex));
+            return (difference < 0) ? leftIndex : rightIndex;
+        }
+        if (hasLeftChild(parentIndex)) {
+            return leftChildIndex(parentIndex);
+        }
+        throw new RuntimeException("Error: Node #" + parentIndex + " has no child!");
+    }
+  #+end_src
+
+
+* Heapification
+
+  #+begin_src java
+      public Heap(Item[] givenItems) {
+        this.items = new ArrayList<Item>();
+        for (Item eachItem:  givenItems) {
+            items.add(eachItem);
+        }
+        heapify();
+    }
+
+    private void heapify() {
+        int currentIndex = (size()-1) / 2;
+        while (currentIndex >= 0) {
+            bubbleDown(currentIndex);
+            currentIndex--;;
+        }
+    }
+  #+end_src

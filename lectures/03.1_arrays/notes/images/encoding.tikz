@@ -1,0 +1,21 @@
+\documentclass[tikz, border=1mm]{standalone}
+\usetikzlibrary{positioning,fit}
+\tikzset{Text/.style={align=center, text width=2.5cm}}
+
+\begin{document}
+\begin{tikzpicture}
+  \node[Text] (data) {\textbf{Data}\\``John''};
+  \node[Text, below=of data] (format) {\textbf{Representation Format} \\ ASCII};
+  \node[left=of format, rotate=90, anchor=north] (encoding) {encoding};
+  \node[right=of format, rotate=90, anchor=north, yshift=0.5cm] (decoding) {decoding};
+  \node[Text, below=of format] (symbols) {\textbf{Symbols}\\\texttt{4A-6F-68-6E}};
+  
+  \draw [-latex] (data.west) -| (encoding.east);
+  \draw [-latex] (encoding.west) |- (symbols.west);
+  
+  \draw [-latex] (symbols.east) -| (decoding.west);
+  \draw [-latex] (decoding.east) |- (data.east);
+
+  \node[draw,dashed,fit=(encoding)(format)(decoding)] {};
+\end{tikzpicture}
+\end{document}

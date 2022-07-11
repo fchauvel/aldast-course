@@ -1,0 +1,38 @@
+\documentclass[tikz]{standalone}
+\usepackage{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usetikzlibrary{positioning, matrix, shapes, arrows.meta, calc}
+\begin{document}
+\tikzset{
+  note/.style={
+    font=\small\it,
+    black!35
+  }
+}
+\begin{tikzpicture}
+  \matrix[
+  matrix of nodes,
+  nodes in empty cells,
+  row sep=2pt,
+  column sep=2pt,
+  nodes={text width=1em, text height=1em, fill=black!10, align=center},
+  row 1/.style={font=\small\itshape, black!75},
+  row 4/.style={font=\bfseries, black!50!red}
+  ] (grid) {
+    & 1 & 1 & 1 &   \\
+    & 4 & 1 & 7 & 9 \\
+    &   & 9 & 6 & 7 \\
+    & 5 & 1 & 4 & 6 \\
+  };
+
+  \node[note, left=2.5mm of grid-1-1, align=flush right] {carry};
+  \node[note, left=2.5mm of grid-2-1, align=flush right] {$x=$};
+  \node[note, left=2.5mm of grid-3-1, align=flush right] {$y=$};
+  \node[note, left=2.5mm of grid-4-1, align=flush right] {result};
+  
+  \draw[Latex-Latex, black!35] ($(grid-1-1.north west) + (0, 0.25)$) -- node[above, font=\small\itshape]{4 columns} ($(grid-1-5.north east) + (0, 0.25)$) {};
+  
+  \draw[thick] (grid-4-1.north west) -- (grid-4-5.north east) {};
+\end{tikzpicture}
+\end{document}
