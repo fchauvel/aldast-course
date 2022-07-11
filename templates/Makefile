@@ -3,7 +3,7 @@
 INKSCAPE=/Applications/Inkscape.app/Contents/MacOS/inkscape
 
 LATEX_CLASS=aldast.cls
-LATEX_MAIN=main.tex
+LATEX_MAIN=notes3.1.tex
 
 IMAGES=images
 

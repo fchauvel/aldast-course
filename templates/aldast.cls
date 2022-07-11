@@ -3,6 +3,8 @@
 
 \LoadClass[a4paper,10pt,twoside]{article}
 
+\RequirePackage{amssymb}
+
 \RequirePackage{xcolor}
 
 \RequirePackage[utf8]{inputenc}
@@ -110,6 +112,20 @@
     colframe=red!75!black,
     borderline west = {2pt}{0pt}{red!75!black}
   ] {\color{red!75!black} {\bfseries Takeaway \thetakeawayCount\ }}}
+{\end{tcolorbox}}
+
+
+\newcounter{noteCount}
+\setcounter{noteCount}{0}
+\newenvironment{note}[1]
+{\refstepcounter{noteCount}\begin{tcolorbox}[
+    enhanced,
+    sharp corners,
+    boxrule=0pt,
+    colback=blue!5!white,
+    colframe=blue!75!black,
+    borderline west = {2pt}{0pt}{blue!75!black}
+  ] {\color{blue!75!black} {\bfseries Note: #1.}}}
 {\end{tcolorbox}}
 
 \definecolor{cadmiumorange}{rgb}{0.93, 0.53, 0.18}
